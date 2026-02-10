@@ -3,8 +3,6 @@ title: 'Trello Automation'
 description: Build an automated card progression system for Trello boards with AI-powered summaries
 ---
 
-import { TrelloTab, TrelloCodeContent } from '../../../components/TrelloCodeFetcher'
-
 ---
 
 ## Explore the iii console
@@ -51,16 +49,7 @@ The Trello board is organized into four main lists:
 This example uses the `steps/` directory, but you can also use `src/` or both. Motia discovers step files from either location automatically.
 </Callout>
 
-<Tabs items={['webhook', 'validation', 'requirements', 'assigned', 'review', 'completion', 'overdue', 'slack']}>
-  <TrelloTab tab="webhook" value="trello-webhook" />
-  <TrelloTab tab="validation" value="trello-webhook-validation" />
-  <TrelloTab tab="requirements" value="validate-card-requirements" />
-  <TrelloTab tab="assigned" value="start-assigned-card" />
-  <TrelloTab tab="review" value="mark-card-for-review" />
-  <TrelloTab tab="completion" value="complete-approved-card" />
-  <TrelloTab tab="overdue" value="check-overdue-cards" />
-  <TrelloTab tab="slack" value="slack-notifier" />
-</Tabs>
+View the source code for each step in the [GitHub repository](https://github.com/MotiaDev/motia-examples/tree/main/examples/integrations/communication/trello-flow).
 
 ## Visual Overview
 

@@ -3,10 +3,6 @@ title: iii Console
 description: Your visual dev environment for building, testing, and debugging Motia apps - the successor to the deprecated Workbench
 ---
 
-import VideoPlayer from '@/components/VideoPlayer';
-
-<VideoPlayer videoPath="https://assets.motia.dev/videos/mp4/site/v1/4-motia-workbench.mp4" gifPath="https://assets.motia.dev/images/gifs/v1/4-motia-workbench.gif" title="Using the iii Console" className="mb-8" />
-
 <Callout type="warn">
 The Workbench has been deprecated and replaced by **iii Console**. All references to "Workbench" in older documentation refer to what is now the iii Console.
 </Callout>

@@ -3,8 +3,6 @@ title: 'Finance Agent'
 description: A powerful event-driven financial analysis workflow that combines web search, financial data, and AI analysis to provide comprehensive investment insights.
 ---
 
-import { CodeFetcher } from '../../../components/CodeFetcher'
-
 ---
 
 ## Explore the iii console
@@ -40,15 +38,7 @@ import { CodeFetcher } from '../../../components/CodeFetcher'
 This example uses the `steps/` directory, but you can also use `src/` or both. Motia discovers step files from either location automatically.
 </Callout>
 
-<Tabs items={['finance-data', 'openai-analysis', 'query-api', 'response-coordinator', 'result-api', 'save-result', 'web-search']}>
-  <CodeFetcher path="examples/finance-agent/steps" tab="finance-data" value="finance-data" />
-  <CodeFetcher path="examples/finance-agent/steps" tab="openai-analysis" value="openai-analysis" />
-  <CodeFetcher path="examples/finance-agent/steps" tab="query-api" value="query-api" />
-  <CodeFetcher path="examples/finance-agent/steps" tab="response-coordinator" value="response-coordinator" />
-  <CodeFetcher path="examples/finance-agent/steps" tab="result-api" value="result-api" />
-  <CodeFetcher path="examples/finance-agent/steps" tab="save-result" value="save-result" />
-  <CodeFetcher path="examples/finance-agent/steps" tab="web-search" value="web-search" />
-</Tabs>
+View the source code for each step in the [GitHub repository](https://github.com/MotiaDev/motia-examples/tree/main/examples/ai-agents/specialized-agents/finance-agent).
 
 ## 🚀 Features
 

@@ -3,8 +3,6 @@ title: 'AI Research Agent'
 description: A powerful research assistant that leverages the Motia Framework to perform comprehensive web research on any topic and any question.
 ---
 
-import { CodeFetcher } from '../../../components/CodeFetcher'
-
 ---
 
 ## Explore the iii console
@@ -44,17 +42,7 @@ import { CodeFetcher } from '../../../components/CodeFetcher'
 This example uses the `steps/` directory, but you can also use `src/` or both. Motia discovers step files from either location automatically.
 </Callout>
 
-<Tabs items={['analyze-content', 'compile-report', 'extract-content', 'follow-up-research', 'generate-queries', 'report-api', 'research-api', 'search-web', 'status-api']}>
-  <CodeFetcher path="examples/ai-deep-research-agent/steps" tab="analyze-content" value="analyze-content" />
-  <CodeFetcher path="examples/ai-deep-research-agent/steps" tab="compile-report" value="compile-report" />
-  <CodeFetcher path="examples/ai-deep-research-agent/steps" tab="extract-content" value="extract-content" />
-  <CodeFetcher path="examples/ai-deep-research-agent/steps" tab="follow-up-research" value="follow-up-research" />
-  <CodeFetcher path="examples/ai-deep-research-agent/steps" tab="generate-queries" value="generate-queries" />
-  <CodeFetcher path="examples/ai-deep-research-agent/steps" tab="report-api" value="report-api" />
-  <CodeFetcher path="examples/ai-deep-research-agent/steps" tab="research-api" value="research-api" />
-  <CodeFetcher path="examples/ai-deep-research-agent/steps" tab="search-web" value="search-web" />
-  <CodeFetcher path="examples/ai-deep-research-agent/steps" tab="status-api" value="status-api" />
-</Tabs>
+View the source code for each step in the [GitHub repository](https://github.com/MotiaDev/motia-examples/tree/main/examples/ai-agents/specialized-agents/ai-deep-research-agent).
 
 ## 🚀 Features
 

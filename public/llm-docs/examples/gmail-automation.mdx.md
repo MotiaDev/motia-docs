@@ -3,8 +3,6 @@ title: 'Gmail Automation'
 description: Build an automated email system with smart labeling, auto-responses, and AI-powered filtering
 ---
 
-import { GmailTab } from '../../../components/GmailCodeFetcher'
-
 ---
 
 ## Explore the iii console
@@ -42,14 +40,7 @@ import { GmailTab } from '../../../components/GmailCodeFetcher'
 This example uses the `steps/` directory, but you can also use `src/` or both. Motia discovers step files from either location automatically.
 </Callout>
 
-<Tabs items={['webhook', 'analyze-email', 'auto-responder', 'daily-summary', 'fetch-email', 'organize-email']}>
-  <GmailTab tab="webhook" value="gmail-webhook" />
-  <GmailTab tab="analyze-email" value="analyze-email" fileExtension="py" />
-  <GmailTab tab="auto-responder" value="auto-responder" />
-  <GmailTab tab="daily-summary" value="daily-summary" />
-  <GmailTab tab="fetch-email" value="fetch-email" />
-  <GmailTab tab="organize-email" value="organize-email" />
-</Tabs>
+View the source code for each step in the [GitHub repository](https://github.com/MotiaDev/motia-examples/tree/main/examples/integrations/communication/gmail-workflow).
 
 ## Visual Overview
 

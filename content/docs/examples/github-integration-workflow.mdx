@@ -55,19 +55,7 @@ The GitHub integration workflow is organized into two main components:
 This example uses the `steps/` directory, but you can also use `src/` or both. Motia discovers step files from either location automatically.
 </Callout>
 
-<Tabs items={['issue-webhook', 'issue-classifier', 'label-assigner', 'assignee-selector']}>
-  <GitHubWorkflowTab tab="issue-webhook" value="github-webhook" folder="issue-triage" />
-  <GitHubWorkflowTab tab="issue-classifier" value="issue-classifier" folder="issue-triage" />
-  <GitHubWorkflowTab tab="label-assigner" value="label-assigner" folder="issue-triage" />
-  <GitHubWorkflowTab tab="assignee-selector" value="assignee-selector" folder="issue-triage" />
-</Tabs>
-
-<Tabs items={['pr-webhook', 'pr-classifier', 'pr-reviewer', 'pr-monitor']}>
-  <GitHubWorkflowTab tab="pr-webhook" value="pr-webhook" folder="pr-classifier" />
-  <GitHubWorkflowTab tab="pr-classifier" value="pr-classifier" folder="pr-classifier" />
-  <GitHubWorkflowTab tab="pr-reviewer" value="pr-reviewer-assigner" folder="pr-classifier" />
-  <GitHubWorkflowTab tab="pr-monitor" value="pr-test-monitor" folder="pr-classifier" />
-</Tabs>
+See the full source code on [GitHub](https://github.com/MotiaDev/motia/tree/main/examples/github-integration).
 
 ## Visual Overview
 

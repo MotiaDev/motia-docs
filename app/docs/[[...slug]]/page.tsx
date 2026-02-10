@@ -1,4 +1,3 @@
-import { Banner } from 'fumadocs-ui/components/banner'
 import { Callout } from 'fumadocs-ui/components/callout'
 import { Card, Cards } from 'fumadocs-ui/components/card'
 import { CodeBlock, Pre } from 'fumadocs-ui/components/codeblock'
@@ -9,14 +8,7 @@ import { Tab, Tabs } from 'fumadocs-ui/components/tabs'
 import { TypeTable } from 'fumadocs-ui/components/type-table'
 import { createRelativeLink } from 'fumadocs-ui/mdx'
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/page'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { LLMCopyButton, ViewOptions } from '@/components/ai/page-actions'
-import { Breadcrumb } from '@/components/Breadcrumb'
-import { CodeSandbox } from '@/components/CodeSandbox'
-import { DescriptionTable } from '@/components/DescriptionTable'
-import { GitHubWorkflowTab } from '@/components/GitHubIntegrationCodeFetcher'
-import { TrelloTab } from '@/components/TrelloCodeFetcher'
 import { source } from '@/lib/source'
 import { getMDXComponents } from '@/mdx-components'
 
@@ -26,8 +18,6 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
   if (!page) notFound()
 
   const MDXContent = page.data.body
-  const slugSegments = params.slug ?? []
-  const docPath = slugSegments.length ? slugSegments.join('/') : 'index'
 
   return (
     <DocsPage
@@ -39,18 +29,9 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
     >
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription className="mb-2">{page.data.description}</DocsDescription>
-      <div className="mt-0 flex items-center gap-2">
-        <LLMCopyButton markdownUrl={`/docs/${docPath}.mdx`} />
-        <ViewOptions
-          markdownUrl={`/docs/${docPath}.mdx`}
-          githubUrl={`https://github.com/MotiaDev/motia-docs/blob/main/content/docs/${docPath}.mdx`}
-        />
-      </div>
       <DocsBody>
         <MDXContent
           components={getMDXComponents({
-            // this allows you to link to other pages with relative file paths
-
             pre: ({ ref: _ref, ...props }) => (
               <CodeBlock {...props}>
                 <Pre>{props.children}</Pre>
@@ -64,27 +45,13 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
             Files,
             Tab,
             Tabs,
-            DescriptionTable,
-            Breadcrumb,
             Step,
             Steps,
             TypeTable,
             img: (props) => <ImageZoom {...(props as ImageZoomProps)} />,
-            CodeSandbox,
-            TrelloTab,
-            GitHubWorkflowTab,
             a: createRelativeLink(source, page),
           })}
         />
-        <div className="mt-8">
-          <Banner>
-            Need help? See our&nbsp;
-            <Link href="/docs/community-resources" aria-label="Visit Community">
-              Community Resources
-            </Link>
-            &nbsp;for questions, examples, and discussions.
-          </Banner>
-        </div>
       </DocsBody>
     </DocsPage>
   )
