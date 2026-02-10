@@ -3,10 +3,6 @@ import { type NextRequest, NextResponse } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  if (pathname === '/') {
-    return NextResponse.redirect(new URL('/docs', request.url), 301)
-  }
-
   if (pathname.endsWith('.mdx')) {
     const cleanPath = pathname.replace('.mdx', '')
     return NextResponse.redirect(new URL(cleanPath, request.url), 301)
