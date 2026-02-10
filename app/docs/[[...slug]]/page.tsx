@@ -43,7 +43,7 @@ export default async function Page(props: { params: Promise<{ slug?: string[] }>
         <LLMCopyButton markdownUrl={`/docs/${docPath}.mdx`} />
         <ViewOptions
           markdownUrl={`/docs/${docPath}.mdx`}
-          githubUrl={`https://github.com/MotiaDev/motia/blob/main/packages/docs/content/docs/${docPath}.mdx`}
+          githubUrl={`https://github.com/MotiaDev/motia-docs/blob/main/content/docs/${docPath}.mdx`}
         />
       </div>
       <DocsBody>
