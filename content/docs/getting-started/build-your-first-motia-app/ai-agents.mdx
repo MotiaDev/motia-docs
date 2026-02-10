@@ -41,13 +41,13 @@ OPENAI_API_KEY=your_api_key_here
 **Important!** This tutorial requires an OpenAI API key. Get yours at [platform.openai.com/api-keys](https://platform.openai.com/api-keys). Without it, the agentic workflows won't work.
 </Callout>
 
-Start the Workbench:
+Start the iii console:
 
 ```bash
 npm run dev
 ```
 
-Your Workbench will be available at `http://localhost:3000`.
+Your iii console will be available at `http://localhost:3000`.
 
 ---
 
@@ -99,7 +99,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/ai-agents) repository.
 
-You can follow this guide to learn how to build agentic workflows with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the Workbench.
+You can follow this guide to learn how to build agentic workflows with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the iii console.
 
 ![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-ai.png)
 
@@ -126,9 +126,9 @@ When a pet arrives with "coughing, lethargy, loss of appetite" - the AI evaluate
 
 Let's start with a content generation agentic step that automatically enriches pet profiles when they're created.
 
-### Step 1: Set Up Pet Creation to Emit Events
+### Step 1: Set Up Pet Creation to Enqueue Events
 
-First, update your pet creation endpoint to emit events that will trigger the agentic step.
+First, update your pet creation endpoint to enqueue events that will trigger the agentic step.
 
 <Callout type="info">
 View on GitHub:
@@ -140,7 +140,7 @@ View on GitHub:
 <Tabs items={['TypeScript', 'Python', 'JavaScript']}>
   <Tab value="TypeScript">
     ```typescript title="src/typescript/create-pet.step.ts"
-    import { ApiRouteConfig, Handlers } from 'motia'
+    import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
     import { TSStore } from './ts-store'
 
@@ -150,16 +150,17 @@ View on GitHub:
       ageMonths: z.number().int().min(0, 'Age must be a positive number')
     })
 
-    export const config: ApiRouteConfig = {
-      type: 'api',
+    export const config = {
       name: 'TsCreatePet',
-      path: '/ts/pets',
-      method: 'POST',
-      emits: ['ts.pet.created', 'ts.feeding.reminder.enqueued'],
-      flows: ['TsPetManagement']
-    }
+      description: 'Creates a new pet',
+      triggers: [
+        { type: 'api', path: '/ts/pets', method: 'POST' },
+      ],
+      enqueues: ['ts.pet.created', 'ts.feeding.reminder.enqueued'],
+      flows: ['TsPetManagement'],
+    } as const satisfies StepConfig
 
-    export const handler: Handlers['TsCreatePet'] = async (req, { emit, logger }) => {
+    export const handler: Handlers<typeof config> = async (req, { enqueue, logger }) => {
       try {
         const validatedData = createPetSchema.parse(req.body)
         
@@ -173,13 +174,13 @@ View on GitHub:
           logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
         }
         
-        if (emit) {
-          await (emit as any)({
+        if (enqueue) {
+          await enqueue({
             topic: 'ts.pet.created',
             data: { petId: pet.id, event: 'pet.created', name: pet.name, species: validatedData.species }
           })
-          
-          await (emit as any)({
+
+          await enqueue({
             topic: 'ts.feeding.reminder.enqueued',
             data: { petId: pet.id, enqueuedAt: Date.now() }
           })
@@ -209,18 +210,19 @@ View on GitHub:
   <Tab value="Python">
     ```python title="src/python/create_pet_step.py"
     config = {
-        "type": "api",
         "name": "PyCreatePet",
-        "path": "/py/pets",
-        "method": "POST",
-        "emits": ["py.pet.created", "py.feeding.reminder.enqueued"],
+        "description": "Creates a new pet",
+        "triggers": [
+            {"type": "api", "path": "/py/pets", "method": "POST"}
+        ],
+        "enqueues": ["py.pet.created", "py.feeding.reminder.enqueued"],
         "flows": ["PyPetManagement"]
     }
 
     async def handler(req, ctx=None):
         logger = getattr(ctx, 'logger', None) if ctx else None
-        emit = getattr(ctx, 'emit', None) if ctx else None
-        
+        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
+
         try:
             import sys
             import os
@@ -254,13 +256,13 @@ View on GitHub:
                 'status': pet['status']
             })
         
-        if emit:
-            await emit({
+        if enqueue:
+            await enqueue({
                 'topic': 'py.pet.created',
                 'data': {'petId': pet['id'], 'event': 'pet.created', 'name': pet['name'], 'species': pet['species']}
             })
-            
-            await emit({
+
+            await enqueue({
                 'topic': 'py.feeding.reminder.enqueued',
                 'data': {'petId': pet['id'], 'enqueuedAt': int(time.time() * 1000)}
             })
@@ -273,16 +275,17 @@ View on GitHub:
     import { create } from './js-store.js'
 
     export const config = {
-      type: 'api',
       name: 'JsCreatePet',
-      path: '/js/pets',
-      method: 'POST',
-      emits: ['js.pet.created', 'js.feeding.reminder.enqueued'],
-      flows: ['JsPetManagement']
+      description: 'Creates a new pet',
+      triggers: [
+        { type: 'api', path: '/js/pets', method: 'POST' },
+      ],
+      enqueues: ['js.pet.created', 'js.feeding.reminder.enqueued'],
+      flows: ['JsPetManagement'],
     }
 
     export const handler = async (req, context) => {
-      const { emit, logger } = context || {}
+      const { enqueue, logger } = context || {}
       const b = req.body || {}
       const name = typeof b.name === 'string' && b.name.trim()
       const speciesOk = ['dog','cat','bird','other'].includes(b.species)
@@ -298,13 +301,13 @@ View on GitHub:
         logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
       }
       
-      if (emit) {
-        await emit({
+      if (enqueue) {
+        await enqueue({
           topic: 'js.pet.created',
           data: { petId: pet.id, event: 'pet.created', name: pet.name, species: pet.species }
         })
-        
-        await emit({
+
+        await enqueue({
           topic: 'js.feeding.reminder.enqueued',
           data: { petId: pet.id, enqueuedAt: Date.now() }
         })
@@ -316,7 +319,7 @@ View on GitHub:
   </Tab>
 </Tabs>
 
-The API endpoint now emits an event after creating a pet. The response returns immediately while the agentic step processes asynchronously in the background.
+The API endpoint now enqueues an event after creating a pet. The response returns immediately while the agentic step processes asynchronously in the background.
 
 ---
 
@@ -335,19 +338,20 @@ View on GitHub:
   <Tab value="TypeScript">
     ```typescript title="src/typescript/ai-profile-enrichment.step.ts"
     // src/typescript/ai-profile-enrichment.step.ts
-    import { EventConfig, Handlers } from 'motia';
-    import { TSStore, PetProfile } from './ts-store';
+    import { type Handlers, type StepConfig } from 'motia'
+    import { TSStore, PetProfile } from './ts-store'
 
     export const config = {
-      type: 'event',
       name: 'TsAiProfileEnrichment',
       description: 'Agentic step that enriches pet profiles using OpenAI',
-      subscribes: ['ts.pet.created'],
-      emits: [],
-      flows: ['TsPetManagement']
-    };
+      triggers: [
+        { type: 'queue', topic: 'ts.pet.created' },
+      ],
+      enqueues: [],
+      flows: ['TsPetManagement'],
+    } as const satisfies StepConfig
 
-    export const handler: Handlers['TsAiProfileEnrichment'] = async (input, { logger }) => {
+    export const handler: Handlers<typeof config> = async (input, { logger }) => {
       const { petId, name, species } = input;
 
       if (logger) {
@@ -471,18 +475,19 @@ Keep it positive, realistic, and adoption-focused.`;
     import time
 
     config = {
-        "type": "event",
         "name": "PyAiProfileEnrichment",
         "description": "Agentic step that enriches pet profiles using OpenAI",
-        "subscribes": ["py.pet.created"],
-        "emits": [],
+        "triggers": [
+            {"type": "queue", "topic": "py.pet.created"}
+        ],
+        "enqueues": [],
         "flows": ["PyPetManagement"]
     }
 
     async def handler(input_data, ctx=None):
         logger = getattr(ctx, 'logger', None) if ctx else None
-        emit = getattr(ctx, 'emit', None) if ctx else None
-        
+        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
+
         pet_id = input_data.get('petId')
         name = input_data.get('name')
         species = input_data.get('species')
@@ -613,16 +618,17 @@ Keep it positive, realistic, and adoption-focused."""
     import { updateProfile } from './js-store.js'
 
     export const config = {
-      type: 'event',
       name: 'JsAiProfileEnrichment',
       description: 'Agentic step that enriches pet profiles using OpenAI',
-      subscribes: ['js.pet.created'],
-      emits: [],
-      flows: ['JsPetManagement']
+      triggers: [
+        { type: 'queue', topic: 'js.pet.created' },
+      ],
+      enqueues: [],
+      flows: ['JsPetManagement'],
     }
 
     exports.handler = async (input, context) => {
-      const { emit, logger } = context || {}
+      const { enqueue, logger } = context || {}
       const { petId, name, species } = input
 
       if (logger) {
@@ -741,7 +747,7 @@ Keep it positive, realistic, and adoption-focused.`
 
 This is a **content generation agentic step** - it enriches data without making workflow decisions:
 
-- **Subscribes** to `pet.created` events
+- **Listens** for `pet.created` events via queue trigger
 - **Calls OpenAI** with a carefully crafted prompt
 - **Parses the response** into structured data
 - **Updates the pet** with AI-generated content
@@ -753,11 +759,11 @@ The key is the prompt engineering - we tell the AI exactly what fields we need a
 
 ## Testing Your Agentic Step
 
-The best way to test your agentic step is through **Workbench**. It lets you create pets, watch the AI enrichment happen in real-time, and see all the logs in one place.
+The best way to test your agentic step is through the **iii console**. It lets you create pets, watch the AI enrichment happen in real-time, and see all the logs in one place.
 
 ### Create a Pet
 
-Open Workbench and test the CreatePet endpoint. The AI will automatically start enriching the profile in the background.
+Open the iii console and test the CreatePet endpoint. The AI will automatically start enriching the profile in the background.
 
 <Callout type="tip">
 **Prefer using curl?**
@@ -769,7 +775,7 @@ curl -X POST http://localhost:3000/ts/pets \
 ```
 </Callout>
 
-Check the logs in Workbench to see the agentic step in action:
+Check the logs in the iii console to see the agentic step in action:
 
 ![ai-enrichment-logs](../../img/build-your-first-app/ai-enrichment-logs.png)
 
@@ -780,7 +786,7 @@ You'll see:
 
 ### View the Enriched Profile
 
-Fetch the pet in Workbench to see the AI-generated profile, or use curl:
+Fetch the pet in the iii console to see the AI-generated profile, or use curl:
 
 <Callout type="tip">
 **Using curl?**
@@ -814,26 +820,26 @@ View on GitHub:
 <Tabs items={['TypeScript', 'Python', 'JavaScript']}>
   <Tab value="TypeScript">
     ```typescript title="src/typescript/health-review-agent.step.ts"
-    // src/typescript/health-review-agent.step.ts
-    import { ApiRouteConfig, Handlers } from 'motia';
-    import { TSStore } from './ts-store';
-    import { 
-      HEALTH_REVIEW_EMITS, 
-      buildAgentContext, 
+    import { type Handlers, type StepConfig } from 'motia'
+    import { TSStore } from './ts-store'
+    import {
+      HEALTH_REVIEW_EMITS,
+      buildAgentContext,
       callAgentDecision,
       getAgentArtifacts
-    } from './agent-decision-framework';
+    } from './agent-decision-framework'
 
-    export const config: ApiRouteConfig = {
-      type: 'api',
+    export const config = {
       name: 'TsHealthReviewAgent',
-      path: '/ts/pets/:id/health-review',
-      method: 'POST',
-      emits: ['ts.health.treatment_required', 'ts.health.no_treatment_needed'],
-      flows: ['TsPetManagement']
-    };
+      description: 'Health review agent for pets',
+      triggers: [
+        { type: 'api', path: '/ts/pets/:id/health-review', method: 'POST' },
+      ],
+      enqueues: ['ts.health.treatment_required', 'ts.health.no_treatment_needed'],
+      flows: ['TsPetManagement'],
+    } as const satisfies StepConfig
 
-    export const handler: Handlers['TsHealthReviewAgent'] = async (req, { emit, logger }) => {
+    export const handler: Handlers<typeof config> = async (req, { enqueue, logger }) => {
       const petId = req.pathParams?.id;
 
       if (!petId) {
@@ -943,8 +949,8 @@ View on GitHub:
           };
         }
 
-        if (emit) {
-          (emit as any)({
+        if (enqueue) {
+          await enqueue({
             topic: chosenEmitDef.topic as 'ts.health.treatment_required' | 'ts.health.no_treatment_needed',
             data: {
               petId,
@@ -1010,11 +1016,12 @@ View on GitHub:
     from services import pet_store
 
     config = {
-        "type": "api",
         "name": "PyHealthReviewAgent",
-        "path": "/py/pets/:id/health-review",
-        "method": "POST",
-        "emits": ["py.health.treatment_required", "py.health.no_treatment_needed"],
+        "description": "Health review agent for pets",
+        "triggers": [
+            {"type": "api", "path": "/py/pets/:id/health-review", "method": "POST"}
+        ],
+        "enqueues": ["py.health.treatment_required", "py.health.no_treatment_needed"],
         "flows": ["PyPetManagement"]
     }
 
@@ -1055,7 +1062,7 @@ View on GitHub:
 
     async def handler(req, ctx=None):
         logger = getattr(ctx, 'logger', None) if ctx else None
-        emit = getattr(ctx, 'emit', None) if ctx else None
+        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
         pet_id = req.get("pathParams", {}).get("id")
 
         if not pet_id:
@@ -1117,8 +1124,8 @@ View on GitHub:
                     }
                 }
 
-            if emit:
-                await emit({
+            if enqueue:
+                await enqueue({
                     "topic": chosen_emit_def["topic"],
                     "data": {
                         "petId": pet_id,
@@ -1180,16 +1187,17 @@ View on GitHub:
     } from './agent-decision-framework.js'
 
     export const config = {
-      type: 'api',
       name: 'JsHealthReviewAgent',
-      path: '/js/pets/:id/health-review',
-      method: 'POST',
-      emits: ['js.health.treatment_required', 'js.health.no_treatment_needed'],
-      flows: ['JsPetManagement']
+      description: 'Health review agent for pets',
+      triggers: [
+        { type: 'api', path: '/js/pets/:id/health-review', method: 'POST' },
+      ],
+      enqueues: ['js.health.treatment_required', 'js.health.no_treatment_needed'],
+      flows: ['JsPetManagement'],
     }
 
     export const handler = async (req, context) => {
-      const { emit, logger } = context || {}
+      const { enqueue, logger } = context || {}
       const petId = req.pathParams?.id
 
       if (!petId) {
@@ -1283,8 +1291,8 @@ View on GitHub:
           }
         }
 
-        if (emit) {
-          await emit({
+        if (enqueue) {
+          await enqueue({
             topic: chosenEmitDef.topic,
             data: {
               petId,
@@ -1295,7 +1303,7 @@ View on GitHub:
           })
 
         if (logger) {
-            logger.info('✅ Health review emit fired', {
+            logger.info('✅ Health review enqueue fired', {
             petId,
               chosenEmit: artifact.parsedDecision.chosenEmit,
               topic: chosenEmitDef.topic,
@@ -1346,9 +1354,9 @@ View on GitHub:
 This agentic step is fundamentally different from the enrichment agentic step:
 
 1. **It's an API Step** - Staff trigger it explicitly when they need a decision
-2. **It defines an emits registry** - Lists all possible actions the AI can choose from (in `agent-decision-framework.ts/js`)
+2. **It defines an enqueues registry** - Lists all possible actions the AI can choose from (in `agent-decision-framework.ts/js`)
 3. **It calls the AI with context + options** - The AI evaluates and picks one
-4. **It fires the chosen emit** - This emit goes to the orchestrator, changing workflow state
+4. **It fires the chosen enqueue** - This enqueue goes to the orchestrator, changing workflow state
 5. **It uses idempotency checking** - Caches recent decisions to prevent duplicate AI calls
 
 The framework functions (`buildAgentContext`, `callAgentDecision`, `getAgentArtifacts`) handle the OpenAI call and ensure the AI picks from valid options.
@@ -1357,11 +1365,11 @@ The framework functions (`buildAgentContext`, `callAgentDecision`, `getAgentArti
 
 ## Testing the Health Review Agentic Step
 
-The best way to test decision-making agentic steps is through **Workbench**. You can create pets, trigger the health review, and watch the AI make decisions in real-time.
+The best way to test decision-making agentic steps is through the **iii console**. You can create pets, trigger the health review, and watch the AI make decisions in real-time.
 
 ### Create a Pet
 
-Use Workbench to create a pet. The AI enrichment will automatically trigger.
+Use the iii console to create a pet. The AI enrichment will automatically trigger.
 
 <Callout type="tip">
 **Prefer using curl?**
@@ -1379,7 +1387,7 @@ curl -X POST http://localhost:3000/ts/pets \
 
 ### Trigger the Health Review
 
-In Workbench, test the health review endpoint to see the AI make a decision.
+In the iii console, test the health review endpoint to see the AI make a decision.
 
 <Callout type="tip">
 **Using curl?**
@@ -1412,11 +1420,11 @@ You'll get a response like:
 ```
 ![ai-health-review-reqd](../../img/build-your-first-app/health-treatment-reqd.png)
 
-The AI evaluates the pet's data and makes a decision. The emit it fires will trigger the orchestrator to handle the appropriate state transition.
+The AI evaluates the pet's data and makes a decision. The enqueue it fires will trigger the orchestrator to handle the appropriate state transition.
 
 ### Verify the Status Change
 
-Check the pet status in Workbench to see the AI's decision reflected in the workflow state.
+Check the pet status in the iii console to see the AI's decision reflected in the workflow state.
 
 <Callout type="tip">
 **Using curl?**
@@ -1434,32 +1442,31 @@ The pet's status has automatically changed based on the AI's decision!
 
 ## Connecting Agentic Steps to the Orchestrator
 
-The real power comes when your agentic steps integrate with a workflow orchestrator. The orchestrator subscribes to the events emitted by agentic steps and handles the actual state transitions.
+The real power comes when your agentic steps integrate with a workflow orchestrator. The orchestrator listens for events enqueued by agentic steps via queue triggers and handles the actual state transitions.
 
-The orchestrator configuration shows it subscribes to agentic step events:
+The orchestrator configuration shows it listens for agentic step events via queue triggers:
 
 <Tabs items={['TypeScript', 'Python', 'JavaScript']}>
   <Tab value="TypeScript">
     ```typescript title="src/typescript/pet-lifecycle-orchestrator.step.ts"
     export const config = {
-      type: 'event',
       name: 'TsPetLifecycleOrchestrator',
       description: 'Pet lifecycle state management with staff interaction points',
-      subscribes: [
-        'ts.feeding.reminder.completed',
-        'ts.pet.status.update.requested',
-        'ts.health.treatment_required',       // From Health Review Agentic Step
-        'ts.health.no_treatment_needed',      // From Health Review Agentic Step
-        'ts.adoption.needs_data',             // From Adoption Review Agentic Step
-        'ts.adoption.ready'                   // From Adoption Review Agentic Step
+      triggers: [
+        { type: 'queue', topic: 'ts.feeding.reminder.completed' },
+        { type: 'queue', topic: 'ts.pet.status.update.requested' },
+        { type: 'queue', topic: 'ts.health.treatment_required' },
+        { type: 'queue', topic: 'ts.health.no_treatment_needed' },
+        { type: 'queue', topic: 'ts.adoption.needs_data' },
+        { type: 'queue', topic: 'ts.adoption.ready' },
       ],
-      emits: [
+      enqueues: [
         'ts.treatment.required',
         'ts.adoption.ready',
         'ts.treatment.completed'
       ],
-      flows: ['TsPetManagement']
-    }
+      flows: ['TsPetManagement'],
+    } as const satisfies StepConfig
 
     // The orchestrator has transition rules that handle agentic step events
     const TRANSITION_RULES: TransitionRule[] = [
@@ -1499,18 +1506,17 @@ The orchestrator configuration shows it subscribes to agentic step events:
   <Tab value="Python">
     ```python title="src/python/pet_lifecycle_orchestrator_step.py"
     config = {
-        "type": "event",
         "name": "PyPetLifecycleOrchestrator",
         "description": "Pet lifecycle state management with staff interaction points",
-        "subscribes": [
-            "py.feeding.reminder.completed",
-            "py.pet.status.update.requested",
-            "py.health.treatment_required",       # From Health Review Agentic Step
-            "py.health.no_treatment_needed",      # From Health Review Agentic Step
-            "py.adoption.needs_data",             # From Adoption Review Agentic Step
-            "py.adoption.ready"                   # From Adoption Review Agentic Step
+        "triggers": [
+            {"type": "queue", "topic": "py.feeding.reminder.completed"},
+            {"type": "queue", "topic": "py.pet.status.update.requested"},
+            {"type": "queue", "topic": "py.health.treatment_required"},
+            {"type": "queue", "topic": "py.health.no_treatment_needed"},
+            {"type": "queue", "topic": "py.adoption.needs_data"},
+            {"type": "queue", "topic": "py.adoption.ready"}
         ],
-        "emits": [
+        "enqueues": [
             "py.treatment.required",
             "py.adoption.ready",
             "py.treatment.completed"
@@ -1556,23 +1562,22 @@ The orchestrator configuration shows it subscribes to agentic step events:
   <Tab value="JavaScript">
     ```javascript title="src/javascript/pet-lifecycle-orchestrator.step.js"
     export const config = {
-      type: 'event',
       name: 'JsPetLifecycleOrchestrator',
       description: 'Pet lifecycle state management with staff interaction points',
-      subscribes: [
-        'js.feeding.reminder.completed',
-        'js.pet.status.update.requested',
-        'js.health.treatment_required',       // From Health Review Agentic Step
-        'js.health.no_treatment_needed',      // From Health Review Agentic Step
-        'js.adoption.needs_data',             // From Adoption Review Agentic Step
-        'js.adoption.ready'                   // From Adoption Review Agentic Step
+      triggers: [
+        { type: 'queue', topic: 'js.feeding.reminder.completed' },
+        { type: 'queue', topic: 'js.pet.status.update.requested' },
+        { type: 'queue', topic: 'js.health.treatment_required' },
+        { type: 'queue', topic: 'js.health.no_treatment_needed' },
+        { type: 'queue', topic: 'js.adoption.needs_data' },
+        { type: 'queue', topic: 'js.adoption.ready' },
       ],
-      emits: [
+      enqueues: [
         'js.treatment.required',
         'js.adoption.ready',
         'js.treatment.completed'
       ],
-      flows: ['JsPetManagement']
+      flows: ['JsPetManagement'],
     }
 
     // Transition rules that handle agentic step events

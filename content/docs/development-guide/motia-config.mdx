@@ -1,23 +1,40 @@
 ---
-title: Overriding the default configuration
-description: Configure your Motia application with motia.config.ts - Express customization, Redis, security, file uploads, and more.
+title: iii Configuration (config.yaml)
+description: Configure your iii application with config.yaml - the central configuration file using a modular architecture.
 ---
 
-The `motia.config.ts` file is the central configuration for your Motia application. Here you can customize Express, configure Redis, add security middleware, handle file uploads, set up stream authentication, and more.
+The `config.yaml` file is the central configuration for your iii application. It uses a modular architecture where each concern (API, queues, state, streams, etc.) is configured as a separate module.
+
+<Callout type="info">
+**Migration Note**: The `motia.config.ts` file has been replaced by `config.yaml`. If you are upgrading from an older version, migrate your configuration to the new YAML-based modular format.
+</Callout>
 
 ## Quick Start
 
-Create a `motia.config.ts` file in your project root:
+Create a `config.yaml` file in your project root:
 
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
+```yaml title="config.yaml"
+modules:
+  - class: modules::api::RestApiModule
+    config:
+      port: 3111
+      host: 127.0.0.1
 
-export default defineConfig({
-  // All configuration is optional
-})
+  - class: modules::queue::QueueModule
+    config:
+      adapter:
+        class: modules::queue::BuiltinQueueAdapter
+
+  - class: modules::state::StateModule
+    config:
+      adapter:
+        class: modules::state::adapters::KvStore
+        config:
+          store_method: file_based
+          file_path: ./data/state_store.db
 ```
 
-That's it. Motia works out of the box with sensible defaults.
+Each module is independently configured. You only need to include the modules your application uses.
 
 ---
 
@@ -26,12 +43,12 @@ That's it. Motia works out of the box with sensible defaults.
 <Callout type="error">
 **Your `package.json` must have `"type": "module"`**
 
-Motia uses ES modules internally. Without this setting, you'll get import/export errors at runtime.
+The framework uses ES modules internally. Without this setting, you'll get import/export errors at runtime.
 </Callout>
 
 ```json title="package.json"
 {
-  "name": "my-motia-app",
+  "name": "my-app",
   "type": "module",
   "scripts": {
     "dev": "motia dev",
@@ -43,513 +60,406 @@ Motia uses ES modules internally. Without this setting, you'll get import/export
 
 ---
 
-## Configuration Options
+## Module Architecture
+
+The `config.yaml` file contains a single top-level `modules` array. Each entry defines a module with its `class` and optional `config`:
+
+```yaml
+modules:
+  - class: modules::module_name::ClassName
+    config:
+      key: value
+```
+
+### Available Modules
+
+| Module | Class | Purpose |
+|--------|-------|---------|
+| **REST API** | `modules::api::RestApiModule` | HTTP endpoints, CORS, timeouts |
+| **Queue** | `modules::queue::QueueModule` | Background job processing |
+| **State** | `modules::state::StateModule` | Persistent key-value state |
+| **Streams** | `modules::streams::StreamModule` | Real-time WebSocket streams |
+| **PubSub** | `modules::pubsub::PubSubModule` | Publish/subscribe messaging |
+| **Cron** | `modules::cron::CronModule` | Scheduled tasks |
+| **Observability** | `modules::observability::OtelModule` | OpenTelemetry tracing and metrics |
+| **Shell Exec** | `modules::shell::ExecModule` | File watching and command execution |
+
+---
+
+## Environment Variable Interpolation
+
+All config values support environment variable interpolation with optional defaults:
+
+```yaml
+config:
+  port: ${STREAMS_PORT:3112}
+  host: ${HOST:127.0.0.1}
+  redis_url: ${REDIS_URL:redis://localhost:6379}
+```
+
+The syntax is `${VARIABLE_NAME:default_value}`. If the environment variable is not set, the default value after `:` is used.
+
+---
+
+## Full Development Configuration
+
+Here's a complete development configuration with all modules:
+
+```yaml title="config.yaml"
+modules:
+  - class: modules::streams::StreamModule
+    config:
+      port: ${STREAMS_PORT:3112}
+      host: 127.0.0.1
+      adapter:
+        class: modules::streams::adapters::KvStore
+        config:
+          store_method: file_based
+          file_path: ./data/streams_store
+
+  - class: modules::state::StateModule
+    config:
+      adapter:
+        class: modules::state::adapters::KvStore
+        config:
+          store_method: file_based
+          file_path: ./data/state_store.db
+
+  - class: modules::api::RestApiModule
+    config:
+      port: 3111
+      host: 127.0.0.1
+      default_timeout: 30000
+      concurrency_request_limit: 1024
+      cors:
+        allowed_origins:
+          - http://localhost:3000
+          - http://localhost:5173
+        allowed_methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+
+  - class: modules::observability::OtelModule
+    config:
+      enabled: ${OTEL_ENABLED:true}
+      service_name: ${OTEL_SERVICE_NAME:iii-engine}
+      exporter: ${OTEL_EXPORTER_TYPE:memory}
+
+  - class: modules::queue::QueueModule
+    config:
+      adapter:
+        class: modules::queue::BuiltinQueueAdapter
+
+  - class: modules::pubsub::PubSubModule
+    config:
+      adapter:
+        class: modules::pubsub::LocalAdapter
+
+  - class: modules::cron::CronModule
+    config:
+      adapter:
+        class: modules::cron::KvCronAdapter
+
+  - class: modules::shell::ExecModule
+    config:
+      watch:
+        - steps/**/*.ts
+        - motia.config.ts
+      exec:
+        - npx motia dev
+```
+
+---
+
+## Module Reference
+
+### REST API Module
+
+Configures HTTP endpoints, CORS, timeouts, and concurrency.
+
+```yaml
+- class: modules::api::RestApiModule
+  config:
+    port: 3111
+    host: 127.0.0.1
+    default_timeout: 30000
+    concurrency_request_limit: 1024
+    cors:
+      allowed_origins:
+        - http://localhost:3000
+      allowed_methods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+```
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `app` | `(app: Express) => void` | Customize the Express instance |
-| `plugins` | `MotiaPluginBuilder[]` | Add Workbench plugins |
-| `adapters` | `AdapterConfig` | Custom adapters for scaling |
-| `streamAuth` | `StreamAuthConfig` | Secure real-time streams |
-| `redis` | `RedisConfig` | Redis connection settings |
+| `port` | `number` | Server port (default: `3111`) |
+| `host` | `string` | Server host (default: `127.0.0.1`) |
+| `default_timeout` | `number` | Request timeout in ms (default: `30000`) |
+| `concurrency_request_limit` | `number` | Max concurrent requests (default: `1024`) |
+| `cors.allowed_origins` | `string[]` | Origins allowed for CORS |
+| `cors.allowed_methods` | `string[]` | HTTP methods allowed for CORS |
 
----
+### Queue Module
 
-## Express Customization
+Handles background job processing. Uses a built-in adapter for development and Redis for production.
 
-Use the `app` callback to add middleware, routes, or any Express configuration. This runs **before** Motia's built-in middleware.
+<Tabs items={['Development', 'Production']}>
+<Tab value='Development'>
 
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
-
-export default defineConfig({
-  app: (app) => {
-    // Your middleware runs first
-    app.use((req, res, next) => {
-      console.log('Request:', req.method, req.path)
-      next()
-    })
-  }
-})
-```
-
-### Health Check Endpoint
-
-Add a simple health check for load balancers and monitoring:
-
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
-
-export default defineConfig({
-  app: (app) => {
-    app.get('/health', (req, res) => {
-      res.json({ 
-        status: 'healthy',
-        timestamp: new Date().toISOString()
-      })
-    })
-  }
-})
-```
-
----
-
-## Security with Helmet
-
-[Helmet](https://helmetjs.github.io/) adds security headers to protect against common vulnerabilities.
-
-**Install:**
-
-```bash
-npm install helmet
-```
-
-**Configure:**
-
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
-import helmet from 'helmet'
-
-export default defineConfig({
-  app: (app) => {
-    app.use(helmet())
-  }
-})
-```
-
-For more control:
-
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
-import helmet from 'helmet'
-
-export default defineConfig({
-  app: (app) => {
-    app.use(helmet({
-      contentSecurityPolicy: false, // Disable if using inline scripts
-      crossOriginEmbedderPolicy: false
-    }))
-  }
-})
-```
-
----
-
-## CORS Configuration
-
-<Callout type="info">
-**Built-in CORS**: Motia automatically adds permissive CORS headers to all responses. You only need custom CORS if you want to restrict origins.
-</Callout>
-
-### Default Behavior
-
-Motia automatically sets these headers on all responses:
-
-```
-Access-Control-Allow-Origin: *
-Access-Control-Allow-Methods: *
-Access-Control-Allow-Headers: *
-Access-Control-Allow-Credentials: true
-```
-
-### Custom CORS
-
-To restrict origins or customize CORS behavior:
-
-**Install:**
-
-```bash
-npm install cors
-```
-
-**Configure:**
-
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
-import cors from 'cors'
-
-export default defineConfig({
-  app: (app) => {
-    // This runs before Motia's default CORS
-    app.use(cors({
-      origin: ['https://myapp.com', 'https://admin.myapp.com'],
-      credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE']
-    }))
-  }
-})
-```
-
-**Environment-based origins:**
-
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
-import cors from 'cors'
-
-export default defineConfig({
-  app: (app) => {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000']
-    
-    app.use(cors({
-      origin: allowedOrigins,
-      credentials: true
-    }))
-  }
-})
-```
-
----
-
-## Middleware
-
-Add any Express middleware in the `app` callback. Middleware runs in the order you define it.
-
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
-import helmet from 'helmet'
-import cors from 'cors'
-import morgan from 'morgan'
-
-export default defineConfig({
-  app: (app) => {
-    // Security headers
-    app.use(helmet())
-    
-    // CORS
-    app.use(cors({ origin: process.env.ALLOWED_ORIGINS?.split(',') }))
-    
-    // Request logging
-    app.use(morgan('combined'))
-    
-    // Custom middleware
-    app.use((req, res, next) => {
-      req.startTime = Date.now()
-      next()
-    })
-  }
-})
-```
-
-<Callout type="info">
-**Middleware Order**: The `app` callback runs before Motia's body parsers. If you need to access `req.body`, your middleware will need to parse it or wait for Motia's parsers.
-</Callout>
-
----
-
-## File Uploads
-
-<Callout type="warning">
-**Limitation**: Motia Step handlers receive a simplified `ApiRequest` object, not the raw Express request. This means traditional Multer middleware cannot pass file data directly to your handlers.
-</Callout>
-
-For file uploads, use one of these approaches:
-
-### Option 1: Base64 Encoding (Small Files)
-
-For small files (under a few MB), encode as Base64 in the request body:
-
-<Tabs items={['TypeScript', 'JavaScript']}>
-<Tab value='TypeScript'>
-
-```typescript title="steps/upload-file.step.ts"
-import { ApiRouteConfig, Handlers } from 'motia'
-import { z } from 'zod'
-import fs from 'fs/promises'
-
-export const config: ApiRouteConfig = {
-  type: 'api',
-  name: 'UploadFile',
-  path: '/upload',
-  method: 'POST',
-  bodySchema: z.object({
-    filename: z.string(),
-    contentType: z.string(),
-    data: z.string() // Base64 encoded
-  })
-}
-
-export const handler: Handlers['UploadFile'] = async (req, { logger }) => {
-  const { filename, data } = req.body
-  
-  // Decode Base64 and save
-  const buffer = Buffer.from(data, 'base64')
-  await fs.writeFile(`uploads/${filename}`, buffer)
-  
-  logger.info('File uploaded', { filename, size: buffer.length })
-  
-  return { 
-    status: 200, 
-    body: { message: 'File uploaded', filename } 
-  }
-}
+```yaml
+- class: modules::queue::QueueModule
+  config:
+    adapter:
+      class: modules::queue::BuiltinQueueAdapter
 ```
 
 </Tab>
-<Tab value='JavaScript'>
+<Tab value='Production'>
 
-```javascript title="steps/upload-file.step.js"
-const fs = require('fs/promises')
-
-const config = {
-  type: 'api',
-  name: 'UploadFile',
-  path: '/upload',
-  method: 'POST'
-}
-
-const handler = async (req, { logger }) => {
-  const { filename, data } = req.body
-  
-  // Decode Base64 and save
-  const buffer = Buffer.from(data, 'base64')
-  await fs.writeFile(`uploads/${filename}`, buffer)
-  
-  logger.info('File uploaded', { filename, size: buffer.length })
-  
-  return { 
-    status: 200, 
-    body: { message: 'File uploaded', filename } 
-  }
-}
-
-module.exports = { config, handler }
+```yaml
+- class: modules::queue::QueueModule
+  config:
+    adapter:
+      class: modules::queue::RedisAdapter
+      config:
+        redis_url: ${REDIS_URL:redis://localhost:6379}
 ```
 
 </Tab>
 </Tabs>
 
-### Option 2: Direct Express Route (Large Files)
+### State Module
 
-For large files, bypass Steps and create a direct Express route in your config:
+Persistent key-value state storage. Uses file-based storage for development and Redis for production.
 
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
-import multer from 'multer'
+<Tabs items={['Development', 'Production']}>
+<Tab value='Development'>
 
-const upload = multer({ dest: 'uploads/' })
-
-export default defineConfig({
-  app: (app) => {
-    // Direct Express route - not a Step
-    app.post('/upload', upload.single('file'), (req, res) => {
-      const file = req.file
-      
-      if (!file) {
-        return res.status(400).json({ error: 'No file uploaded' })
-      }
-      
-      res.json({ 
-        message: 'File uploaded',
-        filename: file.originalname,
-        path: file.path
-      })
-    })
-  }
-})
+```yaml
+- class: modules::state::StateModule
+  config:
+    adapter:
+      class: modules::state::adapters::KvStore
+      config:
+        store_method: file_based
+        file_path: ./data/state_store.db
 ```
 
-<Callout type="info">
-Direct Express routes don't have access to Motia's `emit`, `state`, or `streams`. If you need these features after upload, emit an event from the Express route to trigger a Step.
-</Callout>
+</Tab>
+<Tab value='Production'>
 
----
-
-## Redis Configuration
-
-Motia uses Redis for internal coordination. By default, it includes an embedded in-memory Redis server - no installation required.
-
-### Default: In-Memory Redis
-
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
-
-export default defineConfig({
-  // Uses embedded Redis by default
-})
-
-// Or explicitly:
-export default defineConfig({
-  redis: {
-    useMemoryServer: true
-  }
-})
+```yaml
+- class: modules::state::StateModule
+  config:
+    adapter:
+      class: modules::state::adapters::RedisAdapter
+      config:
+        redis_url: ${REDIS_URL:redis://localhost:6379}
 ```
 
-### External Redis
+</Tab>
+</Tabs>
 
-For production or when you have your own Redis instance:
+### Streams Module
 
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
+Real-time WebSocket streams for live data. Supports authentication in production.
 
-export default defineConfig({
-  redis: {
-    useMemoryServer: false,
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
-    password: process.env.REDIS_PASSWORD,
-    username: process.env.REDIS_USERNAME,
-    db: parseInt(process.env.REDIS_DB || '0')
-  }
-})
+<Tabs items={['Development', 'Production']}>
+<Tab value='Development'>
+
+```yaml
+- class: modules::streams::StreamModule
+  config:
+    port: ${STREAMS_PORT:3112}
+    host: 127.0.0.1
+    adapter:
+      class: modules::streams::adapters::KvStore
+      config:
+        store_method: file_based
+        file_path: ./data/streams_store
 ```
 
-### Skip Embedded Redis
+</Tab>
+<Tab value='Production'>
 
-When creating a new project, skip the embedded Redis binary:
-
-```bash
-npx motia create my-app --skip-redis
+```yaml
+- class: modules::streams::StreamModule
+  config:
+    port: ${STREAMS_PORT:31112}
+    host: 0.0.0.0
+    auth_function: motia.streams.authenticate
+    adapter:
+      class: modules::streams::adapters::RedisAdapter
+      config:
+        redis_url: ${REDIS_URL:redis://localhost:6379}
 ```
 
-This creates a project configured for external Redis from the start.
-
-### Redis Options
+</Tab>
+</Tabs>
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `useMemoryServer` | `boolean` | Use embedded Redis (default: `true`) |
-| `host` | `string` | Redis host |
-| `port` | `number` | Redis port |
-| `password` | `string` | Redis password |
-| `username` | `string` | Redis username (Redis 6.0+) |
-| `db` | `number` | Database number (default: `0`) |
+| `port` | `number` | WebSocket port (default: `3112`) |
+| `host` | `string` | Bind host |
+| `auth_function` | `string` | Function path for stream authentication |
 
----
+### Observability Module
 
-## Stream Authentication
+OpenTelemetry integration for tracing and metrics.
 
-Secure your real-time streams by authenticating WebSocket connections.
-
-### Basic Setup
-
-```typescript title="motia.config.ts"
-import { defineConfig, type StreamAuthRequest } from 'motia'
-import { z } from 'zod'
-
-// Define the shape of your auth context
-const authContextSchema = z.object({
-  userId: z.string(),
-  role: z.enum(['admin', 'user']).optional()
-})
-
-export default defineConfig({
-  streamAuth: {
-    contextSchema: z.toJSONSchema(authContextSchema),
-    authenticate: async (request: StreamAuthRequest) => {
-      const token = extractToken(request)
-      
-      if (!token) {
-        return null // No auth - connection rejected
-      }
-      
-      const user = await validateToken(token)
-      if (!user) {
-        throw new Error('Invalid token')
-      }
-      
-      return {
-        userId: user.id,
-        role: user.role
-      }
-    }
-  }
-})
-
-function extractToken(request: StreamAuthRequest): string | undefined {
-  // Check WebSocket protocol header
-  const protocol = request.headers['sec-websocket-protocol'] as string | undefined
-  if (protocol?.includes('Authorization')) {
-    const [, token] = protocol.split(',')
-    return token?.trim()
-  }
-  
-  // Check query parameter
-  if (request.url) {
-    try {
-      const url = new URL(request.url)
-      return url.searchParams.get('authToken') ?? undefined
-    } catch {
-      return undefined
-    }
-  }
-  
-  return undefined
-}
+```yaml
+- class: modules::observability::OtelModule
+  config:
+    enabled: ${OTEL_ENABLED:true}
+    service_name: ${OTEL_SERVICE_NAME:iii-engine}
+    exporter: ${OTEL_EXPORTER_TYPE:memory}
 ```
 
-### Using Auth in Streams
+| Option | Type | Description |
+|--------|------|-------------|
+| `enabled` | `boolean` | Enable/disable tracing (default: `true`) |
+| `service_name` | `string` | Service name in traces (default: `iii-engine`) |
+| `exporter` | `string` | Exporter type (`memory`, `otlp`, etc.) |
 
-Once configured, use the auth context in your stream's `canAccess` callback:
+### PubSub Module
 
-```typescript title="steps/streams/notifications.stream.ts"
-import { StreamConfig } from 'motia'
-import { z } from 'zod'
+Publish/subscribe messaging between Steps.
 
-export const config: StreamConfig = {
-  name: 'notifications',
-  schema: z.object({
-    message: z.string(),
-    timestamp: z.string()
-  }),
-  baseConfig: { storageType: 'default' },
-  canAccess: (subscription, authContext) => {
-    // Only allow authenticated users
-    if (!authContext) return false
-    
-    // Only allow users to access their own notifications
-    return subscription.groupId === authContext.userId
-  }
-}
+```yaml
+- class: modules::pubsub::PubSubModule
+  config:
+    adapter:
+      class: modules::pubsub::LocalAdapter
+```
+
+### Cron Module
+
+Scheduled task execution.
+
+```yaml
+- class: modules::cron::CronModule
+  config:
+    adapter:
+      class: modules::cron::KvCronAdapter
+```
+
+### Shell Exec Module
+
+File watching and command execution for development.
+
+```yaml
+- class: modules::shell::ExecModule
+  config:
+    watch:
+      - steps/**/*.ts
+      - motia.config.ts
+    exec:
+      - npx motia dev
 ```
 
 ---
 
-## Built-in Features
+## Production Configuration
 
-Motia automatically configures several features you should know about:
+For production, swap file-based adapters for Redis:
 
-### Body Parsers
+```yaml title="config-production.yaml"
+modules:
+  - class: modules::streams::StreamModule
+    config:
+      port: ${STREAMS_PORT:31112}
+      host: 0.0.0.0
+      auth_function: motia.streams.authenticate
+      adapter:
+        class: modules::streams::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
-Motia automatically parses JSON, URL-encoded, and text request bodies with a 1GB limit:
+  - class: modules::state::StateModule
+    config:
+      adapter:
+        class: modules::state::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
-```typescript
-// These are already configured:
-app.use(bodyParser.json({ limit: '1gb' }))
-app.use(bodyParser.urlencoded({ extended: true, limit: '1gb' }))
-app.use(bodyParser.text({ limit: '1gb' }))
+  - class: modules::api::RestApiModule
+    config:
+      port: ${PORT:3111}
+      host: 0.0.0.0
+      default_timeout: 30000
+      concurrency_request_limit: 1024
+
+  - class: modules::queue::QueueModule
+    config:
+      adapter:
+        class: modules::queue::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
+
+  - class: modules::observability::OtelModule
+    config:
+      enabled: true
+      service_name: ${OTEL_SERVICE_NAME:my-app}
+      exporter: otlp
+
+  - class: modules::pubsub::PubSubModule
+    config:
+      adapter:
+        class: modules::pubsub::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
+
+  - class: modules::cron::CronModule
+    config:
+      adapter:
+        class: modules::cron::KvCronAdapter
 ```
 
-### Raw Body Access
+Key differences from development:
+- **Host**: `0.0.0.0` instead of `127.0.0.1` (accept external connections)
+- **Adapters**: Redis instead of file-based KvStore
+- **Stream auth**: `auth_function` enabled for secure WebSocket connections
+- **Observability**: OTLP exporter instead of memory
 
-The raw request body is available as `req.rawBody`. Useful for webhook signature verification:
+---
+
+## Raw Body Access
+
+The raw request body is available as `req.rawBody` in API Steps. Useful for webhook signature verification:
 
 <Tabs items={['TypeScript', 'JavaScript']}>
 <Tab value='TypeScript'>
 
 ```typescript title="steps/webhook.step.ts"
-import { ApiRouteConfig, Handlers } from 'motia'
-import crypto from 'crypto'
+import { type Handlers, type StepConfig } from 'motia'
 
-export const config: ApiRouteConfig = {
-  type: 'api',
+export const config = {
   name: 'StripeWebhook',
-  path: '/webhooks/stripe',
-  method: 'POST'
-}
+  description: 'Handle Stripe webhook events',
+  triggers: [
+    { type: 'api', path: '/webhooks/stripe', method: 'POST' },
+  ],
+  flows: ['payments'],
+} as const satisfies StepConfig
 
-export const handler: Handlers['StripeWebhook'] = async (req, { logger }) => {
+export const handler: Handlers<typeof config> = async (req, { logger }) => {
   const signature = req.headers['stripe-signature']
   const rawBody = req.rawBody
-  
-  // Verify webhook signature using raw body
+
   const isValid = verifyStripeSignature(rawBody, signature)
-  
+
   if (!isValid) {
     return { status: 401, body: { error: 'Invalid signature' } }
   }
-  
-  // Process webhook...
+
   return { status: 200, body: { received: true } }
 }
 ```
@@ -558,27 +468,25 @@ export const handler: Handlers['StripeWebhook'] = async (req, { logger }) => {
 <Tab value='JavaScript'>
 
 ```javascript title="steps/webhook.step.js"
-const crypto = require('crypto')
-
 const config = {
-  type: 'api',
   name: 'StripeWebhook',
-  path: '/webhooks/stripe',
-  method: 'POST'
+  description: 'Handle Stripe webhook events',
+  triggers: [
+    { type: 'api', path: '/webhooks/stripe', method: 'POST' },
+  ],
+  flows: ['payments'],
 }
 
 const handler = async (req, { logger }) => {
   const signature = req.headers['stripe-signature']
   const rawBody = req.rawBody
-  
-  // Verify webhook signature using raw body
+
   const isValid = verifyStripeSignature(rawBody, signature)
-  
+
   if (!isValid) {
     return { status: 401, body: { error: 'Invalid signature' } }
   }
-  
-  // Process webhook...
+
   return { status: 200, body: { received: true } }
 }
 
@@ -590,73 +498,14 @@ module.exports = { config, handler }
 
 ---
 
-## Plugins
-
-Add Workbench UI components and custom steps with plugins.
-
-### Using Built-in Plugins
-
-```typescript title="motia.config.ts"
-import { defineConfig } from 'motia'
-import statesPlugin from '@motiadev/plugin-states/plugin'
-import logsPlugin from '@motiadev/plugin-logs/plugin'
-import observabilityPlugin from '@motiadev/plugin-observability/plugin'
-
-export default defineConfig({
-  plugins: [observabilityPlugin, statesPlugin, logsPlugin]
-})
-```
-
-### Creating Local Plugins
-
-```typescript title="motia.config.ts"
-import path from 'node:path'
-import { defineConfig, type MotiaPlugin, type MotiaPluginContext } from 'motia'
-
-function myPlugin(motia: MotiaPluginContext): MotiaPlugin {
-  // Register custom API endpoints
-  motia.registerApi(
-    { method: 'GET', path: '/__motia/my-plugin' },
-    async (req, ctx) => {
-      return { status: 200, body: { hello: 'world' } }
-    }
-  )
-  
-  return {
-    workbench: [{
-      componentName: 'MyComponent',
-      packageName: '~/plugins/my-component',
-      label: 'My Plugin',
-      position: 'top'
-    }],
-    onShutdown: async () => {
-      // Cleanup when server stops
-    }
-  }
-}
-
-export default defineConfig({
-  plugins: [myPlugin]
-})
-```
-
-👉 [Learn more about Plugins →](/docs/development-guide/plugins)
-
----
-
 ## What's Next?
 
 <Cards>
-  <Card href="/docs/development-guide/adapters" title="📦 Adapters">
-    Configure distributed adapters for scaling
-  </Card>
-  
-  <Card href="/docs/development-guide/plugins" title="🔌 Plugins">
-    Extend Motia with custom plugins
-  </Card>
-  
-  <Card href="/docs/development-guide/streams" title="📡 Streams">
+  <Card href="/docs/development-guide/streams" title="Streams">
     Build real-time features
   </Card>
-</Cards>
 
+  <Card href="/docs/development-guide/state-management" title="State Management">
+    Persistent storage across Steps
+  </Card>
+</Cards>
