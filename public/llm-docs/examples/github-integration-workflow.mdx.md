@@ -3,6 +3,18 @@ title: 'GitHub Integration'
 description: Build an automated GitHub issue and PR management system with AI-powered classification and routing
 ---
 
+---
+
+## Explore the iii console
+
+<div className="my-8">![GitHub Issue Workflow](./../img/github-issue-workflow.png)</div>
+
+**Try it yourself:**
+- [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/integrations/github/github-integration-workflow)
+- [Browse All Examples](https://github.com/MotiaDev/motia-examples)
+
+---
+
 ## Let's build a GitHub automation system that:
 
 1. Automatically triages and classifies new issues
@@ -38,6 +50,10 @@ The GitHub integration workflow is organized into two main components:
     <File name="pr-test-monitor.step.ts" />
   </Folder>
 </Folder>
+
+<Callout type="info">
+This example uses the `steps/` directory, but you can also use `src/` or both. Motia discovers step files from either location automatically.
+</Callout>
 
 <Tabs items={['issue-webhook', 'issue-classifier', 'label-assigner', 'assignee-selector']}>
   <GitHubWorkflowTab tab="issue-webhook" value="github-webhook" folder="issue-triage" />
@@ -132,5 +148,5 @@ npm run dev
 
 <Callout type="info">
   For more detailed setup instructions and configuration options, check out the [full
-  documentation](https://github.com/MotiaDev/motia-examples/tree/main/examples/github-integration-workflow).
+  documentation](https://github.com/MotiaDev/motia-examples/tree/main/examples/integrations/github/github-integration-workflow).
 </Callout> 

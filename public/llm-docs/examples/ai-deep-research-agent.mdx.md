@@ -5,6 +5,18 @@ description: A powerful research assistant that leverages the Motia Framework to
 
 import { CodeFetcher } from '../../../components/CodeFetcher'
 
+---
+
+## Explore the iii console
+
+<div className="my-8">![AI Deep Research Agent](./../img/ai-deep-research-agent.png)</div>
+
+**Try it yourself:**
+- [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/ai-agents/specialized-agents/ai-deep-research-agent)
+- [Browse All Examples](https://github.com/MotiaDev/motia-examples)
+
+---
+
 ## Let's build a AI Deep Research Agent that:
 
 - **Deep Web Research**: Automatically searches the web, extracts content, and synthesizes findings
@@ -27,6 +39,10 @@ import { CodeFetcher } from '../../../components/CodeFetcher'
   <File name="search-web.step.ts" />
   <File name="status-api.step.ts" />
 </Folder>
+
+<Callout type="info">
+This example uses the `steps/` directory, but you can also use `src/` or both. Motia discovers step files from either location automatically.
+</Callout>
 
 <Tabs items={['analyze-content', 'compile-report', 'extract-content', 'follow-up-research', 'generate-queries', 'report-api', 'research-api', 'search-web', 'status-api']}>
   <CodeFetcher path="examples/ai-deep-research-agent/steps" tab="analyze-content" value="analyze-content" />
@@ -62,7 +78,7 @@ import { CodeFetcher } from '../../../components/CodeFetcher'
 1. Clone the repository:
    ```bash
    git clone https://github.com/MotiaDev/motia-examples
-   cd examples/ai-deep-research-agent
+   cd examples/ai-agents/specialized-agents/ai-deep-research-agent
    ```
 
 2. Install dependencies:
@@ -184,7 +200,7 @@ Response:
    pnpm dev
    ```
 
-2. Access the Motia Workbench:
+2. Access the Motia iii console:
    ```
    http://localhost:3000
    ```

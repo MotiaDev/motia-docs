@@ -1,40 +1,142 @@
 ---
 title: Welcome to Motia
-description: Motia is an all-in-one framework for modern backend systems. Out of the box support for API endpoints, background jobs, scheduled tasks and agentic workflow orchestration through a unified runtime. Thanks to its event driven architecture you can run tasks in parallel, stream data to clients, or allow for seamless orchestration of flows. What used to take 5 frameworks to build now comes out of the box with Motia.
+description: "Build production-grade backends with a single primitive. APIs, background jobs, Queues, Workflows, and AI agents - unified in one system with built-in State management, Streaming, and Observability."
 ---
 
-## Why use Motia
+import VideoPlayer from '@/components/VideoPlayer';
 
-Today, backend engineers and software architects face several recurring problems. Motia was created to simplify these common backend engineering challenges in a flexible and elegant way to provide world class developer experience while ensuring robust, event-driven infrastructure.
+# Welcome to Motia
 
-- Unified vs. Fragmented backend
-  - Working with multiple Languages
-- Scalability
-- Observability
-- Fault tolerance
-- Building and shipping
-  - Rollbacks and deployment strategies
-- Real-time data streaming
+<VideoPlayer videoPath="https://assets.motia.dev/videos/mp4/site/v1/1-motia-welcome.mp4" gifPath="https://assets.motia.dev/images/gifs/v1/1-motia-welcome.gif" title="Welcome to Motia" className="mb-8" />
 
-## How Motia simplifies all of this?
+## Why Motia?
 
-Similar to how React simplified frontend development where everything is a component, Motia simplifies backend development where everything is a Step. In Motia, every backend pattern becomes a group of compensable steps with unified state, events and observability. In this way, engineers only have to learn a few concepts about how a Motia Step works, and they get an enterprise-grade event-driven system out of the box.
+**Build production-grade backends with a single primitive.**
 
-- Steps represent a distinct entry point
-- Steps can have different triggers
-  - API Call _(Triggered by an HTTP request)_
-  - Event _(Triggered by an event from another Step)_
-  - CRON Job _(Triggered by a cron schedule)_
-  - More will come soon (Check the [Roadmap](https://github.com/orgs/MotiaDev/projects/2?pane=issue&itemId=121129696&issue=MotiaDev%7Cmotia%7C477))
-- Steps are composable and can be chained together
+Modern backends shouldn't require juggling frameworks, queues, and services. Motia unifies everything: API endpoints, background jobs, durable workflows, AI agents, streaming, and observability into one runtime with a single core primitive.
 
-![Motia](./img/what-is-motia/motia.gif)
+**Motia** is your complete backend solution:
+- 🌐 **API** - RESTful endpoints with validation and routing
+- ⚡ **Background Jobs** - Async processing with built-in queues
+- 🔄 **Durable Workflows** - Complex multi-step orchestration
+- 🤖 **Agentic** - AI agent workflows with streaming support
+- 🏪 **State** - Built-in persistent storage across Steps
+- 📊 **Streaming** - Real-time data updates to clients
+- 📝 **Logging** - Structured, traceable logs
+- 👁️ **Observability** - End-to-end tracing and monitoring
 
-## Unified vs. Fragmented backend
-
-Modern software engineering is splintered. APIs live in one framework, background jobs in another, queues have their own tooling, and AI agents are springing up in yet more isolated runtimes. Motia exists to unify all of these concerns API endpoints, automations & workflows, background tasks, queues, and AI agents into a single, coherent system with shared observability and developer experience.
+Just as React made frontend development simple by introducing components, **Motia redefines backend development with Steps** - a single primitive that powers everything.
 
 To read more about this, check out our [manifesto](/manifesto).
+
+---
+## The Core Primitive: the Step
+
+At the heart of Motia is a single primitive: the **Step**.  
+
+A Step is just a file with a `config` and a `handler`. Motia auto-discovers these files from your project's `src/` directory and connects them automatically - no manual registration required.
+
+Here's a simple example of two Steps working together: an API Step that enqueues a message, and a Queue Step that processes it.
+
+<Tabs items={['TypeScript', 'Python', 'JavaScript']}>
+<Tab value='TypeScript'>
+
+```ts title="src/send-message.step.ts"
+export const config = {
+  name: 'SendMessage',
+  triggers: [{ type: 'api', path: '/messages', method: 'POST' }],
+  enqueues: ['message.sent']
+} as const satisfies StepConfig
+
+export const handler: Handlers<typeof config> = async (req, { enqueue }) => {
+  await enqueue({
+    topic: 'message.sent',
+    data: { text: req.body.text }
+  })
+  return { status: 200, body: { ok: true } }
+}
+```
+
+```ts title="src/process-message.step.ts"
+export const config = {
+  name: 'ProcessMessage',
+  triggers: [{ type: 'queue', topic: 'message.sent' }],
+} as const satisfies StepConfig
+
+export const handler: Handlers<typeof config> = async (input, { logger }) => {
+  logger.info('Processing message', input)
+}
+```
+</Tab>
+
+<Tab value='Python'>
+
+```python title="send_message_step.py"
+config = {
+    "name": "SendMessage",
+    "triggers": [{"type": "api", "path": "/messages", "method": "POST"}],
+    "enqueues": ["message.sent"]
+}
+
+async def handler(req, ctx):
+    await ctx.enqueue({
+        "topic": "message.sent",
+        "data": {"text": req.body["text"]}
+    })
+    return {"status": 200, "body": {"ok": True}}
+```
+
+```python title="process_message_step.py"
+config = {
+    "name": "ProcessMessage",
+    "triggers": [{"type": "queue", "topic": "message.sent"}],
+}
+
+async def handler(input, ctx):
+    ctx.logger.info("Processing message", input)
+```
+</Tab>
+
+<Tab value='JavaScript'>
+
+```js title="src/send-message.step.js"
+const config = {
+  name: 'SendMessage',
+  triggers: [{ type: 'api', path: '/messages', method: 'POST' }],
+  enqueues: ['message.sent']
+}
+
+const handler = async (req, { enqueue }) => {
+  await enqueue({
+    topic: 'message.sent',
+    data: { text: req.body.text }
+  })
+  return { status: 200, body: { ok: true } }
+}
+
+export { config, handler }
+```
+
+```js title="src/process-message.step.js"
+const config = {
+  name: 'ProcessMessage',
+  triggers: [{ type: 'queue', topic: 'message.sent' }],
+}
+
+const handler = async (input, { logger }) => {
+  logger.info('Processing message', input)
+}
+
+export { config, handler }
+```
+</Tab>
+</Tabs>
+
+👉 With just two files, you’ve built an **API endpoint**, a **queue**, and a **worker**. No extra frameworks required.
+
+Learn more about Steps here: [What is a Step?](/docs/concepts/steps).
+
+---
 
 ### Working with multiple Languages
 
@@ -65,10 +167,10 @@ Motia offers a complete observability toolkit available in both cloud and local 
 - State visualization
 - Diagram representation of dependencies between steps and how they are connected
 
-_The image below shows the Workbench interface available when you run `motia dev`. On the top panel you can see a workflow diagram with multiple steps connected.
+_The image below shows the iii console interface available when you run `motia dev`. On the top panel you can see a workflow diagram with multiple steps connected.
 On the bottom panel you can see the trace view of a single request and what happened in each step._
 
-![Motia Workbench](./img/new-workbench.png)
+![iii console](./img/new-workbench.png)
 
 ## Fault tolerance
 
@@ -76,7 +178,7 @@ With the rise of AI, many backend tasks have become less deterministic and more 
 
 Motia provides fault tolerance out of the box, eliminating the need to manually spin up queue infrastructure.
 
-- Using Event Steps, you get retry mechanisms out of the box
+- Using Queue Steps, you get retry mechanisms out of the box
 - Configuration of queue infrastructure is abstracted away
 
 ## Building and Shipping

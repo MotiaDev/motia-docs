@@ -13,7 +13,11 @@ Use `npx` to create a new Motia project. This single command will scaffold a new
 npx motia@latest create
 ```
 
-The installer will guide you through a few questions to set up your project. Once it's done, you will have a new project directory ready to go.
+The installer will guide you through a few questions to set up your project, including choosing a template. Once it's done, you will have a new project directory ready to go.
+
+<Callout>
+Choose a **Tutorial** template for an interactive walkthrough, or a **Starter** template to skip the walkthrough.
+</Callout>
 
 </Step>
 
@@ -25,29 +29,27 @@ Navigate into your new project directory and start the Motia development server.
 ```bash
 cd <your-project-name> # If you've created a new folder for the project, navigate into it
 
-npx motia dev
+npm run dev
 ```
 
 ![run dev command](/docs-images/motia-terminal.gif)
 
 <Callout>
-The `create` command uses `npm` by default. If you chose a different package manager during setup, use `pnpm dev`, `yarn dev`.
+The `create` command uses `npm` by default. If you chose a different package manager during setup, use `pnpm dev` or `yarn dev`.
 </Callout>
 
-This command starts the Motia runtime and the Workbench, a powerful UI for developing and debugging your workflows. By default, it's available at [`http://localhost:3000`](http://localhost:3000).
+This command starts the Motia runtime and the iii console, a powerful UI for developing and debugging your workflows. By default, it's available at [`http://localhost:3000`](http://localhost:3000).
 
 </Step>
 
 <Step>
 ### 3. Run Your First Flow
 
-The starter project comes with a pre-built `default` flow. Let's run it.
+Tutorial projects come with a pre-built Tutorial flow. To step through the tutorial:
 
-1.  **Open the Workbench** in your browser at [`http://localhost:3000`](http://localhost:3000).
-2.  **Select the `default` flow** from the left top panel.
-3.  **Run the flow.** You'll see a visual diagram of the workflow. Find the first node (the API Step) and click the **Start** button on it. This will trigger the flow.
-4.  **Observe the execution.** Watch the trace unfold in real-time in the bottom panel. You can inspect the logs, traces and state for each step as it completes.
-5.  **Explore the Workbench.** You can also read your files directly from the Workbench.
+1.  **Open the iii console** in your browser at [`http://localhost:3000`](http://localhost:3000).
+2.  **Click the `Tutorial`** button on the top right of the iii console.
+3.  **Complete the `Tutorial`** to get an understanding of the basics of Motia and using the iii console.
 
 ![run starter app](/docs-images/motia-build-your-app.gif)
 
@@ -56,11 +58,10 @@ The starter project comes with a pre-built `default` flow. Let's run it.
 <Step>
 ### Next Steps
 
-Congratulations! You've successfully created, run, and observed your first Motia workflow.
+Congratulations! You've successfully ran, and observed your first Motia workflow.
 
-- To build a multi-language application from scratch, follow our **[Multi-Language Data Processing](/docs/examples/multi-language-data-processing)** guide.
-- To learn how to build REST APIs with Motia, check out our **[Creating Your First REST API](/docs/getting-started/build-your-first-app/creating-your-first-rest-api)** guide.
-- To learn about Motia, dive into our **[Welcome to Motia](/docs)**.
+- Build your first application from scratch, follow our **[Build Your First Motia App](/docs/getting-started/build-your-first-motia-app)** guide.
+- To learn about Motia, dive into our **[Core Concepts](/docs/concepts/overview)**.
 
 </Step>
 </Steps>

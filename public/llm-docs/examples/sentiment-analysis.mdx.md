@@ -5,7 +5,17 @@ description: 'Dynamic Workflows: Building a Sentiment Analyzer with Motia'
 
 In modern application development, workflows are rarely linear. Whether you're building a simple "prompt => response" system or a complex, multi-stage data processing pipeline, you often need your application to make decisions and route data dynamically. This is where the power of event-driven architecture shines, and where the Motia framework provides a clear path forward.
 
-<div className="my-8">![motia workbench for sentiment analysis](./../img/sentimental-analysis.png)</div>
+---
+
+## Explore the iii console
+
+<div className="my-8">![motia workbench for sentiment analysis](./../img/sentimental-analyzer-workbench.gif)</div>
+
+**Try it yourself:**
+- [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/api-patterns/sentimental-analysis)
+- [Browse All Examples](https://github.com/MotiaDev/motia-examples)
+
+---
 
 This guide explores how to build a dynamic sentiment analysis application that uses an LLM to determine how to proceed. We'll cover:
 
@@ -52,29 +62,28 @@ Our application will be composed of four steps. Let's explore each one.
 
     ```ts
     // Receives user text, emits "openai.analyzeSentimentRequest".
-    import { Handlers } from 'motia'
+    import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
 
     export const config = {
-      type: 'api',
       name: 'analyzeSentimentApi',
-      description: 'Receives user text and emits an event to trigger sentiment analysis.',
-      path: '/api/analyze-sentiment',
-      method: 'POST',
-      emits: ['openai.analyzeSentimentRequest'],
-      bodySchema: z.object({
-        text: z.string().min(1, 'text is required'),
-      }),
+      description: 'Receives user text and enqueues an event to trigger sentiment analysis.',
+      triggers: [
+        { type: 'api', path: '/api/analyze-sentiment', method: 'POST', bodySchema: z.object({
+          text: z.string().min(1, 'text is required'),
+        }) },
+      ],
+      enqueues: ['openai.analyzeSentimentRequest'],
       flows: ['sentiment-demo'],
-    } as const
+    } as const satisfies StepConfig
 
-    export const handler: Handlers['analyzeSentimentApi'] = async (req, { emit, logger }) => {
+    export const handler: Handlers<typeof config> = async (req, { enqueue, logger }) => {
       const { text } = req.body
 
       logger.info('[AnalyzeSentimentAPI] Received text', { text })
 
-      // Emit an event to call OpenAI
-      await emit({
+      // Enqueue an event to call OpenAI
+      await enqueue({
         topic: 'openai.analyzeSentimentRequest',
         data: { text },
       })
@@ -93,26 +102,23 @@ Our application will be composed of four steps. Let's explore each one.
 
     ```ts
     // Calls OpenAI, instructing it to ONLY return JSON like {"sentiment":"positive","analysis":"..."}
-    import { Handlers } from 'motia'
+    import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
     import { OpenAI } from 'openai'
 
-    // 1) Create an OpenAI client (newer syntax)
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
     export const config = {
-      type: 'event',
       name: 'openAiSentimentAnalyzer',
-      description: 'Calls OpenAI to analyze sentiment and emits corresponding events.',
-      subscribes: ['openai.analyzeSentimentRequest'],
-      // We'll emit different events: "openai.positiveSentiment" or "openai.negativeSentiment"
-      emits: ['openai.positiveSentiment', 'openai.negativeSentiment'],
-      input: z.object({ text: z.string() }),
+      description: 'Calls OpenAI to analyze sentiment and enqueues corresponding events.',
+      triggers: [
+        { type: 'queue', topic: 'openai.analyzeSentimentRequest', input: z.object({ text: z.string() }) },
+      ],
+      enqueues: ['openai.positiveSentiment', 'openai.negativeSentiment'],
       flows: ['sentiment-demo'],
-    } as const
+    } as const satisfies StepConfig
 
-    // 3) Provide the code that runs on each event
-    export const handler: Handlers['openAiSentimentAnalyzer'] = async (input, { emit, logger }) => {
+    export const handler: Handlers<typeof config> = async (input, { enqueue, logger }) => {
       logger.info('[OpenAI Sentiment Analyzer] Prompting OpenAI...', { text: input.text })
 
       try {
@@ -146,13 +152,13 @@ Our application will be composed of four steps. Let's explore each one.
         // 6) Decide how to route the event
         if (parsed.sentiment) {
           if (parsed.sentiment.toLowerCase() === 'positive') {
-            await emit({
+            await enqueue({
               topic: 'openai.positiveSentiment',
               data: { ...parsed, sentiment: parsed.sentiment },
             })
           } else {
             // default to negative
-            await emit({
+            await enqueue({
               topic: 'openai.negativeSentiment',
               data: { ...parsed, sentiment: parsed.sentiment },
             })
@@ -175,23 +181,23 @@ Our application will be composed of four steps. Let's explore each one.
 
     ```ts
     // Handles "openai.positiveSentiment"
-    import { Handlers } from 'motia'
+    import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
 
     export const config = {
-      type: 'event',
       name: 'handlePositive',
       description: 'Handles positive sentiment responses.',
-      subscribes: ['openai.positiveSentiment'],
-      emits: [],
-      input: z.object({
-        sentiment: z.string(),
-        analysis: z.string().optional(),
-      }),
+      triggers: [
+        { type: 'queue', topic: 'openai.positiveSentiment', input: z.object({
+          sentiment: z.string(),
+          analysis: z.string().optional(),
+        }) },
+      ],
+      enqueues: [],
       flows: ['sentiment-demo'],
-    } as const
+    } as const satisfies StepConfig
 
-    export const handler: Handlers['handlePositive'] = async (input, { logger }) => {
+    export const handler: Handlers<typeof config> = async (input, { logger }) => {
       logger.info('[Positive Responder] The sentiment is positive!', { analysis: input.analysis })
       // Maybe notify a Slack channel: "All good vibes here!"
     }
@@ -203,23 +209,23 @@ Our application will be composed of four steps. Let's explore each one.
 
     ```ts
     // Handles "openai.negativeSentiment"
-    import { Handlers } from 'motia'
+    import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
 
     export const config = {
-      type: 'event',
       name: 'handleNegative',
       description: 'Handles negative or unknown sentiment responses.',
-      subscribes: ['openai.negativeSentiment'],
-      emits: [],
-      input: z.object({
-        sentiment: z.string(),
-        analysis: z.string().optional(),
-      }),
+      triggers: [
+        { type: 'queue', topic: 'openai.negativeSentiment', input: z.object({
+          sentiment: z.string(),
+          analysis: z.string().optional(),
+        }) },
+      ],
+      enqueues: [],
       flows: ['sentiment-demo'],
-    } as const
+    } as const satisfies StepConfig
 
-    export const handler: Handlers['handleNegative'] = async (input, { logger }) => {
+    export const handler: Handlers<typeof config> = async (input, { logger }) => {
       logger.info('[Negative Responder] The sentiment is negative or unknown.', { analysis: input.analysis })
       // Could escalate to a service, or respond gently, etc.
     }
@@ -230,15 +236,15 @@ Our application will be composed of four steps. Let's explore each one.
 
 ---
 
-## Explore the Workbench
+## Explore the iii console
 
-You can explore the workflow in the Workbench.
+You can explore the workflow in the iii console.
 
 <div className="my-8">![Flow](./../img/sentimental-analyzer.png)</div>
 
-You can also read your files and watch logs, traces, debug your architecture directly in the Workbench.
+You can also read your files and watch logs, traces, debug your architecture directly in the iii console.
 
-<div className="my-8">![Workbench](./../img/sentimental-analyzer-workbench.gif)</div>
+<div className="my-8">![iii console](./../img/sentimental-analyzer-workbench.gif)</div>
 
 ---
 
@@ -317,7 +323,7 @@ Want to explore the complete implementation? Check out the full source code and 
         <p className="text-gray-600 mb-4">Get hands-on with the complete source code, configuration files, and additional examples to accelerate your learning.</p>
         <div className="flex flex-col sm:flex-row gap-3">
           <a 
-            href="https://github.com/MotiaDev/motia-examples/tree/main/examples/sentimental-analysis" 
+            href="https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/api-patterns/sentimental-analysis" 
             target="_blank" 
             rel="noopener noreferrer"
             className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-200"

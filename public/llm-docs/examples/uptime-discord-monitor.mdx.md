@@ -15,9 +15,19 @@ Let's build a monitoring system that actually works for you.
 
 ---
 
+## Explore the iii console
+
+<div className="my-8">![Uptime Monitor](./../img/uptime-monitor-architecture.png)</div>
+
+**Try it yourself:**
+- [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/infrastructure/motia-uptime-monitor)
+- [Browse All Examples](https://github.com/MotiaDev/motia-examples)
+
+---
+
 ## The Power of Event-Driven Monitoring
 
-<div className="my-8">![Uptime Monitor Architecture](./../img/uptime-monitor-architecture.png)</div>
+<div className="my-8">![Uptime Monitor Architecture](./../img/uptime-monitor.gif)</div>
 
 At its core, our uptime monitoring system solves a fundamental challenge: how do you continuously monitor multiple websites without creating a brittle, monolithic application? Traditional monitoring tools often suffer from tight coupling, making them difficult to scale and customize. Our Motia-powered solution breaks this down into discrete, event-driven components that each handle a specific aspect of monitoring.
 
@@ -51,16 +61,17 @@ Our application consists of five specialized steps, each handling a specific par
 
 <Tabs items={['cron', 'checker', 'alerter', 'health', 'utilities']}>
   <Tab value="cron">
-    The heartbeat of our monitoring system. This cron-triggered step periodically emits check requests for all configured websites, acting as the central scheduler.
+    The heartbeat of our monitoring system. This cron-triggered step periodically enqueues check requests for all configured websites, acting as the central scheduler.
 
     ```js
     import { config as envConfig } from '../lib/env.js';
 
     export const config = {
-      type: 'cron',
       name: 'UptimeCronTrigger',
-      cron: envConfig.cron,
-      emits: ['check.requested'],
+      triggers: [
+        { type: 'cron', cron: envConfig.cron },
+      ],
+      enqueues: ['check.requested'],
       flows: ['uptime-monitoring']
     };
 
@@ -69,16 +80,15 @@ Our application consists of five specialized steps, each handling a specific par
       context.logger.info(`Sites configured: ${JSON.stringify(envConfig.sites)}`);
 
       try {
-        // Emit one check.requested event per configured site URL
         for (const url of envConfig.sites) {
           context.logger.info(`Scheduling check for: ${url}`);
-          
-          await context.emit({ 
-            topic: 'check.requested', 
-            data: { url: url } 
+
+          await context.enqueue({
+            topic: 'check.requested',
+            data: { url: url }
           });
-          
-          context.logger.info(`Successfully emitted for: ${url}`);
+
+          context.logger.info(`Successfully enqueued for: ${url}`);
         }
 
         context.logger.info(`Successfully scheduled checks for all ${envConfig.sites.length} sites`);
@@ -91,24 +101,24 @@ Our application consists of five specialized steps, each handling a specific par
 
   </Tab>
   <Tab value="checker">
-    The core monitoring component that performs HTTP checks on websites. It handles timeouts, errors, and response code analysis, then emits results for further processing.
+    The core monitoring component that performs HTTP checks on websites. It handles timeouts, errors, and response code analysis, then enqueues results for further processing.
 
     ```js
     import { z } from 'zod'
 
     export const config = {
-      type: 'event',
       name: 'WebsiteChecker',
-      description: 'Performs HTTP checks on websites and emits results',
-      subscribes: ['check.requested'],
-      emits: ['check.result', 'status.stream'],
-      input: z.object({
-        url: z.string().url('Must be a valid URL')
-      }),
+      description: 'Performs HTTP checks on websites and enqueues results',
+      triggers: [
+        { type: 'queue', topic: 'check.requested', input: z.object({
+          url: z.string().url('Must be a valid URL')
+        }) },
+      ],
+      enqueues: ['check.result', 'status.stream'],
       flows: ['uptime-monitoring'],
     }
 
-    export const handler = async (input, { logger, emit }) => {
+    export const handler = async (input, { logger, enqueue }) => {
       const { url } = input
       
       logger.info('Starting website check', { url })
@@ -195,11 +205,10 @@ Our application consists of five specialized steps, each handling a specific par
         })
       }
 
-      // Emit results to both alerter and dashboard
-      await emit({ topic: 'check.result', data: result })
-      await emit({ topic: 'status.stream', data: result })
+      await enqueue({ topic: 'check.result', data: result })
+      await enqueue({ topic: 'status.stream', data: result })
 
-      logger.info('Check results emitted successfully', { url, status: result.status })
+      logger.info('Check results enqueued successfully', { url, status: result.status })
     }
     ```
 
@@ -220,19 +229,19 @@ Our application consists of five specialized steps, each handling a specific par
     })
 
     export const config = {
-      type: 'event',
       name: 'DiscordAlerter',
       description: 'Sends Discord notifications when website status changes',
-      subscribes: ['check.result'],
-      emits: [],
-      input: z.object({
-        url: z.string().url(),
-        status: z.enum(['UP', 'DOWN']),
-        code: z.number().nullable(),
-        responseTime: z.number(),
-        checkedAt: z.string(),
-        error: z.string().nullable()
-      }),
+      triggers: [
+        { type: 'queue', topic: 'check.result', input: z.object({
+          url: z.string().url(),
+          status: z.enum(['UP', 'DOWN']),
+          code: z.number().nullable(),
+          responseTime: z.number(),
+          checkedAt: z.string(),
+          error: z.string().nullable()
+        }) },
+      ],
+      enqueues: [],
       flows: ['uptime-monitoring'],
     }
 
@@ -375,12 +384,12 @@ Our application consists of five specialized steps, each handling a specific par
     import { config as envConfig } from '../lib/env.js'
 
     export const config = {
-      type: 'api',
       name: 'HealthCheck',
       description: 'Provides system health status endpoint',
-      method: 'GET',
-      path: '/healthz',
-      emits: [],
+      triggers: [
+        { type: 'api', method: 'GET', path: '/healthz' },
+      ],
+      enqueues: [],
       responseSchema: {
         200: z.object({
           status: z.literal('ok'),
@@ -581,13 +590,13 @@ Our application consists of five specialized steps, each handling a specific par
 
 ---
 
-## Explore the Workbench
+## Explore the iii console
 
-The Motia Workbench provides a visual representation of your monitoring pipeline, making it easy to understand the event flow and debug issues in real-time.
+The iii console provides a visual representation of your monitoring pipeline, making it easy to understand the event flow and debug issues in real-time.
 
-<div className="my-8">![Uptime Monitor in Motia Workbench](./../img/uptime-monitor.gif)</div>
+<div className="my-8">![Uptime Monitor in iii console](./../img/uptime-monitor.gif)</div>
 
-You can monitor real-time status checks, view Discord alert logs, and trace the execution of each step directly in the Workbench interface. This makes development and debugging significantly easier compared to traditional monitoring solutions.
+You can monitor real-time status checks, view Discord alert logs, and trace the execution of each step directly in the iii console. This makes development and debugging significantly easier compared to traditional monitoring solutions.
 
 ---
 
@@ -618,9 +627,9 @@ Beautiful embedded messages with response times, error details, and status trans
 ![Uptime Monitor Event Flow](./../img/uptime-monitor-flow.png)
 
 ### Event Flow
-1. **Cron Trigger** → Emits `check.requested` events for each configured site
+1. **Cron Trigger** → Enqueues `check.requested` events for each configured site
 2. **Website Checker** → Receives `check.requested`, performs HTTP check
-3. **Status Update** → Checker emits `check.result` with result
+3. **Status Update** → Checker enqueues `check.result` with result
 4. **Alert Processing** → Alerter receives `check.result`, detects status changes
 5. **Discord Notification** → Alerter sends webhook if status changed and rate limit allows
 6. **Status Storage** → Status is persisted for health endpoint and future comparisons
@@ -873,7 +882,7 @@ Want to explore the complete monitoring implementation? Check out the full sourc
         <p className="text-gray-600 mb-4">Access the full implementation with event steps, utility libraries, Discord integration, and production-ready configuration.</p>
         <div className="flex flex-col sm:flex-row gap-3">
           <a 
-            href="https://github.com/MotiaDev/motia-examples/tree/main/examples/motia-uptime-monitor" 
+            href="https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/infrastructure/motia-uptime-monitor" 
             target="_blank" 
             rel="noopener noreferrer"
             className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md transition-colors duration-200"

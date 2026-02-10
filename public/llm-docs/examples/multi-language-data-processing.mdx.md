@@ -16,9 +16,17 @@ Let's build a production-ready data processing system where steps unify TypeScri
 
 ---
 
-## The Power of Steps: A Unified Multi-Language Primitive
+## Explore the iii console
 
-<div className="my-8">![Multi-Language Data Processing in Motia Workbench](/docs-images/motia-build-your-app-2.gif)</div>
+<div className="my-8">![Multi-Language Data Processing in Motia iii console](/docs-images/motia-build-your-app-2.gif)</div>
+
+**Try it yourself:**
+- [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/multi-language-data-processing)
+- [Browse All Examples](https://github.com/MotiaDev/motia-examples)
+
+---
+
+## The Power of Steps: A Unified Multi-Language Primitive
 
 At its core, our data processing pipeline demonstrates how **steps** solve the fundamental challenge of multi-language systems: unifying different programming languages under a single, coherent abstraction. Traditional polyglot architectures require complex inter-process communication and deployment coordination. Motia's **step** primitive unifies everything.
 
@@ -64,14 +72,11 @@ const bodySchema = z.object({
 
 // API endpoint to start the multi-language pipeline
 export const config = {
-  type: 'api',
   name: 'AppStarter',
   description: 'Start the multi-language app pipeline',
-
-  method: 'POST',
-  path: '/start-app',
-
-  bodySchema,
+  triggers: [
+    { type: 'api', method: 'POST', path: '/start-app', bodySchema },
+  ],
   responseSchema: {
     200: z.object({
       message: z.string(),
@@ -79,12 +84,11 @@ export const config = {
       traceId: z.string()
     })
   },
-
-  emits: ['app.started'],
-  flows: ['data-processing']
+  enqueues: ['app.started'],
+  flows: ['data-processing'],
 } as const
 
-export const handler = async (req: any, { logger, emit, traceId }: any) => {
+export const handler = async (req: any, { logger, enqueue, traceId }: any) => {
   logger.info('🚀 Starting multi-language app', { body: req.body, traceId })
   
   const appData = {
@@ -94,8 +98,8 @@ export const handler = async (req: any, { logger, emit, traceId }: any) => {
     traceId
   }
 
-  // Emit to next step
-  await emit({
+  // Enqueue to next step
+  await enqueue({
     topic: 'app.started',
     data: appData
   })
@@ -125,21 +129,21 @@ import { z } from 'zod'
 
 // Bridge step to connect app starter to Python processing
 export const config = {
-  type: 'event',
   name: 'AppBridge',
   description: 'Bridge between app start and Python processing',
-  subscribes: ['app.started'],
-  emits: ['data.processed'],
-  input: z.object({
-    id: z.number(),
-    input: z.record(z.unknown()),
-    started_at: z.string(),
-    traceId: z.string()
-  }),
-  flows: ['data-processing']
+  triggers: [
+    { type: 'queue', topic: 'app.started', input: z.object({
+      id: z.number(),
+      input: z.record(z.unknown()),
+      started_at: z.string(),
+      traceId: z.string()
+    }) },
+  ],
+  enqueues: ['data.processed'],
+  flows: ['data-processing'],
 } as const
 
-export const handler = async (input: any, { logger, emit }: any) => {
+export const handler = async (input: any, { logger, enqueue }: any) => {
   logger.info('🌉 Processing app data and sending to Python', { appId: input.id })
   
   // Process data for Python step
@@ -152,8 +156,8 @@ export const handler = async (input: any, { logger, emit }: any) => {
   }
 
   // Send to Python processing
-  await emit({
-    topic: 'data.processed', 
+  await enqueue({
+    topic: 'data.processed',
     data: processedResult
   })
 
@@ -173,11 +177,12 @@ from datetime import datetime
 
 # Python processing step configuration
 config = {
-    "type": "event",
     "name": "ProcessDataPython",
     "description": "Process data using Python capabilities",
-    "subscribes": ["data.processed"],
-    "emits": ["python.done"],
+    "triggers": [
+        {"type": "queue", "topic": "data.processed"}
+    ],
+    "enqueues": ["python.done"],
     "flows": ["data-processing"]
 }
 
@@ -186,7 +191,7 @@ async def handler(input_data, ctx):
     Python step that processes data and demonstrates Python capabilities
     """
     logger = ctx.logger
-    emit = ctx.emit
+    enqueue = ctx.enqueue
     
     # Extract data from input
     original_id = input_data.get("original_id")
@@ -218,8 +223,8 @@ async def handler(input_data, ctx):
         "analysis": data_analysis
     }
     
-    # Emit to next step
-    await emit({
+    # Enqueue to next step
+    await enqueue({
         "topic": "python.done",
         "data": python_result
     })
@@ -235,22 +240,22 @@ async def handler(input_data, ctx):
 import { z } from 'zod'
 
 export const config = {
-  type: 'event',
   name: 'NotificationHandler',
   description: 'Send notifications after Python processing',
-  subscribes: ['python.done'],
-  emits: ['notification.sent'],
-  input: z.object({
-    id: z.number(),
-    python_message: z.string(),
-    processed_by: z.array(z.string()),
-    processing_time: z.number(),
-    analysis: z.record(z.unknown()).optional()
-  }),
-  flows: ['data-processing']
+  triggers: [
+    { type: 'queue', topic: 'python.done', input: z.object({
+      id: z.number(),
+      python_message: z.string(),
+      processed_by: z.array(z.string()),
+      processing_time: z.number(),
+      analysis: z.record(z.unknown()).optional()
+    }) },
+  ],
+  enqueues: ['notification.sent'],
+  flows: ['data-processing'],
 } as const
 
-export const handler = async (input: any, { logger, emit }: any) => {
+export const handler = async (input: any, { logger, enqueue }: any) => {
   logger.info('📧 Sending notifications after Python processing', { id: input.id })
   
   // Simulate sending notifications (email, slack, etc.)
@@ -262,7 +267,7 @@ export const handler = async (input: any, { logger, emit }: any) => {
   }
 
   // Send notification data to final step
-  await emit({
+  await enqueue({
     topic: 'notification.sent',
     data: {
       ...notification,
@@ -283,22 +288,22 @@ import { z } from 'zod'
 
 // Final step to complete the app - TypeScript
 export const config = {
-  type: 'event',
   name: 'AppFinalizer',
   description: 'Complete the basic app and log final results',
-  subscribes: ['notification.sent'],
-  emits: ['app.completed'],
-  input: z.object({
-    id: z.number(),
-    message: z.string(),
-    processed_by: z.array(z.string()),
-    sent_at: z.string(),
-    processing_time: z.number()
-  }),
-  flows: ['data-processing']
+  triggers: [
+    { type: 'queue', topic: 'notification.sent', input: z.object({
+      id: z.number(),
+      message: z.string(),
+      processed_by: z.array(z.string()),
+      sent_at: z.string(),
+      processing_time: z.number()
+    }) },
+  ],
+  enqueues: ['app.completed'],
+  flows: ['data-processing'],
 } as const
 
-export const handler = async (input: any, { logger, emit }: any) => {
+export const handler = async (input: any, { logger, enqueue }: any) => {
   logger.info('🏁 Finalizing app', { 
     notificationId: input.id,
     message: input.message 
@@ -320,7 +325,7 @@ export const handler = async (input: any, { logger, emit }: any) => {
   }
 
   // Send to JavaScript summary generator
-  await emit({
+  await enqueue({
     topic: 'app.completed',
     data: {
       ...summary,
@@ -342,12 +347,13 @@ export const handler = async (input: any, { logger, emit }: any) => {
 ```javascript
 // Final summary step - JavaScript
 export const config = {
-  type: 'event',
   name: 'summaryGenerator',
   description: 'Generate final summary in JavaScript',
-  subscribes: ['app.completed'],
-  emits: [], // Final step - no further processing needed
-  flows: ['data-processing']
+  triggers: [
+    { type: 'queue', topic: 'app.completed' },
+  ],
+  enqueues: [],
+  flows: ['data-processing'],
 }
 
 export const handler = async (input, { logger }) => {
@@ -431,11 +437,11 @@ export interface AppSummary {
 
 ---
 
-## Explore the Workbench
+## Explore the iii console
 
-The Motia Workbench provides a visual representation of your multi-language pipeline, making it easy to trace data flow between TypeScript, Python, and JavaScript steps.
+The Motia iii console provides a visual representation of your multi-language pipeline, making it easy to trace data flow between TypeScript, Python, and JavaScript steps.
 
-<div className="my-8">![Multi-Language Workflow in Motia Workbench](/docs-images/motia-build-your-app-2.gif)</div>
+<div className="my-8">![Multi-Language Workflow in Motia iii console](/docs-images/motia-build-your-app-2.gif)</div>
 
 You can monitor real-time execution, view logs from all languages in a unified interface, and trace the complete data flow from the TypeScript API through Python processing to JavaScript summary generation.
 
@@ -451,7 +457,7 @@ The pipeline follows a clear event-driven flow that connects all languages seaml
 4. **`notification.sent`** - TypeScript Notification → TypeScript Finalizer
 5. **`app.completed`** - TypeScript Finalizer → JavaScript Summary Generator
 
-Each step only needs to know the events it subscribes to and emits, creating loose coupling while maintaining strong data flow guarantees.
+Each step only needs to know the topics it triggers on and enqueues, creating loose coupling while maintaining strong data flow guarantees.
 
 ---
 
@@ -503,9 +509,9 @@ cd my-app  # Replace with your project name
 npm run dev
 ```
 
-### Open the Workbench
+### Open the iii console
 
-Navigate to [`http://localhost:3000`](http://localhost:3000) to access the Workbench and run your workflow.
+Navigate to [`http://localhost:3000`](http://localhost:3000) to access the iii console and run your workflow.
 
 ### Test the Multi-Language Pipeline
 
@@ -517,7 +523,7 @@ Send a request to your API endpoint to see the multi-language workflow in action
      -d '{"data": {"test": "value"}, "message": "Hello!"}'
 ```
 
-Watch in the Workbench as your data flows through:
+Watch in the iii console as your data flows through:
 1. **TypeScript** validation and event emission
 2. **TypeScript** bridge processing and forwarding  
 3. **Python** data processing with rich logging

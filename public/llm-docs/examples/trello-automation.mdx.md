@@ -5,6 +5,18 @@ description: Build an automated card progression system for Trello boards with A
 
 import { TrelloTab, TrelloCodeContent } from '../../../components/TrelloCodeFetcher'
 
+---
+
+## Explore the iii console
+
+<div className="my-8">![Trello Automation](./../img/trello.png)</div>
+
+**Try it yourself:**
+- [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/integrations/communication/trello-flow)
+- [Browse All Examples](https://github.com/MotiaDev/motia-examples)
+
+---
+
 ## Let's build a Trello automation system that:
 
 1. Automatically progresses cards across board lists
@@ -35,6 +47,10 @@ The Trello board is organized into four main lists:
   <File name="slack-notifier.step.ts" />
 </Folder>
 
+<Callout type="info">
+This example uses the `steps/` directory, but you can also use `src/` or both. Motia discovers step files from either location automatically.
+</Callout>
+
 <Tabs items={['webhook', 'validation', 'requirements', 'assigned', 'review', 'completion', 'overdue', 'slack']}>
   <TrelloTab tab="webhook" value="trello-webhook" />
   <TrelloTab tab="validation" value="trello-webhook-validation" />
@@ -50,7 +66,7 @@ The Trello board is organized into four main lists:
 
 Here's how the automation flow works:
 
-<div className="my-8">![Flow: Trello Automation Steps](../img/trello-automation.png)</div>
+<div className="my-8">![Flow: Trello Automation Steps](./../img/trello.png)</div>
 
 1. **Card Validation** → Checks for required information
 2. **Progress Tracking** → Moves cards between lists
@@ -137,5 +153,5 @@ pnpm dev
 
 <Callout type="info">
   For more detailed setup instructions and configuration options, check out the [full
-  documentation](https://github.com/MotiaDev/motia-examples/tree/main/examples/trello-flow).
+  documentation](https://github.com/MotiaDev/motia-examples/tree/main/examples/integrations/communication/trello-flow).
 </Callout>{' '}

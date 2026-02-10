@@ -17,9 +17,17 @@ Let's transform your documents into an intelligent AI assistant.
 
 ---
 
-## The Power of Intelligent Document Processing
+## Explore the iii console
 
-<div className="my-8">![RAG Workflow in Motia Workbench](./../img/rag-docling-weaviate-agent.png)</div>
+<div className="my-8">![RAG Workflow in Motia iii console](./../img/rag-docling-weaviate-agent.png)</div>
+
+**Try it yourself:**
+- [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/rag-and-search/rag-fundamentals/rag-docling-weaviate-agent)
+- [Browse All Examples](https://github.com/MotiaDev/motia-examples)
+
+---
+
+## The Power of Intelligent Document Processing
 
 
 At its core, our RAG agent solves a fundamental challenge: how do you make unstructured documents searchable and queryable by AI? Traditional approaches often involve complex, monolithic systems that are difficult to scale and maintain. Our Motia-powered solution breaks this down into discrete, event-driven steps that each handle a specific aspect of the pipeline.
@@ -56,31 +64,30 @@ Our application consists of seven specialized steps, each handling a specific pa
     The entry point for document ingestion. This API endpoint receives a folder path, kicks off the processing pipeline, and returns immediately with a tracking ID for real-time progress monitoring.
 
     ```ts
-    import { Handlers } from 'motia'
+    import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
     import { v4 as uuidv4 } from 'uuid'
 
     export const config = {
-      type: 'api',
       name: 'api-process-pdfs',
       description: 'API endpoint to start PDF processing pipeline',
-      path: '/api/rag/process-pdfs',
-      method: 'POST',
-      emits: ['rag.read.pdfs'],
-      bodySchema: z.object({
-        folderPath: z.string().min(1, 'folderPath is required'),
-      }),
+      triggers: [
+        { type: 'api', path: '/api/rag/process-pdfs', method: 'POST', bodySchema: z.object({
+          folderPath: z.string().min(1, 'folderPath is required'),
+        }) },
+      ],
+      enqueues: ['rag.read.pdfs'],
       flows: ['rag-workflow'],
-    } as const
+    } as const satisfies StepConfig
 
-    export const handler: Handlers['api-process-pdfs'] = async (req, { emit, logger }) => {
+    export const handler: Handlers<typeof config> = async (req, { enqueue, logger }) => {
       const { folderPath } = req.body
       const streamId = uuidv4()
 
       logger.info('Starting PDF processing pipeline', { folderPath, streamId })
 
-      // Emit event to start the processing chain
-      await emit({
+      // Enqueue event to start the processing chain
+      await enqueue({
         topic: 'rag.read.pdfs',
         data: { folderPath, streamId },
       })
@@ -102,20 +109,21 @@ Our application consists of seven specialized steps, each handling a specific pa
 
     ```ts
     import weaviate, { WeaviateClient, vectorizer, generative } from 'weaviate-client'
-    import { EventConfig, Handlers } from 'motia'
+    import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
 
-    export const config: EventConfig = {
-      type: 'event',
+    export const config = {
       name: 'init-weaviate',
-      subscribes: ['rag.read.pdfs'],
-      emits: [],
+      description: 'Initialize Weaviate vector database',
+      triggers: [
+        { type: 'queue', topic: 'rag.read.pdfs', input: z.object({
+          folderPath: z.string(),
+          streamId: z.string().optional(),
+        }) },
+      ],
+      enqueues: [],
       flows: ['rag-workflow'],
-      input: z.object({
-        folderPath: z.string(),
-        streamId: z.string().optional(),
-      }),
-    }
+    } as const satisfies StepConfig
 
     const WEAVIATE_SCHEMA = {
       name: 'Books',
@@ -136,7 +144,7 @@ Our application consists of seven specialized steps, each handling a specific pa
       ],
     }
 
-    export const handler: Handlers['init-weaviate'] = async (input, { logger }) => {
+    export const handler: Handlers<typeof config> = async (input, { logger }) => {
       logger.info('Initializing Weaviate client')
       
       const client = await weaviate.connectToWeaviateCloud(process.env.WEAVIATE_URL!, {
@@ -169,22 +177,23 @@ Our application consists of seven specialized steps, each handling a specific pa
     ```ts
     import { readdir } from 'fs/promises'
     import { join, resolve, basename } from 'path'
-    import { EventConfig, Handlers } from 'motia'
+    import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
 
-    export const config: EventConfig = {
-      type: 'event',
+    export const config = {
       name: 'read-pdfs',
+      description: 'Read PDF files from folder',
+      triggers: [
+        { type: 'queue', topic: 'rag.read.pdfs', input: z.object({
+          folderPath: z.string(),
+          streamId: z.string().optional(),
+        }) },
+      ],
+      enqueues: [{ topic: 'rag.process.pdfs', label: 'Start processing PDFs' }],
       flows: ['rag-workflow'],
-      subscribes: ['rag.read.pdfs'],
-      emits: [{ topic: 'rag.process.pdfs', label: 'Start processing PDFs' }],
-      input: z.object({
-        folderPath: z.string(),
-        streamId: z.string().optional(),
-      }),
-    }
+    } as const satisfies StepConfig
 
-    export const handler: Handlers['read-pdfs'] = async (input, { emit, logger }) => {
+    export const handler: Handlers<typeof config> = async (input, { enqueue, logger }) => {
       const { folderPath: inputFolderPath, streamId } = input
       logger.info(`Reading PDFs from folder: ${inputFolderPath}`)
 
@@ -216,7 +225,7 @@ Our application consists of seven specialized steps, each handling a specific pa
           })
         )
 
-        await emit({
+        await enqueue({
           topic: 'rag.process.pdfs',
           data: { files: filesInfo, streamId },
         })
@@ -245,7 +254,7 @@ Our application consists of seven specialized steps, each handling a specific pa
     def handler(input_data: Dict[str, Any], context: Dict[str, Any]) -> None:
         """Process PDFs using Docling with intelligent chunking"""
         logger = context['logger']
-        emit = context['emit']
+        enqueue = context['enqueue']
         
         files = input_data.get('files', [])
         stream_id = input_data.get('streamId')
@@ -313,8 +322,8 @@ Our application consists of seven specialized steps, each handling a specific pa
         logger.info(f"Total chunks generated: {len(all_chunks)}")
         
         if all_chunks:
-            # Emit chunks for Weaviate ingestion
-            emit({
+            # Enqueue chunks for Weaviate ingestion
+            enqueue({
                 'topic': 'rag.load.weaviate',
                 'data': {
                     'chunks': all_chunks,
@@ -333,7 +342,7 @@ Our application consists of seven specialized steps, each handling a specific pa
 
     ```ts
     import weaviate from 'weaviate-client'
-    import { EventConfig, Handlers } from 'motia'
+    import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
 
     const ChunkSchema = z.object({
@@ -344,21 +353,22 @@ Our application consists of seven specialized steps, each handling a specific pa
       chunk_id: z.string(),
     })
 
-    export const config: EventConfig = {
-      type: 'event',
+    export const config = {
       name: 'load-weaviate',
-      subscribes: ['rag.load.weaviate'],
-      emits: [],
+      description: 'Load document chunks into Weaviate',
+      triggers: [
+        { type: 'queue', topic: 'rag.load.weaviate', input: z.object({
+          chunks: z.array(ChunkSchema),
+          streamId: z.string().optional(),
+          totalFiles: z.number().optional(),
+          totalChunks: z.number().optional(),
+        }) },
+      ],
+      enqueues: [],
       flows: ['rag-workflow'],
-      input: z.object({
-        chunks: z.array(ChunkSchema),
-        streamId: z.string().optional(),
-        totalFiles: z.number().optional(),
-        totalChunks: z.number().optional(),
-      }),
-    }
+    } as const satisfies StepConfig
 
-    export const handler: Handlers['load-weaviate'] = async (input, { logger }) => {
+    export const handler: Handlers<typeof config> = async (input, { logger }) => {
       const { chunks, streamId, totalFiles, totalChunks } = input
       
       logger.info('Loading chunks into Weaviate', { 
@@ -430,7 +440,7 @@ Our application consists of seven specialized steps, each handling a specific pa
 
     ```ts
     import weaviate from 'weaviate-client'
-    import { Handlers } from 'motia'
+    import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
 
     const RAGResponse = z.object({
@@ -446,20 +456,19 @@ Our application consists of seven specialized steps, each handling a specific pa
     })
 
     export const config = {
-      type: 'api',
       name: 'api-query-rag',
       description: 'Query the RAG system for answers',
-      path: '/api/rag/query',
-      method: 'POST',
-      emits: [],
-      bodySchema: z.object({
-        query: z.string().min(1, 'Query is required'),
-        limit: z.number().min(1).max(10).default(3),
-      }),
+      triggers: [
+        { type: 'api', path: '/api/rag/query', method: 'POST', bodySchema: z.object({
+          query: z.string().min(1, 'Query is required'),
+          limit: z.number().min(1).max(10).default(3),
+        }) },
+      ],
+      enqueues: [],
       flows: ['rag-workflow'],
-    } as const
+    } as const satisfies StepConfig
 
-    export const handler: Handlers['api-query-rag'] = async (req, { logger }) => {
+    export const handler: Handlers<typeof config> = async (req, { logger }) => {
       const { query, limit = 3 } = req.body
 
       logger.info('Processing RAG query', { query, limit })
@@ -527,13 +536,13 @@ Our application consists of seven specialized steps, each handling a specific pa
 
 ---
 
-## Explore the Workbench
+## Explore the iii console
 
-The Motia Workbench provides a visual representation of your RAG pipeline, making it easy to understand the flow and debug any issues.
+The Motia iii console provides a visual representation of your RAG pipeline, making it easy to understand the flow and debug any issues.
 
-<div className="my-8">![RAG Workflow in Motia Workbench](./../img/rag-example.gif)</div>
+<div className="my-8">![RAG Workflow in Motia iii console](./../img/rag-example.gif)</div>
 
-You can monitor real-time processing, view logs, and trace the execution of each step directly in the Workbench interface. This makes development and debugging significantly easier compared to traditional monolithic approaches.
+You can monitor real-time processing, view logs, and trace the execution of each step directly in the iii console interface. This makes development and debugging significantly easier compared to traditional monolithic approaches.
 
 ---
 
@@ -705,7 +714,7 @@ Want to explore the complete RAG implementation? Check out the full source code,
         <p className="text-gray-600 mb-4">Access the full source code for this RAG agent, including Python processing scripts, TypeScript orchestration, and production configuration.</p>
         <div className="flex flex-col sm:flex-row gap-3">
           <a 
-            href="https://github.com/MotiaDev/motia-examples/tree/main/examples/rag-docling-weaviate-agent" 
+            href="https://github.com/MotiaDev/motia-examples/tree/main/examples/rag-and-search/rag-fundamentals/rag-docling-weaviate-agent" 
             target="_blank" 
             rel="noopener noreferrer"
             className="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-md transition-colors duration-200"

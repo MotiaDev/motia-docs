@@ -5,6 +5,18 @@ description: A powerful event-driven financial analysis workflow that combines w
 
 import { CodeFetcher } from '../../../components/CodeFetcher'
 
+---
+
+## Explore the iii console
+
+<div className="my-8">![Finance Agent](./../img/finance-agent.gif)</div>
+
+**Try it yourself:**
+- [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/ai-agents/specialized-agents/finance-agent)
+- [Browse All Examples](https://github.com/MotiaDev/motia-examples)
+
+---
+
 ## Let's build a finance agent that:
 
 - Real-time Financial Analysis: Combines multiple data sources for comprehensive insights
@@ -23,6 +35,10 @@ import { CodeFetcher } from '../../../components/CodeFetcher'
   <File name="save-result.step.ts" />
   <File name="web-search.step.ts" />
 </Folder>
+
+<Callout type="info">
+This example uses the `steps/` directory, but you can also use `src/` or both. Motia discovers step files from either location automatically.
+</Callout>
 
 <Tabs items={['finance-data', 'openai-analysis', 'query-api', 'response-coordinator', 'result-api', 'save-result', 'web-search']}>
   <CodeFetcher path="examples/finance-agent/steps" tab="finance-data" value="finance-data" />
@@ -58,7 +74,7 @@ import { CodeFetcher } from '../../../components/CodeFetcher'
 1. Clone the repository:
    ```bash
    git clone https://github.com/MotiaDev/motia-examples
-   cd examples/finance-agent
+   cd examples/ai-agents/specialized-agents/finance-agent
    ```
 
 2. Install dependencies:
@@ -136,7 +152,7 @@ Response:
    pnpm dev
    ```
 
-2. Access the Motia Workbench:
+2. Access the Motia iii console:
    ```
    http://localhost:3000
    ```
