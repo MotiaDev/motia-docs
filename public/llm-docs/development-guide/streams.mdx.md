@@ -3,6 +3,10 @@ title: Real-time Streams
 description: Push live updates from your backend to connected clients without polling. Perfect for AI responses, chat apps, and long-running tasks.
 ---
 
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/7-motia-streaming.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/7-motia-streaming.mp4" type="video/mp4" />
+</video>
+
 ## Why Streams?
 
 Building modern apps means dealing with long-running tasks - AI responses that stream in word by word, file processing that takes time, or chat messages that need to appear instantly.

@@ -3,6 +3,10 @@ title: Self-Hosted Deployment
 description: Learn how to deploy your Motia project to production using motia-docker
 ---
 
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/8-motia-self-hosting.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/8-motia-self-hosting.mp4" type="video/mp4" />
+</video>
+
 Run your Motia app in Docker containers. Same environment everywhere - dev, staging, production.
 
 <Callout type="warn">You need motia package **0.5.2-beta.101 or higher**</Callout>

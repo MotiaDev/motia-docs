@@ -2218,6 +2218,10 @@ title: Overview
 description: Build production-grade backends with a single primitive - APIs, background jobs, workflows, and AI agents unified
 ---
 
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/2-motia-overview-core-concepts.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/2-motia-overview-core-concepts.mp4" type="video/mp4" />
+</video>
+
 **Build production-grade backends with a single primitive.**
 
 Motia is a unified backend framework that combines APIs, background jobs, durable workflows, AI agents, streaming, and observability around one core primitive: **the Step**.
@@ -2515,6 +2519,10 @@ Visual interface for testing APIs, building and debugging flows:
 title: Steps
 description: One primitive to build any backend. Simple, composable, and multi-language.
 ---
+
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/3-motia-steps.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/3-motia-steps.mp4" type="video/mp4" />
+</video>
 
 ## One Primitive for Any Backend
 
@@ -3301,6 +3309,10 @@ const config = {
 title: iii Console
 description: Your visual dev environment for building, testing, and debugging Motia apps - the successor to the deprecated Workbench
 ---
+
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/4-motia-workbench.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/4-motia-workbench.mp4" type="video/mp4" />
+</video>
 
 <Callout type="warn">
 The Workbench has been deprecated and replaced by **iii Console**. All references to "Workbench" in older documentation refer to what is now the iii Console.
@@ -5026,6 +5038,10 @@ With Redis configured, all instances share state, events, and streams. Requests 
 title: Self-Hosted Deployment
 description: Learn how to deploy your Motia project to production using motia-docker
 ---
+
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/8-motia-self-hosting.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/8-motia-self-hosting.mp4" type="video/mp4" />
+</video>
 
 Run your Motia app in Docker containers. Same environment everywhere - dev, staging, production.
 
@@ -7951,6 +7967,10 @@ title: Observability
 description: See what's happening in your Motia app with logging, tracing, and debugging
 ---
 
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/5-motia-logging.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/5-motia-logging.mp4" type="video/mp4" />
+</video>
+
 Your app is running. But what's actually happening inside?
 - Is that API getting hit?
 - Did the message get enqueued?
@@ -8781,6 +8801,10 @@ title: State Management
 description: Persistent Key-Value storage that works across Triggers, Steps, and Functions
 ---
 
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/6-motia-state.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/6-motia-state.mp4" type="video/mp4" />
+</video>
+
 State is persistent key-value storage that works across all your Triggers, Steps, and Functions. Set data in one Trigger, read it in another. Works across TypeScript, Python, and JavaScript.
 
 ## How It Works
@@ -9264,6 +9288,10 @@ const handler = async (input, { state, logger }) => {
 title: Real-time Streams
 description: Push live updates from your backend to connected clients without polling. Perfect for AI responses, chat apps, and long-running tasks.
 ---
+
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/7-motia-streaming.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/7-motia-streaming.mp4" type="video/mp4" />
+</video>
 
 ## Why Streams?
 
@@ -30101,6 +30129,10 @@ description: "Build production-grade backends with a single primitive. APIs, bac
 ---
 
 # Welcome to Motia
+
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/1-motia-welcome.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/1-motia-welcome.mp4" type="video/mp4" />
+</video>
 
 ## Why Motia?
 

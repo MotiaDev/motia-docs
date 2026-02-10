@@ -5,6 +5,10 @@ description: "Build production-grade backends with a single primitive. APIs, bac
 
 # Welcome to Motia
 
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/1-motia-welcome.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/1-motia-welcome.mp4" type="video/mp4" />
+</video>
+
 ## Why Motia?
 
 **Build production-grade backends with a single primitive.**

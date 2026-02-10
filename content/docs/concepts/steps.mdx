@@ -3,6 +3,10 @@ title: Steps
 description: One primitive to build any backend. Simple, composable, and multi-language.
 ---
 
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/3-motia-steps.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/3-motia-steps.mp4" type="video/mp4" />
+</video>
+
 ## One Primitive for Any Backend
 
 A **Step** is the core primitive in Motia. Instead of juggling separate frameworks for APIs, background jobs, queues, or workflows, you define everything in one place:   **how it runs, when it runs, where it runs, and what it does.**
