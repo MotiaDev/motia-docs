@@ -81,7 +81,7 @@ async def handler(req, context):
 <Tab value='JavaScript'>
 
 ```javascript title="src/my-step.step.js"
-const config = {
+export const config = {
   name: 'MyStep',
   description: 'Handles incoming requests',
   triggers: [
@@ -91,7 +91,7 @@ const config = {
   flows: ['my-flow'],
 }
 
-const handler = async (req, { enqueue, logger }) => {
+export const handler = async (req, { enqueue, logger }) => {
   logger.info('Processing request')
 
   await enqueue({
@@ -101,8 +101,6 @@ const handler = async (req, { enqueue, logger }) => {
 
   return { status: 200, body: { success: true } }
 }
-
-module.exports = { config, handler }
 ```
 
 </Tab>

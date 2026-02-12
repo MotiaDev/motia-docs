@@ -73,11 +73,9 @@ If you don't call `next()`, the request stops. The handler never runs.
       middleware: [authMiddleware]
     }
 
-    const handler = async (req, ctx) => {
+    export const handler = async (req, ctx) => {
       return { status: 200, body: { message: 'Success' } }
     }
-
-    module.exports = { config, handler }
     ```
   </Tab>
   <Tab value="Python">
@@ -228,7 +226,7 @@ Middleware can attach data to the `req` object, making it available to your hand
     Access it in your handler:
 
     ```javascript
-    const handler = async (req, ctx) => {
+    export const handler = async (req, ctx) => {
       const { user } = req
       return { status: 200, body: { user } }
     }
@@ -279,7 +277,7 @@ Catch errors from handlers:
   </Tab>
   <Tab value="JavaScript">
     ```javascript
-    const { ZodError } = require('zod')
+    import { ZodError } from 'zod'
 
     const errorMiddleware = async (req, ctx, next) => {
       try {

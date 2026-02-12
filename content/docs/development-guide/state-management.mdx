@@ -95,7 +95,7 @@ export const config = {
   flows: ['my-flow'],
 }
 
-const handler = async (input, { state }) => {
+export const handler = async (input, { state }) => {
   // Store an item in a group (returns { new_value, old_value })
   const result = await state.set('orders', 'order-123', {
     id: 'order-123',
@@ -256,7 +256,7 @@ async def handler(req, context):
 <Tab value='JavaScript'>
 
   ```javascript
-const handler = async (req, { state, enqueue, logger }) => {
+export const handler = async (req, { state, enqueue, logger }) => {
   const orderId = crypto.randomUUID()
 
   const order = {
@@ -355,7 +355,7 @@ async def handler(input, context):
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, { state, enqueue, logger }) => {
+export const handler = async (input, { state, enqueue, logger }) => {
   const { orderId } = input
 
   // Get order from state
@@ -436,7 +436,7 @@ async def handler(context):
 <Tab value='JavaScript'>
 
   ```javascript
-const handler = async (input, { state, logger }) => {
+export const handler = async (input, { state, logger }) => {
   // Get all orders
   const allOrders = await state.list('orders')
 

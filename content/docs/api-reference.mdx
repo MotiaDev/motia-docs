@@ -153,7 +153,7 @@ type EnqueueData<T> = { topic: string; data: T; messageGroupId?: string }
 ```typescript
 import { StepConfig, Handlers, api, queue, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'CreateUser',
   description: 'Creates a new user',
   triggers: [
@@ -178,7 +178,7 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'CreateUser',
   description: 'Creates a new user',
   triggers: [
@@ -247,7 +247,7 @@ config = {
 ```typescript
 import { StepConfig, queue } from 'motia'
 
-const config = {
+export const config = {
   name: 'ProcessOrder',
   description: 'Processes new orders',
   triggers: [
@@ -271,7 +271,7 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'ProcessOrder',
   description: 'Processes new orders',
   triggers: [
@@ -347,7 +347,7 @@ config = {
 ```typescript
 import { StepConfig, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'DailyReport',
   description: 'Generates daily reports at 9 AM',
   triggers: [
@@ -414,7 +414,7 @@ A single step can respond to multiple trigger types:
 ```typescript
 import { StepConfig, api, queue, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'UserSync',
   description: 'Syncs user data from multiple sources',
   triggers: [
@@ -461,7 +461,7 @@ Use this for visual-only nodes in the console (no code execution).
 ```typescript
 import { StepConfig } from 'motia'
 
-const config = {
+export const config = {
   name: 'ManualApproval',
   description: 'Manager approval gate',
   triggers: [],
@@ -475,7 +475,7 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'ManualApproval',
   description: 'Manager approval gate',
   triggers: [],
@@ -533,7 +533,7 @@ Receives a request, returns a response.
 ```typescript
 import { StepConfig, Handlers, api } from 'motia'
 
-const config = {
+export const config = {
   name: 'CreateUser',
   triggers: [api('POST', '/users')],
   enqueues: ['user.created'],
@@ -560,7 +560,7 @@ export const handler: Handlers<typeof config> = async (req, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (req, ctx) => {
+export const handler = async (req, ctx) => {
   const { name, email } = req.body
   const userId = crypto.randomUUID()
 
@@ -615,7 +615,7 @@ Receives queue data, processes it. No return value.
 ```typescript
 import { StepConfig, Handlers, queue } from 'motia'
 
-const config = {
+export const config = {
   name: 'ProcessOrder',
   triggers: [queue('order.created', { input: z.object({ orderId: z.string(), amount: z.number() }) })],
   enqueues: ['order.processed'],
@@ -644,7 +644,7 @@ export const handler: Handlers<typeof config> = async (input, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, ctx) => {
+export const handler = async (input, ctx) => {
   const data = ctx.getData()
   const { orderId, amount } = data
 
@@ -700,7 +700,7 @@ Runs on a schedule. Only receives context.
 ```typescript
 import { StepConfig, Handlers, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'DailyCleanup',
   triggers: [cron('0 0 * * *')],
   enqueues: [],
@@ -724,7 +724,7 @@ export const handler: Handlers<typeof config> = async (input, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, ctx) => {
+export const handler = async (input, ctx) => {
   ctx.logger.info('Running daily cleanup')
 
   const oldOrders = await ctx.state.list('orders')
@@ -770,7 +770,7 @@ For steps with multiple triggers, use `ctx.match()` to handle each trigger type:
 ```typescript
 import { StepConfig, Handlers, api, queue, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'UserSync',
   triggers: [
     api('POST', '/users/sync'),
@@ -805,7 +805,7 @@ export const handler: Handlers<typeof config> = async (input, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, ctx) => {
+export const handler = async (input, ctx) => {
   return ctx.match({
     api: async (request) => {
       const { userId } = request.body
@@ -1206,7 +1206,7 @@ export const handler: Handlers<typeof config> = async (req, { traceId, logger })
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (req, { traceId, logger }) => {
+export const handler = async (req, { traceId, logger }) => {
   logger.info('Processing request', { traceId })
   return { status: 200, body: { traceId } }
 }
@@ -1362,7 +1362,7 @@ export const handler: Handlers<typeof config> = async (req, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (req, ctx) => {
+export const handler = async (req, ctx) => {
   const userId = req.pathParams.id
   const page = req.queryParams.page
   const limit = req.queryParams.limit

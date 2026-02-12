@@ -479,7 +479,7 @@ export const config = {
   flows: ['payments'],
 }
 
-const handler = async (req, { logger }) => {
+export const handler = async (req, { logger }) => {
   const signature = req.headers['stripe-signature']
   const rawBody = req.rawBody
 
@@ -491,8 +491,6 @@ const handler = async (req, { logger }) => {
 
   return { status: 200, body: { received: true } }
 }
-
-module.exports = { config, handler }
 ```
 
 </Tab>

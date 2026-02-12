@@ -73,9 +73,9 @@ async def handler(req, ctx):
 <Tab value='JavaScript'>
 
 ```js title="src/hello.step.js"
-const { z } = require('zod')
+import { z } from 'zod'
 
-const config = {
+export const config = {
   name: 'HelloStep',
   description: 'Hello endpoint',
   triggers: [
@@ -85,12 +85,10 @@ const config = {
   flows: ['my-flow'],
 }
 
-const handler = async (req, { logger }) => {
+export const handler = async (req, { logger }) => {
   logger.info('Hello endpoint called')
   return { status: 200, body: { message: 'Hello world!' } }
 }
-
-module.exports = { config, handler }
 ```
 
 </Tab>
@@ -196,7 +194,7 @@ async def handler(input, ctx):
 <Tab value='JavaScript'>
 
 ```js title="src/send-message.step.js"
-const config = {
+export const config = {
   name: 'SendMessage',
   description: 'Sends a message',
   triggers: [
@@ -206,19 +204,17 @@ const config = {
   flows: ['messaging'],
 }
 
-const handler = async (req, { enqueue }) => {
+export const handler = async (req, { enqueue }) => {
   await enqueue({
     topic: 'message.sent',
     data: { text: req.body.text }
   })
   return { status: 200, body: { ok: true } }
 }
-
-module.exports = { config, handler }
 ```
 
 ```js title="src/process-message.step.js"
-const config = {
+export const config = {
   name: 'ProcessMessage',
   description: 'Processes messages in background',
   triggers: [
@@ -228,12 +224,10 @@ const config = {
   flows: ['messaging'],
 }
 
-const handler = async (input, { logger, enqueue }) => {
+export const handler = async (input, { logger, enqueue }) => {
   logger.info('Processing message', input)
   await enqueue({ topic: 'message.processed', data: input })
 }
-
-module.exports = { config, handler }
 ```
 </Tab>
 </Tabs>
@@ -292,7 +286,7 @@ Runs when an HTTP request hits the path.
   </Tab>
   <Tab value="JavaScript">
     ```javascript
-    const config = {
+    export const config = {
       name: 'GetUser',
       description: 'Get user by ID',
       triggers: [
@@ -302,13 +296,11 @@ Runs when an HTTP request hits the path.
       flows: ['users'],
     }
 
-    const handler = async (req, { logger }) => {
+    export const handler = async (req, { logger }) => {
       const userId = req.pathParams.id
       logger.info('Getting user', { userId })
       return { status: 200, body: { id: userId, name: 'John' } }
     }
-
-    module.exports = { config, handler }
     ```
   </Tab>
   <Tab value="Python">
@@ -381,7 +373,7 @@ Runs when a message is enqueued to a topic. Use for background tasks.
   </Tab>
   <Tab value="JavaScript">
     ```javascript
-    const config = {
+    export const config = {
       name: 'ProcessMessage',
       description: 'Processes messages in background',
       triggers: [
@@ -391,12 +383,10 @@ Runs when a message is enqueued to a topic. Use for background tasks.
       flows: ['messaging'],
     }
 
-    const handler = async (input, { logger, enqueue }) => {
+    export const handler = async (input, { logger, enqueue }) => {
       logger.info('Processing message:', input)
       await enqueue({ topic: 'message.processed', data: input })
     }
-
-    module.exports = { config, handler }
     ```
   </Tab>
   <Tab value="Python">
@@ -681,7 +671,7 @@ config = {
 <Tab value='JavaScript'>
 
 ```js
-const config = {
+export const config = {
   name: 'CreateOrder',
   description: 'Creates a new order',
   triggers: [
@@ -749,7 +739,7 @@ config = {
 <Tab value='JavaScript'>
 
 ```js
-const config = {
+export const config = {
   name: 'SendEmail',
   description: 'Send email with retries',
   triggers: [

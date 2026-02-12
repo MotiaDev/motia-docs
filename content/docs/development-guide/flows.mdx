@@ -126,7 +126,7 @@ async def handler(req, ctx):
 <Tab value='JavaScript'>
 
 ```javascript title="src/create-resource.step.js"
-const config = {
+export const config = {
   name: 'CreateResource',
   description: 'Create a new resource and trigger email',
   triggers: [
@@ -136,7 +136,7 @@ const config = {
   flows: ['resource-management']
 }
 
-const handler = async (req, { enqueue, logger }) => {
+export const handler = async (req, { enqueue, logger }) => {
   logger.info('Creating resource', { title: req.body.title })
 
   await enqueue({
@@ -146,8 +146,6 @@ const handler = async (req, { enqueue, logger }) => {
 
   return { status: 201, body: { id: '123' } }
 }
-
-module.exports = { config, handler }
 ```
 
 </Tab>
@@ -208,11 +206,9 @@ export const config = {
   flows: ['resource-management']
 }
 
-const handler = async (input, { logger }) => {
+export const handler = async (input, { logger }) => {
   logger.info('Sending email', { email: input.email })
 }
-
-module.exports = { config, handler }
 ```
 
 </Tab>
@@ -500,15 +496,13 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   type: 'noop',
   name: 'ApprovalGate',
   virtualEnqueues: ['approved'],
   virtualSubscribes: ['approval.required'],
   flows: ['resource-management']
 }
-
-module.exports = { config }
 ```
 
 </Tab>
