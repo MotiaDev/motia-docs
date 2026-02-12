@@ -172,147 +172,63 @@ Create a `railway.json` in your project root:
 
 ## Configure Redis
 
-Motia supports two approaches for production Redis configuration:
+Create a production `config.yaml` with Redis adapters for all modules. Railway auto-injects `REDIS_URL` when you link the Redis service to your app:
 
-### Option 1: Simple Redis Config (Recommended)
+```yaml title="config.yaml"
+modules:
+  - class: modules::streams::StreamModule
+    config:
+      port: ${STREAMS_PORT:31112}
+      host: 0.0.0.0
+      auth_function: motia.streams.authenticate
+      adapter:
+        class: modules::streams::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
-The simplest approach uses Motia's built-in `redis` configuration option:
+  - class: modules::state::StateModule
+    config:
+      adapter:
+        class: modules::state::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
-```typescript title="config.yaml"
-import { config } from 'motia'
-import statesPlugin from '@motiadev/plugin-states/plugin'
-import endpointPlugin from '@motiadev/plugin-endpoint/plugin'
-import logsPlugin from '@motiadev/plugin-logs/plugin'
-import observabilityPlugin from '@motiadev/plugin-observability/plugin'
-import bullmqPlugin from '@motiadev/plugin-bullmq/plugin'
+  - class: modules::api::RestApiModule
+    config:
+      port: ${PORT:3111}
+      host: 0.0.0.0
+      default_timeout: 30000
+      concurrency_request_limit: 1024
 
-// Determine Redis configuration based on environment
-const getRedisConfig = () => {
-  const useExternalRedis = process.env.USE_REDIS === 'true' || 
-    (process.env.USE_REDIS !== 'false' && process.env.NODE_ENV === 'production')
+  - class: modules::queue::QueueModule
+    config:
+      adapter:
+        class: modules::queue::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
-  if (!useExternalRedis) {
-    // Use Motia's built-in in-memory Redis for development
-    return { useMemoryServer: true as const }
-  }
+  - class: modules::observability::OtelModule
+    config:
+      enabled: true
+      service_name: ${OTEL_SERVICE_NAME:my-app}
+      exporter: otlp
 
-  // Parse Redis URL for production
-  const redisUrl = process.env.REDIS_PRIVATE_URL || process.env.REDIS_URL
-  
-  if (redisUrl) {
-    try {
-      const url = new URL(redisUrl)
-      return {
-        useMemoryServer: false as const,
-        host: url.hostname,
-        port: parseInt(url.port || '6379', 10),
-        password: url.password || undefined,
-        username: url.username || undefined,
-      }
-    } catch (e) {
-      console.error('[motia] Failed to parse REDIS_URL:', e)
-    }
-  }
+  - class: modules::pubsub::PubSubModule
+    config:
+      adapter:
+        class: modules::pubsub::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
-  // Fallback to individual env vars
-  return {
-    useMemoryServer: false as const,
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379', 10),
-    password: process.env.REDIS_PASSWORD,
-    username: process.env.REDIS_USERNAME,
-  }
-}
-
-export default config({
-  plugins: [
-    observabilityPlugin,
-    statesPlugin,
-    endpointPlugin,
-    logsPlugin,
-    bullmqPlugin,
-  ],
-  redis: getRedisConfig(),
-})
+  - class: modules::cron::CronModule
+    config:
+      adapter:
+        class: modules::cron::KvCronAdapter
 ```
 
 <Callout type="info">
-**That's it!** Motia handles the Redis adapters automatically when you use the `redis` config option. Railway auto-injects `REDIS_URL` when you link the Redis service to your app.
+The `${REDIS_URL:redis://localhost:6379}` syntax uses environment variable interpolation with a default value. Railway auto-provisions this variable when you add a Redis database.
 </Callout>
-
-### Option 2: Custom Adapters (Advanced)
-
-For more control over individual adapters, you can configure them manually:
-
-```bash
-npm install @motiadev/adapter-redis-state \
-            @motiadev/adapter-redis-streams \
-            @motiadev/adapter-redis-cron \
-            @motiadev/adapter-bullmq-events
-```
-
-```typescript title="config.yaml"
-import { config } from 'motia'
-import { RedisStateAdapter } from '@motiadev/adapter-redis-state'
-import { RedisStreamAdapterManager } from '@motiadev/adapter-redis-streams'
-import { RedisCronAdapter } from '@motiadev/adapter-redis-cron'
-import { BullMQEventAdapter } from '@motiadev/adapter-bullmq-events'
-import statesPlugin from '@motiadev/plugin-states/plugin'
-import endpointPlugin from '@motiadev/plugin-endpoint/plugin'
-import logsPlugin from '@motiadev/plugin-logs/plugin'
-import observabilityPlugin from '@motiadev/plugin-observability/plugin'
-
-// Parse REDIS_URL (Railway sets this automatically when you add Redis)
-// Format: redis://default:password@host:port
-const url = new URL(process.env.REDIS_URL || process.env.REDIS_PRIVATE_URL || 'redis://localhost:6379')
-
-const redisConfig = {
-  host: url.hostname,
-  port: Number(url.port) || 6379,
-  username: url.username || undefined,
-  password: url.password || undefined,
-  tls: url.protocol === 'rediss:',
-}
-
-// Only use custom adapters in production
-const useRedis = process.env.USE_REDIS === 'true' || process.env.NODE_ENV === 'production'
-
-export default config({
-  plugins: [
-    observabilityPlugin,
-    statesPlugin,
-    endpointPlugin,
-    logsPlugin,
-  ],
-  adapters: useRedis ? {
-    state: new RedisStateAdapter({
-      socket: { host: redisConfig.host, port: redisConfig.port, tls: redisConfig.tls },
-      username: redisConfig.username,
-      password: redisConfig.password,
-    }),
-    streams: new RedisStreamAdapterManager({
-      socket: { host: redisConfig.host, port: redisConfig.port, tls: redisConfig.tls },
-      username: redisConfig.username,
-      password: redisConfig.password,
-    }),
-    events: new BullMQEventAdapter({
-      connection: {
-        host: redisConfig.host,
-        port: redisConfig.port,
-        username: redisConfig.username,
-        password: redisConfig.password,
-        tls: redisConfig.tls ? {} : undefined,
-        maxRetriesPerRequest: null,
-      },
-    }),
-    cron: new RedisCronAdapter({
-      socket: { host: redisConfig.host, port: redisConfig.port, tls: redisConfig.tls },
-      username: redisConfig.username,
-      password: redisConfig.password,
-    }),
-  } : undefined,
-})
-```
 
 ---
 
@@ -435,18 +351,6 @@ railway logs --tail
 1. Is the Redis service running? Check Railway dashboard.
 2. Is `REDIS_URL` set correctly? Run `railway variables` to verify.
 3. Try the public Redis URL if internal isn't working.
-
-### Plugin Not Loading
-
-**Cause:** Plugin imports might not be resolving correctly.
-
-**Fix:** Use ESM imports (recommended for `"type": "module"` projects):
-
-```typescript
-// ✅ Correct - ESM imports
-import statesPlugin from '@motiadev/plugin-states/plugin'
-import endpointPlugin from '@motiadev/plugin-endpoint/plugin'
-```
 
 ### Healthcheck Failed
 
