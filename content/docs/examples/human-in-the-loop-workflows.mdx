@@ -765,7 +765,7 @@ export const config = {
 } as const satisfies StepConfig
 
 export const handler: Handlers<typeof config> = async ({ state, logger }) => {
-  const orders = await state.getGroup('orders')
+  const orders = await state.list('orders')
   const now = Date.now()
   const timeoutMs = 10 * 60 * 1000  // 10 minutes (demo - use 24 hours in production)
   
@@ -835,7 +835,7 @@ config = {
 }
 
 async def handler(context):
-    orders = await context.state.get_group("orders")
+    orders = await context.state.list("orders")
     now = time.time() * 1000  # Convert to milliseconds
     timeout_ms = 10 * 60 * 1000  # 10 minutes (demo - use 24 hours in production)
     
@@ -894,7 +894,7 @@ export const config = {
 }
 
 export const handler = async ({ state, logger }) => {
-  const orders = await state.getGroup('orders')
+  const orders = await state.list('orders')
   const now = Date.now()
   const timeoutMs = 10 * 60 * 1000  // 10 minutes (demo - use 24 hours in production)
   

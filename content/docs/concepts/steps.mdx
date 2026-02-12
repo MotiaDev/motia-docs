@@ -556,24 +556,24 @@ Key-value storage shared across Steps and workflows.
 <Tab value='TypeScript'>
 
 ```ts
-const result = await state.set(traceId, 'preferences', { theme: 'dark' })
-const prefs = await state.get(traceId, 'preferences')
+const result = await state.set('settings', 'preferences', { theme: 'dark' })
+const prefs = await state.get('settings', 'preferences')
 ```
 
 </Tab>
 <Tab value='Python'>
 
 ```python
-result = await context.state.set(context.trace_id, "preferences", {"theme": "dark"})
-prefs = await context.state.get(context.trace_id, "preferences")
+result = await context.state.set("settings", "preferences", {"theme": "dark"})
+prefs = await context.state.get("settings", "preferences")
 ```
 
 </Tab>
 <Tab value='JavaScript'>
 
 ```js
-const result = await state.set(traceId, 'preferences', { theme: 'dark' })
-const prefs = await state.get(traceId, 'preferences')
+const result = await state.set('settings', 'preferences', { theme: 'dark' })
+const prefs = await state.get('settings', 'preferences')
 ```
 
 </Tab>
