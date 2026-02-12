@@ -387,14 +387,15 @@ const handler = async (input, { state, enqueue, logger }) => {
 <Tab value='TypeScript'>
 
   ```typescript
-import { type Handlers, type StepConfig } from 'motia'
+import { type Handlers, type StepConfig, cron } from 'motia'
 
 export const config = {
   name: 'DailyReport',
   description: 'Generate daily order report',
   triggers: [
-    { type: 'cron', pattern: '0 0 * * *' },
+    cron('0 0 * * *'),
   ],
+  enqueues: [],
   flows: ['order-processing'],
 } as const satisfies StepConfig
 

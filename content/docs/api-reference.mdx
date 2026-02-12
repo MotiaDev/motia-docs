@@ -365,11 +365,13 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+import { cron } from 'motia'
+
+export const config = {
   name: 'DailyReport',
   description: 'Generates daily reports at 9 AM',
   triggers: [
-    { type: 'cron', expression: '0 9 * * *' },
+    cron('0 9 * * *'),
   ],
   enqueues: ['report.generated'],
   virtualEnqueues: ['email.sent'],
@@ -429,13 +431,15 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+import { cron } from 'motia'
+
+export const config = {
   name: 'UserSync',
   description: 'Syncs user data from multiple sources',
   triggers: [
     { type: 'api', method: 'POST', path: '/users/sync' },
     { type: 'queue', topic: 'user.updated' },
-    { type: 'cron', expression: '0 */6 * * *' },
+    cron('0 */6 * * *'),
   ],
   enqueues: ['user.synced'],
   flows: ['user-management'],

@@ -527,14 +527,14 @@ View on GitHub:
 <Tabs items={['TypeScript', 'Python', 'JavaScript']}>
   <Tab value="TypeScript">
     ```typescript title="src/typescript/deletion-reaper.cron.step.ts"
-    import { type Handlers, type StepConfig } from 'motia'
+    import { type Handlers, type StepConfig, cron } from 'motia'
     import { TSStore } from './ts-store'
 
     export const config = {
       name: 'TsDeletionReaper',
       description: 'Daily job that permanently removes pets scheduled for deletion',
       triggers: [
-        { type: 'cron', expression: '0 2 * * *' },
+        cron('0 2 * * *'),
       ],
       enqueues: [],
       flows: ['TsPetManagement'],
@@ -684,12 +684,13 @@ View on GitHub:
   <Tab value="JavaScript">
     ```javascript title="src/javascript/deletion-reaper.cron.step.js"
     import { findDeletedPetsReadyToPurge, remove } from './js-store.js'
+    import { cron } from 'motia'
 
     export const config = {
       name: 'JsDeletionReaper',
       description: 'Daily job that permanently removes pets scheduled for deletion',
       triggers: [
-        { type: 'cron', expression: '0 2 * * *' },
+        cron('0 2 * * *'),
       ],
       enqueues: [],
       flows: ['JsPetManagement'],
@@ -761,7 +762,7 @@ View on GitHub:
 
 Cron Steps run on a schedule defined by a cron expression:
 
-- **triggers** uses `{ type: 'cron', expression: '...' }`
+- **triggers** uses the `cron()` helper from `'motia'`
 - **expression** defines when the job runs (e.g., `'0 2 * * *'` = daily at 2 AM)
 - **handler** receives `(input, ctx)` like all other steps
 

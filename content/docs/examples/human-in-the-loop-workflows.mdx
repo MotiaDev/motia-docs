@@ -752,13 +752,13 @@ A scheduled job periodically scans for orders stuck in approval:
 <Tab value='TypeScript'>
 
 ```typescript title="src/06-detect-timeouts.step.ts"
-import { type Handlers, type StepConfig } from 'motia'
+import { type Handlers, type StepConfig, cron } from 'motia'
 
 export const config = {
   name: 'DetectTimeouts',
   description: 'Find orders stuck awaiting approval and escalate',
   triggers: [
-    { type: 'cron', cron: '*/5 * * * *' },
+    cron('*/5 * * * *'),
   ],
   enqueues: [],
   flows: ['order-approval'],
@@ -828,7 +828,7 @@ config = {
     "name": "DetectTimeouts",
     "description": "Find orders stuck awaiting approval and escalate",
     "triggers": [
-        {"type": "cron", "cron": "*/5 * * * *"}
+        {"type": "cron", "expression": "*/5 * * * *"}
     ],
     "enqueues": [],
     "flows": ["order-approval"]
@@ -883,11 +883,13 @@ async def handler(context):
 <Tab value='JavaScript'>
 
 ```javascript title="src/detect-timeouts.step.js"
+import { cron } from 'motia'
+
 export const config = {
   name: 'DetectTimeouts',
   description: 'Find orders stuck awaiting approval and escalate',
   triggers: [
-    { type: 'cron', cron: '*/5 * * * *' },
+    cron('*/5 * * * *'),
   ],
   enqueues: [],
   flows: ['order-approval'],
