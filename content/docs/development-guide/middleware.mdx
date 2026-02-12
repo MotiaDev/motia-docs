@@ -45,6 +45,7 @@ If you don't call `next()`, the request stops. The handler never runs.
       triggers: [
         { type: 'api', path: '/protected', method: 'GET' },
       ],
+      enqueues: [],
       middleware: [authMiddleware],
     } as const satisfies StepConfig
 
@@ -62,12 +63,13 @@ If you don't call `next()`, the request stops. The handler never runs.
       return next()
     }
 
-    const config = {
+    export const config = {
       name: 'ProtectedEndpoint',
       description: 'A protected API endpoint',
       triggers: [
         { type: 'api', path: '/protected', method: 'GET' },
       ],
+      enqueues: [],
       middleware: [authMiddleware]
     }
 
@@ -91,6 +93,7 @@ If you don't call `next()`, the request stops. The handler never runs.
         "triggers": [
             {"type": "api", "path": "/protected", "method": "GET"}
         ],
+        "enqueues": [],
         "middleware": [auth_middleware]
     }
 
@@ -113,6 +116,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/endpoint', method: 'POST' },
   ],
+  enqueues: [],
   middleware: [
     loggingMiddleware,
     authMiddleware,
@@ -336,6 +340,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/users/:id', method: 'GET' },
   ],
+  enqueues: [],
   middleware: [coreMiddleware],
 } as const satisfies StepConfig
 ```

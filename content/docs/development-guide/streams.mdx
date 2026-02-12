@@ -188,6 +188,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/todo', method: 'POST' },
   ],
+  enqueues: [],
   flows: ['todo-app'],
 } as const satisfies StepConfig
 
