@@ -125,7 +125,7 @@ type StreamTrigger = {
 Use these helpers for concise trigger definitions:
 
 ```typescript
-import { api, queue, cron, state, stream } from 'iii'
+import { api, queue, cron, state, stream } from 'motia'
 
 api(method: ApiRouteMethod, path: string, options?: ApiOptions, condition?: TriggerCondition): ApiTrigger
 queue(topic: string, options?: QueueOptions, condition?: TriggerCondition): QueueTrigger
@@ -151,7 +151,7 @@ type EnqueueData<T> = { topic: string; data: T; messageGroupId?: string }
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api, queue, cron } from 'iii'
+import { StepConfig, Handlers, api, queue, cron } from 'motia'
 
 const config = {
   name: 'CreateUser',
@@ -245,7 +245,7 @@ config = {
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, queue } from 'iii'
+import { StepConfig, queue } from 'motia'
 
 const config = {
   name: 'ProcessOrder',
@@ -345,7 +345,7 @@ config = {
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, cron } from 'iii'
+import { StepConfig, cron } from 'motia'
 
 const config = {
   name: 'DailyReport',
@@ -410,7 +410,7 @@ A single step can respond to multiple trigger types:
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, api, queue, cron } from 'iii'
+import { StepConfig, api, queue, cron } from 'motia'
 
 const config = {
   name: 'UserSync',
@@ -455,7 +455,7 @@ Use this for visual-only nodes in the console (no code execution).
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig } from 'iii'
+import { StepConfig } from 'motia'
 
 const config = {
   name: 'ManualApproval',
@@ -527,7 +527,7 @@ Receives a request, returns a response.
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api } from 'iii'
+import { StepConfig, Handlers, api } from 'motia'
 
 const config = {
   name: 'CreateUser',
@@ -609,7 +609,7 @@ Receives queue data, processes it. No return value.
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, queue } from 'iii'
+import { StepConfig, Handlers, queue } from 'motia'
 
 const config = {
   name: 'ProcessOrder',
@@ -694,7 +694,7 @@ Runs on a schedule. Only receives context.
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, cron } from 'iii'
+import { StepConfig, Handlers, cron } from 'motia'
 
 const config = {
   name: 'DailyCleanup',
@@ -764,7 +764,7 @@ For steps with multiple triggers, use `ctx.match()` to handle each trigger type:
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api, queue, cron } from 'iii'
+import { StepConfig, Handlers, api, queue, cron } from 'motia'
 
 const config = {
   name: 'UserSync',
@@ -1271,7 +1271,7 @@ Intercepts API requests before and after the handler.
 <Tab value='TypeScript'>
 
 ```typescript
-import { ApiMiddleware } from 'iii'
+import { ApiMiddleware } from 'motia'
 
 export const authMiddleware: ApiMiddleware = async (req, ctx, next) => {
   const token = req.headers.authorization
@@ -1478,7 +1478,7 @@ interface StreamConfig {
 <Tab value='TypeScript'>
 
 ```typescript title="src/chat-messages.stream.ts"
-import { StreamConfig } from 'iii'
+import { StreamConfig } from 'motia'
 import { z } from 'zod'
 
 export const config: StreamConfig = {
