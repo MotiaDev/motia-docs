@@ -100,34 +100,30 @@ async def handler(input, ctx):
 <Tab value='JavaScript'>
 
 ```js title="src/send-message.step.js"
-const config = {
+export const config = {
   name: 'SendMessage',
   triggers: [{ type: 'api', path: '/messages', method: 'POST' }],
   enqueues: ['message.sent']
 }
 
-const handler = async (req, { enqueue }) => {
+export const handler = async (req, { enqueue }) => {
   await enqueue({
     topic: 'message.sent',
     data: { text: req.body.text }
   })
   return { status: 200, body: { ok: true } }
 }
-
-export { config, handler }
 ```
 
 ```js title="src/process-message.step.js"
-const config = {
+export const config = {
   name: 'ProcessMessage',
   triggers: [{ type: 'queue', topic: 'message.sent' }],
 }
 
-const handler = async (input, { logger }) => {
+export const handler = async (input, { logger }) => {
   logger.info('Processing message', input)
 }
-
-export { config, handler }
 ```
 </Tab>
 </Tabs>

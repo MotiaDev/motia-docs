@@ -170,21 +170,17 @@ View on GitHub:
           ageMonths: validatedData.ageMonths 
         })
         
-        if (logger) {
-          logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
-        }
+        logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
         
-        if (enqueue) {
-          await enqueue({
-            topic: 'ts.pet.created',
-            data: { petId: pet.id, event: 'pet.created', name: pet.name, species: validatedData.species }
-          })
+        await enqueue({
+          topic: 'ts.pet.created',
+          data: { petId: pet.id, event: 'pet.created', name: pet.name, species: validatedData.species }
+        })
 
-          await enqueue({
-            topic: 'ts.feeding.reminder.enqueued',
-            data: { petId: pet.id, enqueuedAt: Date.now() }
-          })
-        }
+        await enqueue({
+          topic: 'ts.feeding.reminder.enqueued',
+          data: { petId: pet.id, enqueuedAt: Date.now() }
+        })
 
       return { status: 201, body: pet }
         
@@ -219,10 +215,7 @@ View on GitHub:
         "flows": ["PyPetManagement"]
     }
 
-    async def handler(req, ctx=None):
-        logger = getattr(ctx, 'logger', None) if ctx else None
-        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
-
+    async def handler(req, ctx):
         try:
             import sys
             import os
@@ -248,24 +241,22 @@ View on GitHub:
 
         pet = pet_store.create(name, species, age_val)
         
-        if logger:
-            logger.info('🐾 Pet created', {
-                'petId': pet['id'], 
-                'name': pet['name'], 
-                'species': pet['species'], 
-                'status': pet['status']
-            })
+        ctx.logger.info('🐾 Pet created', {
+            'petId': pet['id'], 
+            'name': pet['name'], 
+            'species': pet['species'], 
+            'status': pet['status']
+        })
         
-        if enqueue:
-            await enqueue({
-                'topic': 'py.pet.created',
-                'data': {'petId': pet['id'], 'event': 'pet.created', 'name': pet['name'], 'species': pet['species']}
-            })
+        await ctx.enqueue({
+            'topic': 'py.pet.created',
+            'data': {'petId': pet['id'], 'event': 'pet.created', 'name': pet['name'], 'species': pet['species']}
+        })
 
-            await enqueue({
-                'topic': 'py.feeding.reminder.enqueued',
-                'data': {'petId': pet['id'], 'enqueuedAt': int(time.time() * 1000)}
-            })
+        await ctx.enqueue({
+            'topic': 'py.feeding.reminder.enqueued',
+            'data': {'petId': pet['id'], 'enqueuedAt': int(time.time() * 1000)}
+        })
 
         return {"status": 201, "body": pet}
     ```
@@ -284,8 +275,7 @@ View on GitHub:
       flows: ['JsPetManagement'],
     }
 
-    export const handler = async (req, context) => {
-      const { enqueue, logger } = context || {}
+    export const handler = async (req, { enqueue, logger }) => {
       const b = req.body || {}
       const name = typeof b.name === 'string' && b.name.trim()
       const speciesOk = ['dog','cat','bird','other'].includes(b.species)
@@ -297,21 +287,17 @@ View on GitHub:
 
       const pet = create({ name, species: b.species, ageMonths: Number(b.ageMonths) })
 
-      if (logger) {
-        logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
-      }
+      logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
       
-      if (enqueue) {
-        await enqueue({
-          topic: 'js.pet.created',
-          data: { petId: pet.id, event: 'pet.created', name: pet.name, species: pet.species }
-        })
+      await enqueue({
+        topic: 'js.pet.created',
+        data: { petId: pet.id, event: 'pet.created', name: pet.name, species: pet.species }
+      })
 
-        await enqueue({
-          topic: 'js.feeding.reminder.enqueued',
-          data: { petId: pet.id, enqueuedAt: Date.now() }
-        })
-      }
+      await enqueue({
+        topic: 'js.feeding.reminder.enqueued',
+        data: { petId: pet.id, enqueuedAt: Date.now() }
+      })
 
       return { status: 201, body: pet }
     }
@@ -354,9 +340,7 @@ View on GitHub:
     export const handler: Handlers<typeof config> = async (input, { logger }) => {
       const { petId, name, species } = input;
 
-      if (logger) {
-        logger.info('🤖 AI Profile Enrichment started', { petId, name, species });
-      }
+      logger.info('🤖 AI Profile Enrichment started', { petId, name, species });
 
       try {
         const apiKey = process.env.OPENAI_API_KEY;
@@ -421,9 +405,7 @@ Keep it positive, realistic, and adoption-focused.`;
             adopterHints: `${name} would do well in a caring home with patience and love.`
           };
           
-          if (logger) {
-            logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError instanceof Error ? parseError.message : String(parseError) });
-          }
+          logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError instanceof Error ? parseError.message : String(parseError) });
         }
 
         const updatedPet = TSStore.updateProfile(petId, profile);
@@ -432,25 +414,21 @@ Keep it positive, realistic, and adoption-focused.`;
           throw new Error(`Pet not found: ${petId}`);
         }
 
-        if (logger) {
-          logger.info('✅ AI Profile Enrichment completed', { 
-            petId, 
-            profile: {
-              bio: profile.bio.substring(0, 50) + '...',
-              breedGuess: profile.breedGuess,
-              temperamentTags: profile.temperamentTags,
-              adopterHints: profile.adopterHints.substring(0, 50) + '...'
-            }
-          });
-        }
+        logger.info('✅ AI Profile Enrichment completed', { 
+          petId, 
+          profile: {
+            bio: profile.bio.substring(0, 50) + '...',
+            breedGuess: profile.breedGuess,
+            temperamentTags: profile.temperamentTags,
+            adopterHints: profile.adopterHints.substring(0, 50) + '...'
+          }
+        });
 
       } catch (error: any) {
-        if (logger) {
-          logger.error('❌ AI Profile Enrichment failed', { 
-            petId, 
-            error: error.message 
-          });
-        }
+        logger.error('❌ AI Profile Enrichment failed', { 
+          petId, 
+          error: error.message 
+        });
 
         const fallbackProfile: PetProfile = {
           bio: `${name} is a lovely ${species} with a unique personality, ready to find their forever home.`,
@@ -484,16 +462,12 @@ Keep it positive, realistic, and adoption-focused.`;
         "flows": ["PyPetManagement"]
     }
 
-    async def handler(input_data, ctx=None):
-        logger = getattr(ctx, 'logger', None) if ctx else None
-        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
-
+    async def handler(input_data, ctx):
         pet_id = input_data.get('petId')
         name = input_data.get('name')
         species = input_data.get('species')
 
-        if logger:
-            logger.info('🤖 AI Profile Enrichment started', {'petId': pet_id, 'name': name, 'species': species})
+        ctx.logger.info('🤖 AI Profile Enrichment started', {'petId': pet_id, 'name': name, 'species': species})
 
         try:
             import sys
@@ -570,31 +544,28 @@ Keep it positive, realistic, and adoption-focused."""
                     'adopterHints': f'{name} would do well in a caring home with patience and love.'
                 }
                 
-                if logger:
-                    logger.warn('⚠️ AI response parsing failed, using fallback profile', {'petId': pet_id, 'parseError': str(parse_error)})
+                ctx.logger.warn('⚠️ AI response parsing failed, using fallback profile', {'petId': pet_id, 'parseError': str(parse_error)})
 
             updated_pet = pet_store.update_profile(pet_id, profile)
             
             if not updated_pet:
                 raise Exception(f'Pet not found: {pet_id}')
 
-            if logger:
-                logger.info('✅ AI Profile Enrichment completed', {
-                    'petId': pet_id,
-                    'profile': {
-                        'bio': profile['bio'][:50] + '...',
-                        'breedGuess': profile['breedGuess'],
-                        'temperamentTags': profile['temperamentTags'],
-                        'adopterHints': profile['adopterHints'][:50] + '...'
-                    }
-                })
+            ctx.logger.info('✅ AI Profile Enrichment completed', {
+                'petId': pet_id,
+                'profile': {
+                    'bio': profile['bio'][:50] + '...',
+                    'breedGuess': profile['breedGuess'],
+                    'temperamentTags': profile['temperamentTags'],
+                    'adopterHints': profile['adopterHints'][:50] + '...'
+                }
+            })
 
         except Exception as error:
-            if logger:
-                logger.error('❌ AI Profile Enrichment failed', {
-                    'petId': pet_id,
-                    'error': str(error)
-                })
+            ctx.logger.error('❌ AI Profile Enrichment failed', {
+                'petId': pet_id,
+                'error': str(error)
+            })
 
             fallback_profile = {
                 'bio': f'{name} is a lovely {species} with a unique personality, ready to find their forever home.',
@@ -627,13 +598,10 @@ Keep it positive, realistic, and adoption-focused."""
       flows: ['JsPetManagement'],
     }
 
-    exports.handler = async (input, context) => {
-      const { enqueue, logger } = context || {}
+    export const handler = async (input, { logger }) => {
       const { petId, name, species } = input
 
-      if (logger) {
-        logger.info('🤖 AI Profile Enrichment started', { petId, name, species })
-      }
+      logger.info('🤖 AI Profile Enrichment started', { petId, name, species })
 
       try {
       const apiKey = process.env.OPENAI_API_KEY
@@ -698,9 +666,7 @@ Keep it positive, realistic, and adoption-focused.`
             adopterHints: `${name} would do well in a caring home with patience and love.`
           }
           
-          if (logger) {
-            logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError.message })
-          }
+          logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError.message })
         }
 
         const updatedPet = updateProfile(petId, profile)
@@ -709,25 +675,21 @@ Keep it positive, realistic, and adoption-focused.`
           throw new Error(`Pet not found: ${petId}`)
         }
 
-        if (logger) {
-          logger.info('✅ AI Profile Enrichment completed', {
-            petId,
-            profile: {
-              bio: profile.bio.substring(0, 50) + '...',
-              breedGuess: profile.breedGuess,
-              temperamentTags: profile.temperamentTags,
-              adopterHints: profile.adopterHints.substring(0, 50) + '...'
-            }
-          })
-        }
+        logger.info('✅ AI Profile Enrichment completed', {
+          petId,
+          profile: {
+            bio: profile.bio.substring(0, 50) + '...',
+            breedGuess: profile.breedGuess,
+            temperamentTags: profile.temperamentTags,
+            adopterHints: profile.adopterHints.substring(0, 50) + '...'
+          }
+        })
 
       } catch (error) {
-        if (logger) {
-          logger.error('❌ AI Profile Enrichment failed', {
-            petId,
-            error: error.message
-          })
-        }
+        logger.error('❌ AI Profile Enrichment failed', {
+          petId,
+          error: error.message
+        })
 
         const fallbackProfile = {
           bio: `${name} is a lovely ${species} with a unique personality, ready to find their forever home.`,
@@ -851,13 +813,11 @@ View on GitHub:
         return { status: 404, body: { message: 'Pet not found' } };
       }
 
-      if (logger) {
-        logger.info('🏥 Health Review Agent triggered', { 
-          petId, 
-          currentStatus: pet.status,
-          symptoms: pet.symptoms || []
-        });
-      }
+      logger.info('🏥 Health Review Agent triggered', { 
+        petId, 
+        currentStatus: pet.status,
+        symptoms: pet.symptoms || []
+      });
 
       if (!['healthy', 'in_quarantine', 'available'].includes(pet.status)) {
         return {
@@ -881,13 +841,11 @@ View on GitHub:
 
       if (recentArtifacts.length > 0) {
         const recent = recentArtifacts[recentArtifacts.length - 1];
-        if (logger) {
-          logger.info('🔄 Idempotent health review - returning cached decision', {
-            petId,
-            chosenEmit: recent.parsedDecision.chosenEmit,
-            timestamp: recent.timestamp
-          });
-        }
+        logger.info('🔄 Idempotent health review - returning cached decision', {
+          petId,
+          chosenEmit: recent.parsedDecision.chosenEmit,
+          timestamp: recent.timestamp
+        });
 
         return {
           status: 200,
@@ -904,9 +862,7 @@ View on GitHub:
       }
 
       try {
-        if (logger) {
-          logger.info('🔍 Starting agent decision call', { petId, agentContext });
-        }
+        logger.info('🔍 Starting agent decision call', { petId, agentContext });
         
         const artifact = await callAgentDecision(
           'health-review',
@@ -915,17 +871,13 @@ View on GitHub:
           logger
         );
         
-        if (logger) {
-          logger.info('✅ Agent decision call completed', { petId, success: artifact.success });
-        }
+        logger.info('✅ Agent decision call completed', { petId, success: artifact.success });
 
         if (!artifact.success) {
-          if (logger) {
-            logger.warn('⚠️ Agent decision failed, but returning error response', {
-              petId,
-              error: artifact.error
-            });
-          }
+          logger.warn('⚠️ Agent decision failed, but returning error response', {
+            petId,
+            error: artifact.error
+          });
           
           return {
             status: 500,
@@ -949,27 +901,23 @@ View on GitHub:
           };
         }
 
-        if (enqueue) {
-          await enqueue({
-            topic: chosenEmitDef.topic as 'ts.health.treatment_required' | 'ts.health.no_treatment_needed',
-            data: {
-              petId,
-              event: chosenEmitDef.id.replace('emit.', ''),
-              agentDecision: artifact.parsedDecision,
-              timestamp: artifact.timestamp,
-              context: agentContext
-            }
-          });
-
-          if (logger) {
-            logger.info('✅ Health review emit fired', {
-              petId,
-              chosenEmit: artifact.parsedDecision.chosenEmit,
-              topic: chosenEmitDef.topic,
-              rationale: artifact.parsedDecision.rationale
-            });
+        await enqueue({
+          topic: chosenEmitDef.topic as 'ts.health.treatment_required' | 'ts.health.no_treatment_needed',
+          data: {
+            petId,
+            event: chosenEmitDef.id.replace('emit.', ''),
+            agentDecision: artifact.parsedDecision,
+            timestamp: artifact.timestamp,
+            context: agentContext
           }
-        }
+        });
+
+        logger.info('✅ Health review emit fired', {
+          petId,
+          chosenEmit: artifact.parsedDecision.chosenEmit,
+          topic: chosenEmitDef.topic,
+          rationale: artifact.parsedDecision.rationale
+        });
 
         return {
           status: 200,
@@ -987,12 +935,10 @@ View on GitHub:
         };
 
       } catch (error: any) {
-        if (logger) {
-          logger.error('❌ Health review agent error', {
-            petId,
-            error: error.message
-          });
-        }
+        logger.error('❌ Health review agent error', {
+          petId,
+          error: error.message
+        });
 
         return {
           status: 500,
@@ -1060,9 +1006,7 @@ View on GitHub:
         # (See full implementation in the actual file)
         pass
 
-    async def handler(req, ctx=None):
-        logger = getattr(ctx, 'logger', None) if ctx else None
-        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
+    async def handler(req, ctx):
         pet_id = req.get("pathParams", {}).get("id")
 
         if not pet_id:
@@ -1072,12 +1016,11 @@ View on GitHub:
             if not pet:
                 return {"status": 404, "body": {"message": "Pet not found"}}
 
-        if logger:
-            logger.info('🏥 Health Review Agent triggered', {
-                "petId": pet_id,
-                "currentStatus": pet["status"],
-                "symptoms": pet.get("symptoms", [])
-            })
+        ctx.logger.info('🏥 Health Review Agent triggered', {
+            "petId": pet_id,
+            "currentStatus": pet["status"],
+            "symptoms": pet.get("symptoms", [])
+        })
 
         if pet["status"] not in ["healthy", "in_quarantine"]:
                 return {
@@ -1124,25 +1067,23 @@ View on GitHub:
                     }
                 }
 
-            if enqueue:
-                await enqueue({
-                    "topic": chosen_emit_def["topic"],
-                    "data": {
-                        "petId": pet_id,
-                        "event": chosen_emit_def["id"].replace('emit.', ''),
-                        "agentDecision": artifact["parsedDecision"],
-                        "timestamp": artifact["timestamp"],
-                        "context": agent_context
-                    }
-                })
-
-            if logger:
-                    logger.info('✅ Health review emit fired', {
+            await ctx.enqueue({
+                "topic": chosen_emit_def["topic"],
+                "data": {
                     "petId": pet_id,
-                        "chosenEmit": artifact["parsedDecision"]["chosenEmit"],
-                        "topic": chosen_emit_def["topic"],
-                        "rationale": artifact["parsedDecision"]["rationale"]
-                })
+                    "event": chosen_emit_def["id"].replace('emit.', ''),
+                    "agentDecision": artifact["parsedDecision"],
+                    "timestamp": artifact["timestamp"],
+                    "context": agent_context
+                }
+            })
+
+            ctx.logger.info('✅ Health review emit fired', {
+                "petId": pet_id,
+                "chosenEmit": artifact["parsedDecision"]["chosenEmit"],
+                "topic": chosen_emit_def["topic"],
+                "rationale": artifact["parsedDecision"]["rationale"]
+            })
 
             return {
                 "status": 200,
@@ -1160,11 +1101,10 @@ View on GitHub:
             }
 
         except Exception as error:
-            if logger:
-                logger.error('❌ Health review agent error', {
-                    "petId": pet_id,
-                    "error": str(error)
-                })
+            ctx.logger.error('❌ Health review agent error', {
+                "petId": pet_id,
+                "error": str(error)
+            })
 
             return {
                 "status": 500,
@@ -1196,8 +1136,7 @@ View on GitHub:
       flows: ['JsPetManagement'],
     }
 
-    export const handler = async (req, context) => {
-      const { enqueue, logger } = context || {}
+    export const handler = async (req, { enqueue, logger }) => {
       const petId = req.pathParams?.id
 
       if (!petId) {
@@ -1209,13 +1148,11 @@ View on GitHub:
         return { status: 404, body: { message: 'Pet not found' } }
       }
 
-      if (logger) {
-        logger.info('🏥 Health Review Agent triggered', { 
-          petId, 
-          currentStatus: pet.status,
-          symptoms: pet.symptoms || []
-        })
-      }
+      logger.info('🏥 Health Review Agent triggered', { 
+        petId, 
+        currentStatus: pet.status,
+        symptoms: pet.symptoms || []
+      })
 
       if (pet.status !== 'healthy' && pet.status !== 'in_quarantine') {
           return {
@@ -1239,13 +1176,11 @@ View on GitHub:
 
       if (recentArtifacts.length > 0) {
         const recent = recentArtifacts[recentArtifacts.length - 1]
-          if (logger) {
-          logger.info('🔄 Idempotent health review - returning cached decision', {
-            petId,
-            chosenEmit: recent.parsedDecision.chosenEmit,
-            timestamp: recent.timestamp
-          })
-        }
+        logger.info('🔄 Idempotent health review - returning cached decision', {
+          petId,
+          chosenEmit: recent.parsedDecision.chosenEmit,
+          timestamp: recent.timestamp
+        })
 
           return {
             status: 200,
@@ -1291,26 +1226,22 @@ View on GitHub:
           }
         }
 
-        if (enqueue) {
-          await enqueue({
-            topic: chosenEmitDef.topic,
-            data: {
-              petId,
-              agentDecision: artifact.parsedDecision,
-              timestamp: artifact.timestamp,
-              context: agentContext
-            }
-          })
-
-        if (logger) {
-            logger.info('✅ Health review enqueue fired', {
+        await enqueue({
+          topic: chosenEmitDef.topic,
+          data: {
             petId,
-              chosenEmit: artifact.parsedDecision.chosenEmit,
-              topic: chosenEmitDef.topic,
-              rationale: artifact.parsedDecision.rationale
-          })
+            agentDecision: artifact.parsedDecision,
+            timestamp: artifact.timestamp,
+            context: agentContext
           }
-        }
+        })
+
+        logger.info('✅ Health review enqueue fired', {
+          petId,
+          chosenEmit: artifact.parsedDecision.chosenEmit,
+          topic: chosenEmitDef.topic,
+          rationale: artifact.parsedDecision.rationale
+        })
 
         return {
           status: 200,
@@ -1328,12 +1259,10 @@ View on GitHub:
         }
 
       } catch (error) {
-        if (logger) {
-          logger.error('❌ Health review agent error', {
-            petId,
-            error: error.message
-          })
-        }
+        logger.error('❌ Health review agent error', {
+          petId,
+          error: error.message
+        })
 
         return {
           status: 500,

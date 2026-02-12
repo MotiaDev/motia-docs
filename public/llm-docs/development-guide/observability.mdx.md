@@ -94,7 +94,7 @@ Every Step has a `logger` in the context. Use it to see what's happening.
   </Tab>
   <Tab value='JavaScript'>
     ```javascript
-    const handler = async (input, { logger }) => {
+    export const handler = async (input, { logger }) => {
       logger.info('Processing order')
 
       logger.info('Order created', {

@@ -77,7 +77,7 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript title="src/chat-messages.stream.js"
-const config = {
+export const config = {
   name: 'chatMessage',
   schema: {
     type: 'object',
@@ -93,8 +93,6 @@ const config = {
     storageType: 'default'
   }
 }
-
-module.exports = { config }
 ```
 
 </Tab>
@@ -188,6 +186,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/todo', method: 'POST' },
   ],
+  enqueues: [],
   flows: ['todo-app'],
 } as const satisfies StepConfig
 

@@ -65,11 +65,12 @@ Our application consists of five specialized steps, each handling a specific par
 
     ```js
     import { config as envConfig } from '../lib/env.js';
+    import { cron } from 'motia'
 
     export const config = {
       name: 'UptimeCronTrigger',
       triggers: [
-        { type: 'cron', cron: envConfig.cron },
+        cron(envConfig.cron),
       ],
       enqueues: ['check.requested'],
       flows: ['uptime-monitoring']

@@ -447,6 +447,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/webhooks/stripe', method: 'POST' },
   ],
+  enqueues: [],
   flows: ['payments'],
 } as const satisfies StepConfig
 
@@ -468,16 +469,17 @@ export const handler: Handlers<typeof config> = async (req, { logger }) => {
 <Tab value='JavaScript'>
 
 ```javascript title="steps/webhook.step.js"
-const config = {
+export const config = {
   name: 'StripeWebhook',
   description: 'Handle Stripe webhook events',
   triggers: [
     { type: 'api', path: '/webhooks/stripe', method: 'POST' },
   ],
+  enqueues: [],
   flows: ['payments'],
 }
 
-const handler = async (req, { logger }) => {
+export const handler = async (req, { logger }) => {
   const signature = req.headers['stripe-signature']
   const rawBody = req.rawBody
 
@@ -489,8 +491,6 @@ const handler = async (req, { logger }) => {
 
   return { status: 200, body: { received: true } }
 }
-
-module.exports = { config, handler }
 ```
 
 </Tab>

@@ -63,6 +63,7 @@ Our application consists of six specialized steps, each leveraging the optimal l
     The entry point for our multi-language workflow. This TypeScript API endpoint receives data, validates it with Zod schemas, and kicks off the processing pipeline.
 
 ```typescript
+import { type StepConfig } from 'motia'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -86,7 +87,7 @@ export const config = {
   },
   enqueues: ['app.started'],
   flows: ['data-processing'],
-} as const
+} as const satisfies StepConfig
 
 export const handler = async (req: any, { logger, enqueue, traceId }: any) => {
   logger.info('🚀 Starting multi-language app', { body: req.body, traceId })
@@ -125,6 +126,7 @@ export const handler = async (req: any, { logger, enqueue, traceId }: any) => {
     A TypeScript bridge that receives the app start event, processes the data, and forwards it to the Python processing step with proper type transformation.
 
 ```typescript
+import { type StepConfig } from 'motia'
 import { z } from 'zod'
 
 // Bridge step to connect app starter to Python processing
@@ -141,7 +143,7 @@ export const config = {
   ],
   enqueues: ['data.processed'],
   flows: ['data-processing'],
-} as const
+} as const satisfies StepConfig
 
 export const handler = async (input: any, { logger, enqueue }: any) => {
   logger.info('🌉 Processing app data and sending to Python', { appId: input.id })
@@ -237,6 +239,7 @@ async def handler(input_data, ctx):
     A TypeScript notification handler that processes the Python results and sends notifications, showing seamless data flow between Python and TypeScript.
 
 ```typescript
+import { type StepConfig } from 'motia'
 import { z } from 'zod'
 
 export const config = {
@@ -253,7 +256,7 @@ export const config = {
   ],
   enqueues: ['notification.sent'],
   flows: ['data-processing'],
-} as const
+} as const satisfies StepConfig
 
 export const handler = async (input: any, { logger, enqueue }: any) => {
   logger.info('📧 Sending notifications after Python processing', { id: input.id })
@@ -284,6 +287,7 @@ export const handler = async (input: any, { logger, enqueue }: any) => {
     A TypeScript finalizer that aggregates all the processing results and prepares the final summary data before handing off to JavaScript for metrics generation.
 
 ```typescript
+import { type StepConfig } from 'motia'
 import { z } from 'zod'
 
 // Final step to complete the app - TypeScript
@@ -301,7 +305,7 @@ export const config = {
   ],
   enqueues: ['app.completed'],
   flows: ['data-processing'],
-} as const
+} as const satisfies StepConfig
 
 export const handler = async (input: any, { logger, enqueue }: any) => {
   logger.info('🏁 Finalizing app', { 

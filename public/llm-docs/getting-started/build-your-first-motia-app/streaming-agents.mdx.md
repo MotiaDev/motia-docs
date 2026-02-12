@@ -256,26 +256,22 @@ View on GitHub:
           symptoms: validatedData.symptoms
         });
 
-        if (logger) {
-          logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status });
-        }
+        logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status });
 
         // Create & return the initial stream record (following working pattern)
         const result = await streams.petCreation.set(traceId, 'message', { 
           message: `Pet ${pet.name} (ID: ${pet.id}) created successfully - Species: ${pet.species}, Age: ${pet.ageMonths} months, Status: ${pet.status}` 
         });
 
-        if (enqueue) {
-          await enqueue({
-            topic: 'ts.pet.created',
-            data: { petId: pet.id, event: 'pet.created', name: pet.name, species: validatedData.species, traceId }
-          })
+        await enqueue({
+          topic: 'ts.pet.created',
+          data: { petId: pet.id, event: 'pet.created', name: pet.name, species: validatedData.species, traceId }
+        })
 
-          await enqueue({
-            topic: 'ts.feeding.reminder.enqueued',
-            data: { petId: pet.id, enqueuedAt: Date.now(), traceId }
-          })
-        }
+        await enqueue({
+          topic: 'ts.feeding.reminder.enqueued',
+          data: { petId: pet.id, enqueuedAt: Date.now(), traceId }
+        })
 
         return { 
           status: 201, 
@@ -315,12 +311,7 @@ View on GitHub:
         "flows": ["PyPetManagement"]
     }
 
-    async def handler(req, ctx=None):
-        logger = getattr(ctx, 'logger', None) if ctx else None
-        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
-        streams = getattr(ctx, 'streams', None) if ctx else None
-        trace_id = getattr(ctx, 'traceId', None) if ctx else None
-
+    async def handler(req, ctx):
         try:
             import sys
             import os
@@ -329,6 +320,8 @@ View on GitHub:
             from services import pet_store
         except ImportError:
             return {"status": 500, "body": {"message": "Import error"}}
+        
+        trace_id = ctx.traceId
         
         b = (req.get("body") or {})
         name = b.get("name")
@@ -349,29 +342,27 @@ View on GitHub:
         # Create the pet
         pet = pet_store.create(name, species, age_val, weight_kg=weight_kg, symptoms=symptoms)
         
-        if logger:
-            logger.info('🐾 Pet created', {
-                'petId': pet['id'], 
-                'name': pet['name'], 
-                'species': pet['species'], 
-                'status': pet['status']
-            })
+        ctx.logger.info('🐾 Pet created', {
+            'petId': pet['id'], 
+            'name': pet['name'], 
+            'species': pet['species'], 
+            'status': pet['status']
+        })
 
         # Create & return the initial stream record (following working pattern)
-        result = await streams.petCreation.set(trace_id, 'message', { 
+        result = await ctx.streams.petCreation.set(trace_id, 'message', { 
             'message': f"Pet {pet['name']} (ID: {pet['id']}) created successfully - Species: {pet['species']}, Age: {pet['ageMonths']} months, Status: {pet['status']}"
         })
         
-        if enqueue:
-            await enqueue({
-                'topic': 'py.pet.created',
-                'data': {'petId': pet['id'], 'event': 'pet.created', 'name': pet['name'], 'species': pet['species'], 'traceId': trace_id}
-            })
+        await ctx.enqueue({
+            'topic': 'py.pet.created',
+            'data': {'petId': pet['id'], 'event': 'pet.created', 'name': pet['name'], 'species': pet['species'], 'traceId': trace_id}
+        })
 
-            await enqueue({
-                'topic': 'py.feeding.reminder.enqueued',
-                'data': {'petId': pet['id'], 'enqueuedAt': int(time.time() * 1000), 'traceId': trace_id}
-            })
+        await ctx.enqueue({
+            'topic': 'py.feeding.reminder.enqueued',
+            'data': {'petId': pet['id'], 'enqueuedAt': int(time.time() * 1000), 'traceId': trace_id}
+        })
 
         # Return the stream result so it can be tracked in the iii console
         return {
@@ -394,8 +385,7 @@ View on GitHub:
       flows: ['JsPetManagement'],
     }
 
-    export const handler = async (req, context) => {
-      const { enqueue, logger, streams, traceId } = context || {}
+    export const handler = async (req, { enqueue, logger, streams, traceId }) => {
       const b = req.body || {}
       const name = typeof b.name === 'string' && b.name.trim()
       const speciesOk = ['dog','cat','bird','other'].includes(b.species)
@@ -414,26 +404,22 @@ View on GitHub:
         symptoms: Array.isArray(b.symptoms) ? b.symptoms : undefined
       })
       
-      if (logger) {
-        logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
-      }
+      logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
 
       // Create & return the initial stream record (following working pattern)
       const result = await streams.petCreation.set(traceId, 'message', { 
         message: `Pet ${pet.name} (ID: ${pet.id}) created successfully - Species: ${pet.species}, Age: ${pet.ageMonths} months, Status: ${pet.status}` 
       })
 
-      if (enqueue) {
-        await enqueue({
-          topic: 'js.pet.created',
-          data: { petId: pet.id, event: 'pet.created', name: pet.name, species: pet.species, traceId }
-        })
+      await enqueue({
+        topic: 'js.pet.created',
+        data: { petId: pet.id, event: 'pet.created', name: pet.name, species: pet.species, traceId }
+      })
 
-        await enqueue({
-          topic: 'js.feeding.reminder.enqueued',
-          data: { petId: pet.id, enqueuedAt: Date.now(), traceId }
-        })
-      }
+      await enqueue({
+        topic: 'js.feeding.reminder.enqueued',
+        data: { petId: pet.id, enqueuedAt: Date.now(), traceId }
+      })
 
       return { 
         status: 201, 
@@ -487,9 +473,7 @@ View on GitHub:
     export const handler: Handlers<typeof config> = async (input, { enqueue, logger, streams, traceId }) => {
       const { petId, enqueuedAt } = input;
 
-      if (logger) {
-        logger.info('🔄 Setting next feeding reminder', { petId, enqueuedAt });
-      }
+      logger.info('🔄 Setting next feeding reminder', { petId, enqueuedAt });
 
       try {
         // Calculate next feeding time (24 hours from now)
@@ -505,19 +489,15 @@ View on GitHub:
         const updatedPet = TSStore.update(petId, updates);
         
         if (!updatedPet) {
-          if (logger) {
-            logger.error('❌ Failed to set feeding reminder - pet not found', { petId });
-          }
+          logger.error('❌ Failed to set feeding reminder - pet not found', { petId });
           return;
         }
 
-        if (logger) {
-          logger.info('✅ Next feeding reminder set', { 
-            petId, 
-            notes: updatedPet.notes?.substring(0, 50) + '...',
-            nextFeedingAt: new Date(nextFeedingAt).toISOString()
-          });
-        }
+        logger.info('✅ Next feeding reminder set', { 
+          petId, 
+          notes: updatedPet.notes?.substring(0, 50) + '...',
+          nextFeedingAt: new Date(nextFeedingAt).toISOString()
+        });
 
         // Stream status updates using the simple pattern
         if (streams?.petCreation && traceId) {
@@ -549,22 +529,18 @@ View on GitHub:
           }
         }
 
-        if (enqueue) {
-          await enqueue({
-            topic: 'ts.feeding.reminder.completed',
-            data: {
-              petId,
-              event: 'feeding.reminder.completed',
-              completedAt: Date.now(),
-              processingTimeMs: Date.now() - enqueuedAt
-            }
-          })
-        }
+        await enqueue({
+          topic: 'ts.feeding.reminder.completed',
+          data: {
+            petId,
+            event: 'feeding.reminder.completed',
+            completedAt: Date.now(),
+            processingTimeMs: Date.now() - enqueuedAt
+          }
+        })
 
       } catch (error: any) {
-        if (logger) {
-          logger.error('❌ Feeding reminder job error', { petId, error: error.message });
-        }
+        logger.error('❌ Feeding reminder job error', { petId, error: error.message });
       }
     };
     ```
@@ -583,12 +559,7 @@ View on GitHub:
         "flows": ["PyPetManagement"]
     }
 
-    async def handler(input_data, ctx=None):
-        logger = getattr(ctx, 'logger', None) if ctx else None
-        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
-        streams = getattr(ctx, 'streams', None) if ctx else None
-        trace_id = getattr(ctx, 'traceId', None) if ctx else None
-
+    async def handler(input, ctx):
         try:
             import sys
             import os
@@ -596,15 +567,15 @@ View on GitHub:
             sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
             from services import pet_store
         except ImportError:
-            if logger:
-                logger.error('❌ Failed to set feeding reminder - import error')
+            ctx.logger.error('❌ Failed to set feeding reminder - import error')
             return
 
-        pet_id = input_data.get('petId')
-        enqueued_at = input_data.get('enqueuedAt')
+        trace_id = ctx.traceId
 
-        if logger:
-            logger.info('🔄 Setting next feeding reminder', {'petId': pet_id, 'enqueuedAt': enqueued_at})
+        pet_id = input.get('petId')
+        enqueued_at = input.get('enqueuedAt')
+
+        ctx.logger.info('🔄 Setting next feeding reminder', {'petId': pet_id, 'enqueuedAt': enqueued_at})
 
         try:
             # Calculate next feeding time (24 hours from now)
@@ -620,60 +591,56 @@ View on GitHub:
             updated_pet = pet_store.update(pet_id, updates)
             
             if not updated_pet:
-                if logger:
-                    logger.error('❌ Failed to set feeding reminder - pet not found', {'petId': pet_id})
+                ctx.logger.error('❌ Failed to set feeding reminder - pet not found', {'petId': pet_id})
                 return
 
-            if logger:
-                notes_preview = updated_pet.get('notes', '')[:50] + '...' if updated_pet.get('notes') else ''
-                logger.info('✅ Next feeding reminder set', {
-                    'petId': pet_id,
-                    'notes': notes_preview,
-                    'nextFeedingAt': time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.gmtime(next_feeding_at / 1000))
-                })
+            notes_preview = updated_pet.get('notes', '')[:50] + '...' if updated_pet.get('notes') else ''
+            ctx.logger.info('✅ Next feeding reminder set', {
+                'petId': pet_id,
+                'notes': notes_preview,
+                'nextFeedingAt': time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.gmtime(next_feeding_at / 1000))
+            })
 
             # Stream status updates using the simple pattern
-            if streams and streams.petCreation and trace_id:
-                await streams.petCreation.set(trace_id, 'message', { 
+            if ctx.streams and ctx.streams.petCreation and trace_id:
+                await ctx.streams.petCreation.set(trace_id, 'message', { 
                     'message': f"Pet {updated_pet['name']} entered quarantine period" 
                 })
 
                 # Check symptoms and stream appropriate updates
                 if not updated_pet.get('symptoms') or len(updated_pet['symptoms']) == 0:
                     await asyncio.sleep(1.0)
-                    await streams.petCreation.set(trace_id, 'message', { 
+                    await ctx.streams.petCreation.set(trace_id, 'message', { 
                         'message': f"Health check passed for {updated_pet['name']} - no symptoms found" 
                     })
 
                     await asyncio.sleep(1.0)
-                    await streams.petCreation.set(trace_id, 'message', { 
+                    await ctx.streams.petCreation.set(trace_id, 'message', { 
                         'message': f"{updated_pet['name']} is healthy and ready for adoption! ✅" 
                     })
                 else:
                     await asyncio.sleep(1.0)
-                    await streams.petCreation.set(trace_id, 'message', { 
+                    await ctx.streams.petCreation.set(trace_id, 'message', { 
                         'message': f"Health check failed for {updated_pet['name']} - symptoms detected: {', '.join(updated_pet['symptoms'])}" 
                     })
 
                     await asyncio.sleep(1.0)
-                    await streams.petCreation.set(trace_id, 'message', { 
+                    await ctx.streams.petCreation.set(trace_id, 'message', { 
                         'message': f"{updated_pet['name']} needs medical treatment ❌" 
                     })
 
-            if enqueue:
-                await enqueue({
-                    'topic': 'py.feeding.reminder.completed',
-                    'data': {
-                        'petId': pet_id,
-                        'event': 'feeding.reminder.completed',
-                        'completedAt': int(time.time() * 1000),
-                        'processingTimeMs': int(time.time() * 1000) - enqueued_at
-                    }
-                })
+            await ctx.enqueue({
+                'topic': 'py.feeding.reminder.completed',
+                'data': {
+                    'petId': pet_id,
+                    'event': 'feeding.reminder.completed',
+                    'completedAt': int(time.time() * 1000),
+                    'processingTimeMs': int(time.time() * 1000) - enqueued_at
+                }
+            })
 
         except Exception as error:
-            if logger:
-                logger.error('❌ Feeding reminder job error', {'petId': pet_id, 'error': str(error)})
+            ctx.logger.error('❌ Feeding reminder job error', {'petId': pet_id, 'error': str(error)})
     ```
   </Tab>
   <Tab value="JavaScript">
@@ -690,13 +657,10 @@ View on GitHub:
       flows: ['JsPetManagement'],
     }
 
-    export const handler = async (input, context) => {
-      const { enqueue, logger, streams, traceId } = context || {}
+    export const handler = async (input, { enqueue, logger, streams, traceId }) => {
       const { petId, enqueuedAt } = input
 
-      if (logger) {
-        logger.info('🔄 Setting next feeding reminder', { petId, enqueuedAt })
-      }
+      logger.info('🔄 Setting next feeding reminder', { petId, enqueuedAt })
 
       try {
         // Calculate next feeding time (24 hours from now)
@@ -712,19 +676,15 @@ View on GitHub:
         const updatedPet = update(petId, updates)
         
         if (!updatedPet) {
-          if (logger) {
-            logger.error('❌ Failed to set feeding reminder - pet not found', { petId })
-          }
+          logger.error('❌ Failed to set feeding reminder - pet not found', { petId })
           return
         }
 
-        if (logger) {
-          logger.info('✅ Next feeding reminder set', { 
-            petId, 
-            notes: updatedPet.notes?.substring(0, 50) + '...',
-            nextFeedingAt: new Date(nextFeedingAt).toISOString()
-          })
-        }
+        logger.info('✅ Next feeding reminder set', { 
+          petId, 
+          notes: updatedPet.notes?.substring(0, 50) + '...',
+          nextFeedingAt: new Date(nextFeedingAt).toISOString()
+        })
 
         // Stream status updates using the simple pattern
         if (streams?.petCreation && traceId) {
@@ -756,22 +716,18 @@ View on GitHub:
           }
         }
 
-        if (enqueue) {
-          await enqueue({
-            topic: 'js.feeding.reminder.completed',
-            data: {
-              petId,
-              event: 'feeding.reminder.completed',
-              completedAt: Date.now(),
-              processingTimeMs: Date.now() - enqueuedAt
-            }
-          })
-        }
+        await enqueue({
+          topic: 'js.feeding.reminder.completed',
+          data: {
+            petId,
+            event: 'feeding.reminder.completed',
+            completedAt: Date.now(),
+            processingTimeMs: Date.now() - enqueuedAt
+          }
+        })
 
       } catch (error) {
-        if (logger) {
-          logger.error('❌ Feeding reminder job error', { petId, error: error.message })
-        }
+        logger.error('❌ Feeding reminder job error', { petId, error: error.message })
       }
     }
     ```
@@ -821,9 +777,7 @@ View on GitHub:
     export const handler: Handlers<typeof config> = async (input, { logger, streams, traceId }) => {
       const { petId, name, species } = input;
 
-      if (logger) {
-        logger.info('🤖 AI Profile Enrichment started', { petId, name, species });
-      }
+      logger.info('🤖 AI Profile Enrichment started', { petId, name, species });
 
       // Stream enrichment started event
       if (streams && traceId) {
@@ -898,9 +852,7 @@ Keep it positive, realistic, and adoption-focused.`;
             adopterHints: `${name} would do well in a caring home with patience and love.`
           };
           
-          if (logger) {
-            logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError instanceof Error ? parseError.message : String(parseError) });
-          }
+          logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError instanceof Error ? parseError.message : String(parseError) });
         }
 
         const updatedPet = TSStore.updateProfile(petId, profile);
@@ -909,17 +861,15 @@ Keep it positive, realistic, and adoption-focused.`;
           throw new Error(`Pet not found: ${petId}`);
         }
 
-        if (logger) {
-          logger.info('✅ AI Profile Enrichment completed', { 
-            petId, 
-            profile: {
-              bio: profile.bio.substring(0, 50) + '...',
-              breedGuess: profile.breedGuess,
-              temperamentTags: profile.temperamentTags,
-              adopterHints: profile.adopterHints.substring(0, 50) + '...'
-            }
-          });
-        }
+        logger.info('✅ AI Profile Enrichment completed', { 
+          petId, 
+          profile: {
+            bio: profile.bio.substring(0, 50) + '...',
+            breedGuess: profile.breedGuess,
+            temperamentTags: profile.temperamentTags,
+            adopterHints: profile.adopterHints.substring(0, 50) + '...'
+          }
+        });
 
         // Stream each field as it's processed
         for (const field of enrichmentFields) {
@@ -942,12 +892,10 @@ Keep it positive, realistic, and adoption-focused.`;
         }
 
       } catch (error: any) {
-        if (logger) {
-          logger.error('❌ AI Profile Enrichment failed', { 
-            petId, 
-            error: error.message 
-          });
-        }
+        logger.error('❌ AI Profile Enrichment failed', { 
+          petId, 
+          error: error.message 
+        });
 
         const fallbackProfile: PetProfile = {
           bio: `${name} is a lovely ${species} with a unique personality, ready to find their forever home.`,
@@ -989,22 +937,18 @@ Keep it positive, realistic, and adoption-focused.`;
         "flows": ["PyPetManagement"]
     }
 
-    async def handler(input_data, ctx=None):
-        logger = getattr(ctx, 'logger', None) if ctx else None
-        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
-        streams = getattr(ctx, 'streams', None) if ctx else None
-        trace_id = getattr(ctx, 'traceId', None) if ctx else None
+    async def handler(input, ctx):
+        trace_id = ctx.traceId
 
-        pet_id = input_data.get('petId')
-        name = input_data.get('name')
-        species = input_data.get('species')
+        pet_id = input.get('petId')
+        name = input.get('name')
+        species = input.get('species')
 
-        if logger:
-            logger.info('🤖 AI Profile Enrichment started', {'petId': pet_id, 'name': name, 'species': species})
+        ctx.logger.info('🤖 AI Profile Enrichment started', {'petId': pet_id, 'name': name, 'species': species})
 
         # Stream enrichment started event
-        if streams and streams.petCreation and trace_id:
-            await streams.petCreation.set(trace_id, 'enrichment_started', { 
+        if ctx.streams and ctx.streams.petCreation and trace_id:
+            await ctx.streams.petCreation.set(trace_id, 'enrichment_started', { 
                 'message': f'AI enrichment started for {name}'
             })
 
@@ -1089,8 +1033,7 @@ Keep it positive, realistic, and adoption-focused.'''
                     'adopterHints': f'{name} would do well in a caring home with patience and love.'
                 }
                 
-                if logger:
-                    logger.warn('⚠️ AI response parsing failed, using fallback profile', {'petId': pet_id, 'parseError': str(parse_error)})
+                ctx.logger.warn('⚠️ AI response parsing failed, using fallback profile', {'petId': pet_id, 'parseError': str(parse_error)})
 
             # Update pet with AI-generated profile
             updated_pet = pet_store.update_profile(pet_id, profile)
@@ -1098,16 +1041,15 @@ Keep it positive, realistic, and adoption-focused.'''
             if not updated_pet:
                 raise Exception(f'Pet not found: {pet_id}')
 
-            if logger:
-                logger.info('✅ AI Profile Enrichment completed', {
-                    'petId': pet_id,
-                    'profile': {
-                        'bio': profile['bio'][:50] + '...',
-                        'breedGuess': profile['breedGuess'],
-                        'temperamentTags': profile['temperamentTags'],
-                        'adopterHints': profile['adopterHints'][:50] + '...'
-                    }
-                })
+            ctx.logger.info('✅ AI Profile Enrichment completed', {
+                'petId': pet_id,
+                'profile': {
+                    'bio': profile['bio'][:50] + '...',
+                    'breedGuess': profile['breedGuess'],
+                    'temperamentTags': profile['temperamentTags'],
+                    'adopterHints': profile['adopterHints'][:50] + '...'
+                }
+            })
 
             # Stream each field as it's processed
             enrichment_fields = ['bio', 'breedGuess', 'temperamentTags', 'adopterHints']
@@ -1116,23 +1058,22 @@ Keep it positive, realistic, and adoption-focused.'''
                 
                 value = profile.get(field)
                 
-                if streams and streams.petCreation and trace_id:
-                    await streams.petCreation.set(trace_id, f'progress_{field}', { 
+                if ctx.streams and ctx.streams.petCreation and trace_id:
+                    await ctx.streams.petCreation.set(trace_id, f'progress_{field}', { 
                         'message': f'Generated {field} for {name}'
                     })
 
             # Stream enrichment completed event
-            if streams and streams.petCreation and trace_id:
-                await streams.petCreation.set(trace_id, 'completed', { 
+            if ctx.streams and ctx.streams.petCreation and trace_id:
+                await ctx.streams.petCreation.set(trace_id, 'completed', { 
                     'message': f'AI enrichment completed for {name}'
                 })
 
         except Exception as error:
-            if logger:
-                logger.error('❌ AI Profile Enrichment failed', {
-                    'petId': pet_id,
-                    'error': str(error)
-                })
+            ctx.logger.error('❌ AI Profile Enrichment failed', {
+                'petId': pet_id,
+                'error': str(error)
+            })
 
             # Create fallback profile on error
             fallback_profile = {
@@ -1153,8 +1094,8 @@ Keep it positive, realistic, and adoption-focused.'''
                 pass
 
             # Stream fallback profile completion
-            if streams and streams.petCreation and trace_id:
-                await streams.petCreation.set(trace_id, 'completed', { 
+            if ctx.streams and ctx.streams.petCreation and trace_id:
+                await ctx.streams.petCreation.set(trace_id, 'completed', { 
                     'message': f'AI enrichment completed with fallback profile for {name}'
                 })
     ```
@@ -1174,13 +1115,10 @@ Keep it positive, realistic, and adoption-focused.'''
       flows: ['JsPetManagement'],
     }
 
-    export const handler = async (input, context) => {
-      const { logger, streams, traceId } = context || {};
+    export const handler = async (input, { logger, streams, traceId }) => {
       const { petId, name, species } = input;
 
-      if (logger) {
-        logger.info('🤖 AI Profile Enrichment started', { petId, name, species });
-      }
+      logger.info('🤖 AI Profile Enrichment started', { petId, name, species });
 
       // Stream enrichment started event
       if (streams && traceId) {
@@ -1252,9 +1190,7 @@ Keep it positive, realistic, and adoption-focused.`;
             adopterHints: `${name} would do well in a caring home with patience and love.`
           };
           
-          if (logger) {
-            logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError.message });
-          }
+          logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError.message });
         }
 
         const updatedPet = updateProfile(petId, profile);
@@ -1263,17 +1199,15 @@ Keep it positive, realistic, and adoption-focused.`;
           throw new Error(`Pet not found: ${petId}`);
         }
 
-        if (logger) {
-          logger.info('✅ AI Profile Enrichment completed', { 
-            petId, 
-            profile: {
-              bio: profile.bio.substring(0, 50) + '...',
-              breedGuess: profile.breedGuess,
-              temperamentTags: profile.temperamentTags,
-              adopterHints: profile.adopterHints.substring(0, 50) + '...'
-            }
-          });
-        }
+        logger.info('✅ AI Profile Enrichment completed', { 
+          petId, 
+          profile: {
+            bio: profile.bio.substring(0, 50) + '...',
+            breedGuess: profile.breedGuess,
+            temperamentTags: profile.temperamentTags,
+            adopterHints: profile.adopterHints.substring(0, 50) + '...'
+          }
+        });
 
         // Stream each field as it's processed
         const enrichmentFields = ['bio', 'breedGuess', 'temperamentTags', 'adopterHints'];
@@ -1297,12 +1231,10 @@ Keep it positive, realistic, and adoption-focused.`;
         }
 
       } catch (error) {
-        if (logger) {
-          logger.error('❌ AI Profile Enrichment failed', { 
-            petId, 
-            error: error.message 
-          });
-        }
+        logger.error('❌ AI Profile Enrichment failed', { 
+          petId, 
+          error: error.message 
+        });
 
         const fallbackProfile = {
           bio: `${name} is a lovely ${species} with a unique personality, ready to find their forever home.`,

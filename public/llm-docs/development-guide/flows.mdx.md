@@ -21,6 +21,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/resources', method: 'POST' },
   ],
+  enqueues: [],
   flows: ['resource-management'],
 } as const satisfies StepConfig
 ```
@@ -35,6 +36,7 @@ config = {
     "triggers": [
         {"type": "api", "path": "/resources", "method": "POST"}
     ],
+    "enqueues": [],
     "flows": ["resource-management"]
 }
 ```
@@ -43,12 +45,13 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'CreateResource',
   description: 'Create a new resource',
   triggers: [
     { type: 'api', path: '/resources', method: 'POST' },
   ],
+  enqueues: [],
   flows: ['resource-management']
 }
 ```
@@ -123,7 +126,7 @@ async def handler(req, ctx):
 <Tab value='JavaScript'>
 
 ```javascript title="src/create-resource.step.js"
-const config = {
+export const config = {
   name: 'CreateResource',
   description: 'Create a new resource and trigger email',
   triggers: [
@@ -133,7 +136,7 @@ const config = {
   flows: ['resource-management']
 }
 
-const handler = async (req, { enqueue, logger }) => {
+export const handler = async (req, { enqueue, logger }) => {
   logger.info('Creating resource', { title: req.body.title })
 
   await enqueue({
@@ -143,8 +146,6 @@ const handler = async (req, { enqueue, logger }) => {
 
   return { status: 201, body: { id: '123' } }
 }
-
-module.exports = { config, handler }
 ```
 
 </Tab>
@@ -164,6 +165,7 @@ export const config = {
   triggers: [
     { type: 'queue', topic: 'send-email' },
   ],
+  enqueues: [],
   flows: ['resource-management'],
 } as const satisfies StepConfig
 
@@ -182,6 +184,7 @@ config = {
     "triggers": [
         {"type": "queue", "topic": "send-email"}
     ],
+    "enqueues": [],
     "flows": ["resource-management"]
 }
 
@@ -193,20 +196,19 @@ async def handler(input, ctx):
 <Tab value='JavaScript'>
 
 ```javascript title="src/send-email.step.js"
-const config = {
+export const config = {
   name: 'SendEmail',
   description: 'Send an email notification',
   triggers: [
     { type: 'queue', topic: 'send-email' },
   ],
+  enqueues: [],
   flows: ['resource-management']
 }
 
-const handler = async (input, { logger }) => {
+export const handler = async (input, { logger }) => {
   logger.info('Sending email', { email: input.email })
 }
-
-module.exports = { config, handler }
 ```
 
 </Tab>
@@ -232,6 +234,7 @@ export const config = {
   triggers: [
     { type: 'queue', topic: 'send-email' },
   ],
+  enqueues: [],
   flows: ['resource-management', 'user-onboarding'],
 } as const satisfies StepConfig
 ```
@@ -246,6 +249,7 @@ config = {
     "triggers": [
         {"type": "queue", "topic": "send-email"}
     ],
+    "enqueues": [],
     "flows": ["resource-management", "user-onboarding"]
 }
 ```
@@ -254,12 +258,13 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'SendEmail',
   description: 'Send an email notification',
   triggers: [
     { type: 'queue', topic: 'send-email' },
   ],
+  enqueues: [],
   flows: ['resource-management', 'user-onboarding']
 }
 ```
@@ -285,6 +290,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/health', method: 'GET' },
   ],
+  enqueues: [],
 } as const satisfies StepConfig
 ```
 
@@ -297,7 +303,8 @@ config = {
     "description": "Health check endpoint",
     "triggers": [
         {"type": "api", "path": "/health", "method": "GET"}
-    ]
+    ],
+    "enqueues": []
 }
 ```
 
@@ -305,12 +312,13 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'HealthCheck',
   description: 'Health check endpoint',
   triggers: [
     { type: 'api', path: '/health', method: 'GET' },
   ],
+  enqueues: [],
 }
 ```
 
@@ -341,6 +349,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/resources', method: 'POST' },
   ],
+  enqueues: [],
   virtualEnqueues: ['approval.required'],
   flows: ['resource-management'],
 } as const satisfies StepConfig
@@ -356,6 +365,7 @@ config = {
     "triggers": [
         {"type": "api", "path": "/resources", "method": "POST"}
     ],
+    "enqueues": [],
     "virtualEnqueues": ["approval.required"],
     "flows": ["resource-management"]
 }
@@ -365,12 +375,13 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'CreateResource',
   description: 'Create a resource requiring approval',
   triggers: [
     { type: 'api', path: '/resources', method: 'POST' },
   ],
+  enqueues: [],
   virtualEnqueues: ['approval.required'],
   flows: ['resource-management']
 }
@@ -399,6 +410,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/send', method: 'POST' },
   ],
+  enqueues: [],
   virtualEnqueues: [
     { topic: 'email-sent', label: 'Email delivered' },
     { topic: 'email-failed', label: 'Failed to send', conditional: true },
@@ -417,6 +429,7 @@ config = {
     "triggers": [
         {"type": "api", "path": "/send", "method": "POST"}
     ],
+    "enqueues": [],
     "virtualEnqueues": [
         {"topic": "email-sent", "label": "Email delivered"},
         {"topic": "email-failed", "label": "Failed to send", "conditional": True}
@@ -429,12 +442,13 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'SendEmail',
   description: 'Send email notifications',
   triggers: [
     { type: 'api', path: '/send', method: 'POST' },
   ],
+  enqueues: [],
   virtualEnqueues: [
     { topic: 'email-sent', label: 'Email delivered' },
     { topic: 'email-failed', label: 'Failed to send', conditional: true }
@@ -482,15 +496,13 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   type: 'noop',
   name: 'ApprovalGate',
   virtualEnqueues: ['approved'],
   virtualSubscribes: ['approval.required'],
   flows: ['resource-management']
 }
-
-module.exports = { config }
 ```
 
 </Tab>

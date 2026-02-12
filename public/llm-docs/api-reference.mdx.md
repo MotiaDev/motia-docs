@@ -125,7 +125,7 @@ type StreamTrigger = {
 Use these helpers for concise trigger definitions:
 
 ```typescript
-import { api, queue, cron, state, stream } from 'iii'
+import { api, queue, cron, state, stream } from 'motia'
 
 api(method: ApiRouteMethod, path: string, options?: ApiOptions, condition?: TriggerCondition): ApiTrigger
 queue(topic: string, options?: QueueOptions, condition?: TriggerCondition): QueueTrigger
@@ -151,9 +151,9 @@ type EnqueueData<T> = { topic: string; data: T; messageGroupId?: string }
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api, queue, cron } from 'iii'
+import { StepConfig, Handlers, api, queue, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'CreateUser',
   description: 'Creates a new user',
   triggers: [
@@ -178,7 +178,7 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'CreateUser',
   description: 'Creates a new user',
   triggers: [
@@ -245,9 +245,9 @@ config = {
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, queue } from 'iii'
+import { StepConfig, queue } from 'motia'
 
-const config = {
+export const config = {
   name: 'ProcessOrder',
   description: 'Processes new orders',
   triggers: [
@@ -271,7 +271,7 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'ProcessOrder',
   description: 'Processes new orders',
   triggers: [
@@ -345,9 +345,9 @@ config = {
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, cron } from 'iii'
+import { StepConfig, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'DailyReport',
   description: 'Generates daily reports at 9 AM',
   triggers: [
@@ -365,11 +365,13 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+import { cron } from 'motia'
+
+export const config = {
   name: 'DailyReport',
   description: 'Generates daily reports at 9 AM',
   triggers: [
-    { type: 'cron', expression: '0 9 * * *' },
+    cron('0 9 * * *'),
   ],
   enqueues: ['report.generated'],
   virtualEnqueues: ['email.sent'],
@@ -410,9 +412,9 @@ A single step can respond to multiple trigger types:
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, api, queue, cron } from 'iii'
+import { StepConfig, api, queue, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'UserSync',
   description: 'Syncs user data from multiple sources',
   triggers: [
@@ -429,13 +431,15 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+import { cron } from 'motia'
+
+export const config = {
   name: 'UserSync',
   description: 'Syncs user data from multiple sources',
   triggers: [
     { type: 'api', method: 'POST', path: '/users/sync' },
     { type: 'queue', topic: 'user.updated' },
-    { type: 'cron', expression: '0 */6 * * *' },
+    cron('0 */6 * * *'),
   ],
   enqueues: ['user.synced'],
   flows: ['user-management'],
@@ -455,9 +459,9 @@ Use this for visual-only nodes in the console (no code execution).
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig } from 'iii'
+import { StepConfig } from 'motia'
 
-const config = {
+export const config = {
   name: 'ManualApproval',
   description: 'Manager approval gate',
   triggers: [],
@@ -471,7 +475,7 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'ManualApproval',
   description: 'Manager approval gate',
   triggers: [],
@@ -527,9 +531,9 @@ Receives a request, returns a response.
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api } from 'iii'
+import { StepConfig, Handlers, api } from 'motia'
 
-const config = {
+export const config = {
   name: 'CreateUser',
   triggers: [api('POST', '/users')],
   enqueues: ['user.created'],
@@ -556,7 +560,7 @@ export const handler: Handlers<typeof config> = async (req, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (req, ctx) => {
+export const handler = async (req, ctx) => {
   const { name, email } = req.body
   const userId = crypto.randomUUID()
 
@@ -609,9 +613,9 @@ Receives queue data, processes it. No return value.
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, queue } from 'iii'
+import { StepConfig, Handlers, queue } from 'motia'
 
-const config = {
+export const config = {
   name: 'ProcessOrder',
   triggers: [queue('order.created', { input: z.object({ orderId: z.string(), amount: z.number() }) })],
   enqueues: ['order.processed'],
@@ -640,7 +644,7 @@ export const handler: Handlers<typeof config> = async (input, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, ctx) => {
+export const handler = async (input, ctx) => {
   const data = ctx.getData()
   const { orderId, amount } = data
 
@@ -694,9 +698,9 @@ Runs on a schedule. Only receives context.
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, cron } from 'iii'
+import { StepConfig, Handlers, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'DailyCleanup',
   triggers: [cron('0 0 * * *')],
   enqueues: [],
@@ -720,7 +724,7 @@ export const handler: Handlers<typeof config> = async (input, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, ctx) => {
+export const handler = async (input, ctx) => {
   ctx.logger.info('Running daily cleanup')
 
   const oldOrders = await ctx.state.list('orders')
@@ -764,9 +768,9 @@ For steps with multiple triggers, use `ctx.match()` to handle each trigger type:
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api, queue, cron } from 'iii'
+import { StepConfig, Handlers, api, queue, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'UserSync',
   triggers: [
     api('POST', '/users/sync'),
@@ -801,7 +805,7 @@ export const handler: Handlers<typeof config> = async (input, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, ctx) => {
+export const handler = async (input, ctx) => {
   return ctx.match({
     api: async (request) => {
       const { userId } = request.body
@@ -1202,7 +1206,7 @@ export const handler: Handlers<typeof config> = async (req, { traceId, logger })
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (req, { traceId, logger }) => {
+export const handler = async (req, { traceId, logger }) => {
   logger.info('Processing request', { traceId })
   return { status: 200, body: { traceId } }
 }
@@ -1271,7 +1275,7 @@ Intercepts API requests before and after the handler.
 <Tab value='TypeScript'>
 
 ```typescript
-import { ApiMiddleware } from 'iii'
+import { ApiMiddleware } from 'motia'
 
 export const authMiddleware: ApiMiddleware = async (req, ctx, next) => {
   const token = req.headers.authorization
@@ -1358,7 +1362,7 @@ export const handler: Handlers<typeof config> = async (req, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (req, ctx) => {
+export const handler = async (req, ctx) => {
   const userId = req.pathParams.id
   const page = req.queryParams.page
   const limit = req.queryParams.limit
@@ -1478,7 +1482,7 @@ interface StreamConfig {
 <Tab value='TypeScript'>
 
 ```typescript title="src/chat-messages.stream.ts"
-import { StreamConfig } from 'iii'
+import { StreamConfig } from 'motia'
 import { z } from 'zod'
 
 export const config: StreamConfig = {

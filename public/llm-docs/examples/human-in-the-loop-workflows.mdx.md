@@ -752,20 +752,20 @@ A scheduled job periodically scans for orders stuck in approval:
 <Tab value='TypeScript'>
 
 ```typescript title="src/06-detect-timeouts.step.ts"
-import { type Handlers, type StepConfig } from 'motia'
+import { type Handlers, type StepConfig, cron } from 'motia'
 
 export const config = {
   name: 'DetectTimeouts',
   description: 'Find orders stuck awaiting approval and escalate',
   triggers: [
-    { type: 'cron', cron: '*/5 * * * *' },
+    cron('*/5 * * * *'),
   ],
   enqueues: [],
   flows: ['order-approval'],
 } as const satisfies StepConfig
 
 export const handler: Handlers<typeof config> = async ({ state, logger }) => {
-  const orders = await state.getGroup('orders')
+  const orders = await state.list('orders')
   const now = Date.now()
   const timeoutMs = 10 * 60 * 1000  // 10 minutes (demo - use 24 hours in production)
   
@@ -828,14 +828,14 @@ config = {
     "name": "DetectTimeouts",
     "description": "Find orders stuck awaiting approval and escalate",
     "triggers": [
-        {"type": "cron", "cron": "*/5 * * * *"}
+        {"type": "cron", "expression": "*/5 * * * *"}
     ],
     "enqueues": [],
     "flows": ["order-approval"]
 }
 
 async def handler(context):
-    orders = await context.state.get_group("orders")
+    orders = await context.state.list("orders")
     now = time.time() * 1000  # Convert to milliseconds
     timeout_ms = 10 * 60 * 1000  # 10 minutes (demo - use 24 hours in production)
     
@@ -883,18 +883,20 @@ async def handler(context):
 <Tab value='JavaScript'>
 
 ```javascript title="src/detect-timeouts.step.js"
+import { cron } from 'motia'
+
 export const config = {
   name: 'DetectTimeouts',
   description: 'Find orders stuck awaiting approval and escalate',
   triggers: [
-    { type: 'cron', cron: '*/5 * * * *' },
+    cron('*/5 * * * *'),
   ],
   enqueues: [],
   flows: ['order-approval'],
 }
 
 export const handler = async ({ state, logger }) => {
-  const orders = await state.getGroup('orders')
+  const orders = await state.list('orders')
   const now = Date.now()
   const timeoutMs = 10 * 60 * 1000  // 10 minutes (demo - use 24 hours in production)
   
