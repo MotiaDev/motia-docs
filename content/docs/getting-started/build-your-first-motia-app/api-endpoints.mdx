@@ -172,7 +172,7 @@ View on GitHub:
         "flows": ["PetManagement"]
     }
 
-    async def handler(req, ctx=None):
+    async def handler(req, ctx):
         b = req.get("body") or {}
         name = b.get("name")
         species = b.get("species")
@@ -295,7 +295,7 @@ View on GitHub:
         "flows": ["PetManagement"]
     }
 
-    async def handler(req, ctx=None):
+    async def handler(req, ctx):
         return {"status": 200, "body": pet_store.list_all()}
     ```
   </Tab>
@@ -389,7 +389,7 @@ View on GitHub:
         "flows": ["PetManagement"]
     }
 
-    async def handler(req, ctx=None):
+    async def handler(req, ctx):
         pid = req.get("pathParams", {}).get("id")
         pet = pet_store.get(pid)
         return {"status": 200, "body": pet} if pet else {"status": 404, "body": {"message": "Not found"}}
@@ -503,7 +503,7 @@ View on GitHub:
         "flows": ["PetManagement"]
     }
 
-    async def handler(req, ctx=None):
+    async def handler(req, ctx):
         pid = req.get("pathParams", {}).get("id")
         b = req.get("body") or {}
         patch = {}
@@ -624,7 +624,7 @@ View on GitHub:
         "flows": ["PetManagement"]
     }
 
-    async def handler(req, ctx=None):
+    async def handler(req, ctx):
         pid = req.get("pathParams", {}).get("id")
         ok = pet_store.remove(pid)
         return {"status": 204, "body": {}} if ok else {"status": 404, "body": {"message": "Not found"}}

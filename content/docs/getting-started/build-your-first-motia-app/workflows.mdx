@@ -223,17 +223,13 @@ View on GitHub:
     export const handler: Handlers<typeof config> = async (input, { enqueue, logger }) => {
       const { petId, event: eventType, requestedStatus, automatic } = input;
 
-      if (logger) {
-        const logMessage = automatic ? '🤖 Automatic progression' : '🔄 Lifecycle orchestrator processing';
-        logger.info(logMessage, { petId, eventType, requestedStatus, automatic });
-      }
+      const logMessage = automatic ? '🤖 Automatic progression' : '🔄 Lifecycle orchestrator processing';
+      logger.info(logMessage, { petId, eventType, requestedStatus, automatic });
 
       try {
         const pet = TSStore.get(petId);
         if (!pet) {
-          if (logger) {
-            logger.error('❌ Pet not found for lifecycle transition', { petId, eventType });
-          }
+          logger.error('❌ Pet not found for lifecycle transition', { petId, eventType });
           return;
         }
 
@@ -257,15 +253,13 @@ View on GitHub:
             ? `Invalid transition: cannot change from ${pet.status} to ${requestedStatus}`
             : `No transition rule found for ${eventType} from ${pet.status}`;
             
-          if (logger) {
-            logger.warn('⚠️ Transition rejected', { 
-              petId, 
-              currentStatus: pet.status, 
-              requestedStatus,
-              eventType,
-              reason
-            });
-          }
+          logger.warn('⚠️ Transition rejected', { 
+            petId, 
+            currentStatus: pet.status, 
+            requestedStatus,
+            eventType,
+            reason
+          });
           
           // Transition rejected - no event emission needed
           return;
@@ -273,13 +267,11 @@ View on GitHub:
 
         // Check for idempotency
         if (pet.status === rule.to) {
-          if (logger) {
-            logger.info('✅ Already in target status', { 
-              petId, 
-              status: pet.status,
-              eventType
-            });
-          }
+          logger.info('✅ Already in target status', { 
+            petId, 
+            status: pet.status,
+            eventType
+          });
           return;
         }
 
@@ -288,41 +280,33 @@ View on GitHub:
         const updatedPet = TSStore.updateStatus(petId, rule.to);
         
         if (!updatedPet) {
-          if (logger) {
-            logger.error('❌ Failed to update pet status', { petId, oldStatus, newStatus: rule.to });
-          }
+          logger.error('❌ Failed to update pet status', { petId, oldStatus, newStatus: rule.to });
           return;
         }
 
-        if (logger) {
-          logger.info('✅ Lifecycle transition completed', {
-            petId,
-            oldStatus,
-            newStatus: rule.to,
-            eventType,
-            description: rule.description,
-            timestamp: Date.now()
-          });
-        }
+        logger.info('✅ Lifecycle transition completed', {
+          petId,
+          oldStatus,
+          newStatus: rule.to,
+          eventType,
+          description: rule.description,
+          timestamp: Date.now()
+        });
 
         // Transition completed successfully
-        if (logger) {
-          logger.info('✅ Pet status transition completed', { 
-            petId, 
-            oldStatus, 
-            newStatus: rule.to, 
-            eventType, 
-            description: rule.description 
-          });
-        }
+        logger.info('✅ Pet status transition completed', { 
+          petId, 
+          oldStatus, 
+          newStatus: rule.to, 
+          eventType, 
+          description: rule.description 
+        });
 
         // Check for automatic progressions after successful transition
         await processAutomaticProgression(petId, rule.to, enqueue, logger);
 
       } catch (error: any) {
-        if (logger) {
-          logger.error('❌ Lifecycle orchestrator error', { petId, eventType, error: error.message });
-        }
+        logger.error('❌ Lifecycle orchestrator error', { petId, eventType, error: error.message });
       }
     };
 
@@ -336,13 +320,11 @@ View on GitHub:
 
       const progression = automaticProgressions[currentStatus];
       if (progression) {
-        if (logger) {
-          logger.info('🤖 Processing automatic progression', { 
-            petId, 
-            currentStatus, 
-            nextStatus: progression.to 
-          });
-        }
+        logger.info('🤖 Processing automatic progression', { 
+          petId, 
+          currentStatus, 
+          nextStatus: progression.to 
+        });
 
         // Find the transition rule for automatic progression
         const rule = TRANSITION_RULES.find(r => 
@@ -357,32 +339,28 @@ View on GitHub:
           const updatedPet = TSStore.updateStatus(petId, rule.to);
           
           if (updatedPet) {
-            if (logger) {
-              logger.info('✅ Automatic progression completed', {
-                petId,
-                oldStatus,
-                newStatus: rule.to,
-                description: progression.description,
-                timestamp: Date.now()
-              });
-            }
+            logger.info('✅ Automatic progression completed', {
+              petId,
+              oldStatus,
+              newStatus: rule.to,
+              description: progression.description,
+              timestamp: Date.now()
+            });
 
             // Automatic progression completed successfully
-            if (logger) {
-              logger.info('✅ Automatic progression completed', { 
-                petId, 
-                oldStatus, 
-                newStatus: rule.to, 
-                description: progression.description 
-              });
-            }
+            logger.info('✅ Automatic progression completed', { 
+              petId, 
+              oldStatus, 
+              newStatus: rule.to, 
+              description: progression.description 
+            });
 
             // Check for further automatic progressions (for chaining like recovered → healthy → available)
             await processAutomaticProgression(petId, rule.to, enqueue, logger);
-          } else if (logger) {
+          } else {
             logger.error('❌ Failed to apply automatic progression', { petId, oldStatus, newStatus: rule.to });
           }
-        } else if (logger) {
+        } else {
           logger.warn('⚠️ No transition rule found for automatic progression', { 
             petId, 
             currentStatus, 
@@ -472,10 +450,7 @@ View on GitHub:
         "flows": ["PyPetManagement"]
     }
 
-    async def handler(input_data, ctx=None):
-        logger = getattr(ctx, 'logger', None) if ctx else None
-        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
-        
+    async def handler(input, ctx):
         try:
             import sys
             import os
@@ -483,24 +458,21 @@ View on GitHub:
             sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
             from services import pet_store
         except ImportError:
-            if logger:
-                logger.error('❌ Lifecycle orchestrator failed - import error')
+            ctx.logger.error('❌ Lifecycle orchestrator failed - import error')
             return
 
-        pet_id = input_data.get('petId')
-        event_type = input_data.get('event')
-        requested_status = input_data.get('requestedStatus')
-        automatic = input_data.get('automatic', False)
+        pet_id = input.get('petId')
+        event_type = input.get('event')
+        requested_status = input.get('requestedStatus')
+        automatic = input.get('automatic', False)
 
-        if logger:
-            log_message = '🤖 Automatic progression' if automatic else '🔄 Lifecycle orchestrator processing'
-            logger.info(log_message, {'petId': pet_id, 'eventType': event_type, 'requestedStatus': requested_status, 'automatic': automatic})
+        log_message = '🤖 Automatic progression' if automatic else '🔄 Lifecycle orchestrator processing'
+        ctx.logger.info(log_message, {'petId': pet_id, 'eventType': event_type, 'requestedStatus': requested_status, 'automatic': automatic})
 
         try:
             pet = pet_store.get(pet_id)
             if not pet:
-                if logger:
-                    logger.error('❌ Pet not found for lifecycle transition', {'petId': pet_id, 'eventType': event_type})
+                ctx.logger.error('❌ Pet not found for lifecycle transition', {'petId': pet_id, 'eventType': event_type})
                 return
 
             # For status update requests, find the rule based on requested status
@@ -524,37 +496,34 @@ View on GitHub:
                          if event_type == 'status.update.requested' 
                          else f"No transition rule found for {event_type} from {pet['status']}")
                     
-                if logger:
-                    logger.warn('⚠️ Transition rejected', {
+                ctx.logger.warn('⚠️ Transition rejected', {
+                    'petId': pet_id,
+                    'currentStatus': pet['status'],
+                    'requestedStatus': requested_status,
+                    'eventType': event_type,
+                    'reason': reason
+                })
+                
+                await ctx.enqueue({
+                    'topic': 'py.lifecycle.transition.rejected',
+                    'data': {
                         'petId': pet_id,
                         'currentStatus': pet['status'],
                         'requestedStatus': requested_status,
                         'eventType': event_type,
-                        'reason': reason
-                    })
-                
-                if enqueue:
-                    await enqueue({
-                        'topic': 'py.lifecycle.transition.rejected',
-                        'data': {
-                            'petId': pet_id,
-                            'currentStatus': pet['status'],
-                            'requestedStatus': requested_status,
-                            'eventType': event_type,
-                            'reason': reason,
-                            'timestamp': int(time.time() * 1000)
-                        }
-                    })
+                        'reason': reason,
+                        'timestamp': int(time.time() * 1000)
+                    }
+                })
                 return
 
             # Check for idempotency
             if pet['status'] == rule['to']:
-                if logger:
-                    logger.info('✅ Already in target status', {
-                        'petId': pet_id,
-                        'status': pet['status'],
-                        'eventType': event_type
-                    })
+                ctx.logger.info('✅ Already in target status', {
+                    'petId': pet_id,
+                    'status': pet['status'],
+                    'eventType': event_type
+                })
                 return
 
             # Apply the transition
@@ -562,41 +531,37 @@ View on GitHub:
             updated_pet = pet_store.update_status(pet_id, rule['to'])
             
             if not updated_pet:
-                if logger:
-                    logger.error('❌ Failed to update pet status', {'petId': pet_id, 'oldStatus': old_status, 'newStatus': rule['to']})
+                ctx.logger.error('❌ Failed to update pet status', {'petId': pet_id, 'oldStatus': old_status, 'newStatus': rule['to']})
                 return
 
-            if logger:
-                logger.info('✅ Lifecycle transition completed', {
+            ctx.logger.info('✅ Lifecycle transition completed', {
+                'petId': pet_id,
+                'oldStatus': old_status,
+                'newStatus': rule['to'],
+                'eventType': event_type,
+                'description': rule['description'],
+                'timestamp': int(time.time() * 1000)
+            })
+
+            await ctx.enqueue({
+                'topic': 'py.lifecycle.transition.completed',
+                'data': {
                     'petId': pet_id,
                     'oldStatus': old_status,
                     'newStatus': rule['to'],
                     'eventType': event_type,
                     'description': rule['description'],
                     'timestamp': int(time.time() * 1000)
-                })
+                }
+            })
 
-            if enqueue:
-                await enqueue({
-                    'topic': 'py.lifecycle.transition.completed',
-                    'data': {
-                        'petId': pet_id,
-                        'oldStatus': old_status,
-                        'newStatus': rule['to'],
-                        'eventType': event_type,
-                        'description': rule['description'],
-                        'timestamp': int(time.time() * 1000)
-                    }
-                })
-
-                # Check for automatic progressions after successful transition
-                await check_automatic_progressions(pet_id, rule['to'], enqueue, logger)
+            # Check for automatic progressions after successful transition
+            await check_automatic_progressions(pet_id, rule['to'], ctx)
 
         except Exception as error:
-            if logger:
-                logger.error('❌ Lifecycle orchestrator error', {'petId': pet_id, 'eventType': event_type, 'error': str(error)})
+            ctx.logger.error('❌ Lifecycle orchestrator error', {'petId': pet_id, 'eventType': event_type, 'error': str(error)})
 
-    async def check_automatic_progressions(pet_id, current_status, enqueue, logger):
+    async def check_automatic_progressions(pet_id, current_status, ctx):
         # Define automatic progressions
         automatic_progressions = {
             'healthy': {'to': 'available', 'description': 'Automatic progression - pet ready for adoption'},
@@ -606,16 +571,15 @@ View on GitHub:
 
         progression = automatic_progressions.get(current_status)
         if progression:
-            if logger:
-                logger.info('🤖 Orchestrator triggering automatic progression', {
-                    'petId': pet_id,
-                    'currentStatus': current_status,
-                    'nextStatus': progression['to']
-                })
+            ctx.logger.info('🤖 Orchestrator triggering automatic progression', {
+                'petId': pet_id,
+                'currentStatus': current_status,
+                'nextStatus': progression['to']
+            })
 
-            # Emit automatic progression event with delay
+            # Automatic progression event with delay
             import asyncio
-            async def delayed_emit():
+            async def delayed_progression():
                 await asyncio.sleep(1.5)  # Slightly longer delay to ensure current transition completes
                 # Get fresh pet status to ensure we have the latest state
                 try:
@@ -625,7 +589,7 @@ View on GitHub:
                     from services import pet_store
                     fresh_pet = pet_store.get(pet_id)
                     if fresh_pet and fresh_pet['status'] == current_status:
-                        await enqueue({
+                        await ctx.enqueue({
                             'topic': 'py.pet.status.update.requested',
                             'data': {
                                 'petId': pet_id,
@@ -635,17 +599,16 @@ View on GitHub:
                                 'automatic': True
                             }
                         })
-                    elif logger:
-                        logger.warn('⚠️ Automatic progression skipped - pet status changed', {
+                    else:
+                        ctx.logger.warn('⚠️ Automatic progression skipped - pet status changed', {
                             'petId': pet_id,
                             'expectedStatus': current_status,
                             'actualStatus': fresh_pet['status'] if fresh_pet else None
                         })
                 except Exception as e:
-                    if logger:
-                        logger.error('❌ Automatic progression error', {'petId': pet_id, 'error': str(e)})
+                    ctx.logger.error('❌ Automatic progression error', {'petId': pet_id, 'error': str(e)})
             
-            asyncio.create_task(delayed_emit())
+            asyncio.create_task(delayed_progression())
     ```
   </Tab>
   <Tab value="JavaScript">
@@ -728,21 +691,16 @@ View on GitHub:
       flows: ['JsPetManagement'],
     }
 
-    export const handler = async (input, context) => {
-      const { enqueue, logger } = context || {};
+    export const handler = async (input, { enqueue, logger }) => {
       const { petId, event: eventType, requestedStatus, automatic } = input;
 
-      if (logger) {
-        const logMessage = automatic ? '🤖 Automatic progression' : '🔄 Lifecycle orchestrator processing';
-        logger.info(logMessage, { petId, eventType, requestedStatus, automatic });
-      }
+      const logMessage = automatic ? '🤖 Automatic progression' : '🔄 Lifecycle orchestrator processing';
+      logger.info(logMessage, { petId, eventType, requestedStatus, automatic });
 
       try {
         const pet = get(petId);
         if (!pet) {
-          if (logger) {
-            logger.error('❌ Pet not found for lifecycle transition', { petId, eventType });
-          }
+          logger.error('❌ Pet not found for lifecycle transition', { petId, eventType });
           return;
         }
 
@@ -766,41 +724,35 @@ View on GitHub:
             ? `Invalid transition: cannot change from ${pet.status} to ${requestedStatus}`
             : `No transition rule found for ${eventType} from ${pet.status}`;
             
-          if (logger) {
-            logger.warn('⚠️ Transition rejected', { 
-              petId, 
-              currentStatus: pet.status, 
+          logger.warn('⚠️ Transition rejected', { 
+            petId, 
+            currentStatus: pet.status, 
+            requestedStatus,
+            eventType,
+            reason
+          });
+          
+          await enqueue({
+            topic: 'js.lifecycle.transition.rejected',
+            data: {
+              petId,
+              currentStatus: pet.status,
               requestedStatus,
               eventType,
-              reason
-            });
-          }
-          
-          if (enqueue) {
-            await enqueue({
-              topic: 'js.lifecycle.transition.rejected',
-              data: {
-                petId,
-                currentStatus: pet.status,
-                requestedStatus,
-                eventType,
-                reason,
-                timestamp: Date.now()
-              }
-            })
-          }
+              reason,
+              timestamp: Date.now()
+            }
+          })
           return;
         }
 
         // Check for idempotency
         if (pet.status === rule.to) {
-          if (logger) {
-            logger.info('✅ Already in target status', { 
-              petId, 
-              status: pet.status,
-              eventType
-            });
-          }
+          logger.info('✅ Already in target status', { 
+            petId, 
+            status: pet.status,
+            eventType
+          });
           return;
         }
 
@@ -809,44 +761,36 @@ View on GitHub:
         const updatedPet = updateStatus(petId, rule.to);
         
         if (!updatedPet) {
-          if (logger) {
-            logger.error('❌ Failed to update pet status', { petId, oldStatus, newStatus: rule.to });
-          }
+          logger.error('❌ Failed to update pet status', { petId, oldStatus, newStatus: rule.to });
           return;
         }
 
-        if (logger) {
-          logger.info('✅ Lifecycle transition completed', {
+        logger.info('✅ Lifecycle transition completed', {
+          petId,
+          oldStatus,
+          newStatus: rule.to,
+          eventType,
+          description: rule.description,
+          timestamp: Date.now()
+        });
+
+        await enqueue({
+          topic: 'js.lifecycle.transition.completed',
+          data: {
             petId,
             oldStatus,
             newStatus: rule.to,
             eventType,
             description: rule.description,
             timestamp: Date.now()
-          });
-        }
+          }
+        });
 
-        if (enqueue) {
-          await enqueue({
-            topic: 'js.lifecycle.transition.completed',
-            data: {
-              petId,
-              oldStatus,
-              newStatus: rule.to,
-              eventType,
-              description: rule.description,
-              timestamp: Date.now()
-            }
-          });
-
-          // Check for automatic progressions after successful transition
-          await processAutomaticProgression(petId, rule.to, enqueue, logger);
-        }
+        // Check for automatic progressions after successful transition
+        await processAutomaticProgression(petId, rule.to, enqueue, logger);
 
       } catch (error) {
-        if (logger) {
-          logger.error('❌ Lifecycle orchestrator error', { petId, eventType, error: error.message });
-        }
+        logger.error('❌ Lifecycle orchestrator error', { petId, eventType, error: error.message });
       }
     };
 
@@ -860,13 +804,11 @@ View on GitHub:
 
       const progression = automaticProgressions[currentStatus];
       if (progression) {
-        if (logger) {
-          logger.info('🤖 Processing automatic progression', { 
-            petId, 
-            currentStatus, 
-            nextStatus: progression.to 
-          });
-        }
+        logger.info('🤖 Processing automatic progression', { 
+          petId, 
+          currentStatus, 
+          nextStatus: progression.to 
+        });
 
         // Find the transition rule for automatic progression
         const rule = TRANSITION_RULES.find(r => 
@@ -881,37 +823,33 @@ View on GitHub:
           const updatedPet = updateStatus(petId, rule.to);
           
           if (updatedPet) {
-            if (logger) {
-              logger.info('✅ Automatic progression completed', {
+            logger.info('✅ Automatic progression completed', {
+              petId,
+              oldStatus,
+              newStatus: rule.to,
+              description: progression.description,
+              timestamp: Date.now()
+            });
+
+            await enqueue({
+              topic: 'js.lifecycle.transition.completed',
+              data: {
                 petId,
                 oldStatus,
                 newStatus: rule.to,
+                eventType: 'status.update.requested',
                 description: progression.description,
+                automatic: true,
                 timestamp: Date.now()
-              });
-            }
+              }
+            });
 
-            if (enqueue) {
-              await enqueue({
-                topic: 'js.lifecycle.transition.completed',
-                data: {
-                  petId,
-                  oldStatus,
-                  newStatus: rule.to,
-                  eventType: 'status.update.requested',
-                  description: progression.description,
-                  automatic: true,
-                  timestamp: Date.now()
-                }
-              });
-
-              // Check for further automatic progressions (for chaining like recovered → healthy → available)
-              await processAutomaticProgression(petId, rule.to, enqueue, logger);
-            }
-          } else if (logger) {
+            // Check for further automatic progressions (for chaining like recovered → healthy → available)
+            await processAutomaticProgression(petId, rule.to, enqueue, logger);
+          } else {
             logger.error('❌ Failed to apply automatic progression', { petId, oldStatus, newStatus: rule.to });
           }
-        } else if (logger) {
+        } else {
           logger.warn('⚠️ No transition rule found for automatic progression', { 
             petId, 
             currentStatus, 
