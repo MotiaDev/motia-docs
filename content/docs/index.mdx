@@ -1,7 +1,6 @@
 ---
 title: Welcome to Motia
 description: "Build production-grade backends with a single primitive. APIs, background jobs, Queues, Workflows, and AI agents - unified in one system with built-in State management, Streaming, and Observability."
-hideCards: true
 ---
 
 **Motia** is a unified backend framework that combines APIs, background jobs, workflows, AI agents, streaming, and observability into a single runtime. Instead of juggling separate frameworks and services, everything is built around one core primitive: the **Step**.
@@ -22,15 +21,21 @@ The best way to understand Motia is to try it:
   Motia is powered by iii. Install iii by following the instructions at [iii.dev/docs](https://iii.dev/docs).
 </Callout>
 
-### Create a project
+### Clone the example project
 
 ```bash
-npx motia@latest create -t quickstart
+git clone git@github.com:MotiaDev/motia-iii-example.git
 ```
 
-The installer will guide you through setting up your project.
+<Callout title="Motia powered by iii is in alpha" type="info">
+We will have a tool dedicated to creating motia projects soon.
+</Callout>
 
-## Next Steps
+### Try out the Quickstart
+
+Now head on over to the Quickstart to run some Motia code!
+
+{/* ## Next Steps
 
 <Cards>
   <Card title="Quickstart Tutorial" href="/docs/getting-started/quick-start">
@@ -39,4 +44,4 @@ The installer will guide you through setting up your project.
   <Card title="Core Concepts" href="/docs/concepts/overview">
     Learn how Steps, Flows, and the event-driven model simplify backend development.
   </Card>
-</Cards>
+</Cards> */}

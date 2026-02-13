@@ -1,11 +1,10 @@
 ---
 title: Quick Start
 description: Get up and running with a new Motia project in just a few seconds.
-hideCards: true
 ---
 
 <Callout title="Start with a template" type="info">
-Make sure to create a new project with `npx motia@latest create -t quickstart` before proceeding.
+Make sure to create a new project with `git clone git@github.com:MotiaDev/motia-iii-example.git` before proceeding.
 </Callout>
 
 <Steps>
@@ -51,14 +50,14 @@ The application code is in the `steps` folder and `config.yaml` describes the in
 Congratulations! You've successfully ran, your first Motia workflow.
 
 {/* - Build your first application from scratch, follow our **[Build Your First Motia App](/getting-started/build-your-first-motia-app)** guide. */}
-<Cards>
+{/* <Cards>
   <Card title="Core Concepts" href="/docs/concepts/overview">
     Learn about Motia's architecture and how Steps, Flows, and the event-driven model work together.
   </Card>
   <Card title="iii Documentation" href="https://iii.dev/">
     Learn more about the iii runtime that powers Motia.
   </Card>
-</Cards>
+</Cards> */}
 
 </Step>
 </Steps>
