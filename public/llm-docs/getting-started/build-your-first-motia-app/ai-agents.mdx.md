@@ -12,7 +12,6 @@ An intelligent pet management system with agentic workflows that automate decisi
 - **Adoption Review Agentic Step** - Assesses adoption readiness and data completeness
 - **Orchestrator Integration** - AI decisions that drive real workflow changes
 
-![workbench](../../img/build-your-first-app/ai-agents-workbench.png)
 ---
 
 ## Getting Started

@@ -278,7 +278,7 @@ Visual interface for building and debugging flows:
 - Inspect state as it changes
 - View stream updates in real-time
 
-[Learn about the iii development console](/docs/concepts/workbench) | [Full iii docs](https://iii.dev/docs)
+[Learn about the iii development console](https://iii.dev/docs)
 
 ---
 

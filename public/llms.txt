@@ -2289,7 +2289,7 @@ Visual interface for building and debugging flows:
 - Inspect state as it changes
 - View stream updates in real-time
 
-[Learn about the iii development console](/docs/concepts/workbench) | [Full iii docs](https://iii.dev/docs)
+[Learn about the iii development console](https://iii.dev/docs)
 
 ---
 
@@ -3084,66 +3084,6 @@ export const config = {
 ## What's Next?
 
 [Build your first app](/docs/getting-started/build-your-first-motia-app)
-
-
--   [workbench](/docs/concepts/workbench): Documentation for workbench.
----
-title: iii Development Console
-description: The visual development environment for building and debugging Motia apps, powered by iii.
----
-
-When you run your Motia project with `npm run dev`, the iii development console is available at [`http://localhost:3000`](http://localhost:3000). This console is powered by [iii](https://iii.dev) and provides visual tooling for your Motia workflows.
-
-<Callout type="info">
-The development console is provided by iii. For full documentation on console features, visit [iii.dev/docs](https://iii.dev/docs).
-</Callout>
-
-## What You Get
-
-- **Flow visualization** -- see your entire backend as an interactive diagram where every Step is a node
-- **Real-time logs** -- watch `logger.info()`, `logger.warn()`, and `logger.error()` calls stream in
-- **Tracing** -- follow the execution timeline of every request across Steps
-- **State inspector** -- view and edit data stored with `state.set()`
-- **Stream viewer** -- monitor real-time stream updates
-- **Hot reload** -- changes to Step files refresh automatically
-
-## Getting Started
-
-<Tabs items={['npm', 'yarn', 'pnpm']}>
-  <Tab value="pnpm">
-  ```bash
-  pnpm run dev
-  ```
-  </Tab>
-  <Tab value="yarn">
-  ```bash
-  yarn dev
-  ```
-  </Tab>
-  <Tab value="npm">
-  ```bash
-  npm run dev
-  ```
-  </Tab>
-</Tabs>
-
-This starts the iii runtime which boots your Motia backend and the development console at `http://localhost:3000`.
-
----
-
-## Customizing Flow Visualization
-
-You can override how any Step looks in the console by creating a `.tsx` or `.jsx` file next to your Step file. Use built-in components like `QueueNode`, `ApiNode`, and `CronNode`, or build completely custom React components.
-
-[Full guide to customizing flows](/docs/development-guide/customizing-flows)
-
----
-
-## What's Next?
-
-[Build your first app](/docs/getting-started/build-your-first-motia-app)
-[Learn about State](/docs/development-guide/state-management)
-[Learn about Streams](/docs/development-guide/streams)
 
 
 -   [contribution](/docs/contribution): Documentation for contribution.
@@ -12046,8 +11986,6 @@ Let's build a stars counter that updates in real-time across all connected clien
 
 ---
 
-<div className="my-8">![GitHub Stars Counter Demo](./../img/gitstars-workbench.png)</div>
-
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/github-stars-counter)
 
@@ -12676,8 +12614,6 @@ This comprehensive guide explores how to build a production-ready, real-time Git
 Let's build a stars counter that updates in real-time across all connected clients.
 
 ---
-
-<div className="my-8">![GitHub Stars Counter Demo](./../img/gitstars-workbench.png)</div>
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/github-stars-counter)
@@ -19357,8 +19293,6 @@ In modern application development, workflows are rarely linear. Whether you're b
 
 ## Workflow Overview
 
-<div className="my-8">![Sentiment analysis workflow](./../img/sentimental-analyzer-workbench.gif)</div>
-
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/api-patterns/sentimental-analysis)
 - [Browse All Examples](https://github.com/MotiaDev/motia-examples)
@@ -19377,8 +19311,6 @@ Let's dive in.
 ---
 
 ## A Step at a Time
-
-<div className="my-8">![Sentiment analysis workflow](./../img/sentimental-analyzer-workbench.png)</div>
 
 At the heart of the Motia framework is a simple but powerful idea: the **`step`**. A step is a self-contained, independent unit of logic that listens for an event, performs a task, and, optionally, emits a new event. This concept is the core primitive that allows you to break down even the most complex architectures into a series of simple, manageable components.
 
@@ -19717,8 +19649,6 @@ In modern application development, workflows are rarely linear. Whether you're b
 
 ## Workflow Overview
 
-<div className="my-8">![Sentiment analysis workflow](./../img/sentimental-analyzer-workbench.gif)</div>
-
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/api-patterns/sentimental-analysis)
 - [Browse All Examples](https://github.com/MotiaDev/motia-examples)
@@ -19737,8 +19667,6 @@ Let's dive in.
 ---
 
 ## A Step at a Time
-
-<div className="my-8">![Sentiment analysis workflow](./../img/sentimental-analyzer-workbench.png)</div>
 
 At the heart of the Motia framework is a simple but powerful idea: the **`step`**. A step is a self-contained, independent unit of logic that listens for an event, performs a task, and, optionally, emits a new event. This concept is the core primitive that allows you to break down even the most complex architectures into a series of simple, manageable components.
 
@@ -22260,7 +22188,6 @@ An intelligent pet management system with agentic workflows that automate decisi
 - **Adoption Review Agentic Step** - Assesses adoption readiness and data completeness
 - **Orchestrator Integration** - AI decisions that drive real workflow changes
 
-![workbench](../../img/build-your-first-app/ai-agents-workbench.png)
 ---
 
 ## Getting Started
@@ -23809,7 +23736,6 @@ A pet management API with these endpoints:
 - **PUT `/pets/:id`** - Update a pet
 - **DELETE `/pets/:id`** - Delete a pet
 
-![workbench](../../img/build-your-first-app/api-workbench.png)
 ---
 
 ## Getting Started
@@ -24469,7 +24395,6 @@ A pet management system with background jobs that handle:
 - **Queue Step** - Async job that sets feeding reminders when pets are created
 - **Cron Step** - Scheduled job that runs daily to clean up deleted pets
 
-![workbench](../../img/build-your-first-app/background-jobs-workbench.png)
 ---
 
 ## Getting Started
@@ -25210,7 +25135,6 @@ A complete pet store backend system that grows with you:
 
 By the end, you'll have a production-ready backend that handles everything from simple CRUD to intelligent, real-time systems.
 
-![workbench](../../img/build-your-first-app/streaming-workbench.png)
 ---
 
 ## Before You Start
@@ -25387,7 +25311,6 @@ A pet management system with real-time streaming that provides live updates to c
 - **Agentic Step Streaming** - AI enrichment with live progress updates
 - **Multi-Step Streaming** - Multiple steps updating the same stream
 
-![workbench](../../img/build-your-first-app/streaming-workbench.png)
 ---
 
 ## Getting Started
@@ -26661,7 +26584,7 @@ curl -X POST http://localhost:3000/ts/pets \
 
 You'll get an immediate response with the stream result. The API returns right away while background jobs process asynchronously.
 
-### Test 2: View Stream Updates
+### View Stream Updates
 
 You can view stream updates in the [iii development console](https://iii.dev/docs) Tracing view:
 
@@ -26669,7 +26592,7 @@ You can view stream updates in the [iii development console](https://iii.dev/doc
 - Watch the timeline as steps execute
 - See stream updates appear in real-time
 
-### Test 3: Create Pet with Symptoms
+### Test with Symptoms
 
 Test the conditional streaming logic by creating a pet with symptoms:
 
@@ -26763,7 +26686,6 @@ A pet lifecycle management system that automatically guides pets through their j
 - **Smart Progressions** - Some transitions trigger follow-up actions automatically
 - **Validation Rules** - Prevents invalid status changes to keep data consistent
 
-![workbench](../../img/build-your-first-app/workflow-workbench.png)
 ---
 
 ## Getting Started
@@ -28002,11 +27924,6 @@ Motia offers a complete observability toolkit available in both cloud and local 
 - State visualization
 - Diagram representation of dependencies between steps and how they are connected
 
-_The image below shows the [iii development console](https://iii.dev/docs) interface. On the top panel you can see a workflow diagram with multiple steps connected.
-On the bottom panel you can see the trace view of a single request and what happened in each step._
-
-![iii development console](./img/new-workbench.png)
-
 ## Fault tolerance
 
 With the rise of AI, many backend tasks have become less deterministic and more error-prone. These scenarios require robust error handling and retry mechanisms. In traditional systems, developers often need to set up and maintain queue infrastructures to ensure resilience, especially when dealing with unreliable responses from LLMs.
@@ -28075,8 +27992,6 @@ Let's build a chess platform that measures AI intelligence through gameplay qual
 ---
 
 ## 🏭 Production-Grade Chess Platform
-
-<div className="my-8">![ChessArena AI](./../img/chessarena-workbench.png)</div>
 
 **This is not a tutorial project** - this is battle-tested, production-ready code that handles real traffic at scale. Every aspect has been designed for enterprise use:
 

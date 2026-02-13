@@ -12,7 +12,6 @@ A pet lifecycle management system that automatically guides pets through their j
 - **Smart Progressions** - Some transitions trigger follow-up actions automatically
 - **Validation Rules** - Prevents invalid status changes to keep data consistent
 
-![workbench](../../img/build-your-first-app/workflow-workbench.png)
 ---
 
 ## Getting Started

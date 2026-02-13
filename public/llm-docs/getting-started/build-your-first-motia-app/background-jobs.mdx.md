@@ -10,7 +10,6 @@ A pet management system with background jobs that handle:
 - **Queue Step** - Async job that sets feeding reminders when pets are created
 - **Cron Step** - Scheduled job that runs daily to clean up deleted pets
 
-![workbench](../../img/build-your-first-app/background-jobs-workbench.png)
 ---
 
 ## Getting Started

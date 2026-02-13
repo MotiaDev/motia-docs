@@ -9,8 +9,6 @@ In modern application development, workflows are rarely linear. Whether you're b
 
 ## Workflow Overview
 
-<div className="my-8">![Sentiment analysis workflow](./../img/sentimental-analyzer-workbench.gif)</div>
-
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/api-patterns/sentimental-analysis)
 - [Browse All Examples](https://github.com/MotiaDev/motia-examples)
@@ -29,8 +27,6 @@ Let's dive in.
 ---
 
 ## A Step at a Time
-
-<div className="my-8">![Sentiment analysis workflow](./../img/sentimental-analyzer-workbench.png)</div>
 
 At the heart of the Motia framework is a simple but powerful idea: the **`step`**. A step is a self-contained, independent unit of logic that listens for an event, performs a task, and, optionally, emits a new event. This concept is the core primitive that allows you to break down even the most complex architectures into a series of simple, manageable components.
 

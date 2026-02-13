@@ -13,7 +13,6 @@ A pet management API with these endpoints:
 - **PUT `/pets/:id`** - Update a pet
 - **DELETE `/pets/:id`** - Delete a pet
 
-![workbench](../../img/build-your-first-app/api-workbench.png)
 ---
 
 ## Getting Started

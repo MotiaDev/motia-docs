@@ -16,8 +16,6 @@ Let's build a stars counter that updates in real-time across all connected clien
 
 ---
 
-<div className="my-8">![GitHub Stars Counter Demo](./../img/gitstars-workbench.png)</div>
-
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/github-stars-counter)
 

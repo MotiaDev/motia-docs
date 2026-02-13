@@ -15,7 +15,6 @@ A complete pet store backend system that grows with you:
 
 By the end, you'll have a production-ready backend that handles everything from simple CRUD to intelligent, real-time systems.
 
-![workbench](../../img/build-your-first-app/streaming-workbench.png)
 ---
 
 ## Before You Start
