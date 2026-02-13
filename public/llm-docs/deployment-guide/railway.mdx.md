@@ -165,7 +165,7 @@ Create a `railway.json` in your project root:
 ```
 
 <Callout type="warn">
-**Healthchecks:** Railway's default healthcheck expects a `200` response on `/`. Motia's iii console serves the root path, so this should work out of the box.
+**Healthchecks:** Railway's default healthcheck expects a `200` response on `/`. Motia's development console serves the root path, so this should work out of the box.
 </Callout>
 
 ---
@@ -176,13 +176,13 @@ Create a production `config.yaml` with Redis adapters for all modules. Railway a
 
 ```yaml title="config.yaml"
 modules:
-  - class: modules::streams::StreamModule
+  - class: modules::stream::StreamModule
     config:
       port: ${STREAMS_PORT:31112}
       host: 0.0.0.0
       auth_function: motia.streams.authenticate
       adapter:
-        class: modules::streams::adapters::RedisAdapter
+        class: modules::stream::adapters::RedisAdapter
         config:
           redis_url: ${REDIS_URL:redis://localhost:6379}
 
@@ -358,7 +358,7 @@ railway logs --tail
 
 **Options:**
 1. Remove healthcheck settings from `railway.json`
-2. Motia iii console serves `/` by default which returns 200
+2. Motia development console serves `/` by default which returns 200
 3. Increase the healthcheck timeout
 
 ### Still Seeing "Redis Memory Server Started"

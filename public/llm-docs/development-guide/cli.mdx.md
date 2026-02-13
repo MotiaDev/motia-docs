@@ -1,42 +1,35 @@
 ---
 title: Command Line Interface (CLI)
-description: Learn how to use the Motia CLI to manage your projects and workflows
+description: Learn how to use the Motia CLI for project creation and deployment
 ---
 
 # Command Line Interface (CLI)
 
-Motia provides a powerful Command Line Interface (CLI) to help you manage your projects and workflows. The CLI offers various commands for creating projects, generating steps, managing state, and more.
+The Motia CLI handles project scaffolding and deployment. It is installed with the `motia` package.
 
-## Installation
+<Callout type="info">
+During development, `npm run dev` starts the [iii](https://iii.dev) runtime which orchestrates building and running your Motia application. The commands below are either run directly by you or internally by iii's Shell Exec module.
+</Callout>
 
-The Motia CLI is automatically installed when you install the `motia` package. You can use it by running `npx motia` followed by the desired command.
+## Project Creation
 
-## Commands
+### `motia create`
 
-### `create`
-
-Create a new Motia project.
+Scaffold a new Motia project.
 
 ```bash
-npx motia@latest create [project-name] [options]
+motia create [project-name] [options]
 ```
 
 **Arguments:**
 
-- `[project-name]` (optional): The name for your project folder.
-  If not provided, you will be prompted to enter it.
-  Use `.` or `./` to create it in the current directory.
+- `[project-name]` (optional): The name for your project folder. Use `.` or `./` for the current directory.
 
 **Options:**
 
-- `--template <template-name>` (optional): The template to use for your project.
-  If not provided, you will be prompted to select one interactively.
-- `--skip-redis` (optional): Skip the embedded Redis binary installation.
-  Use this when you have your own Redis instance or want to configure external Redis.
+- `--template <template-name>` (optional): Template to use. If not provided, you'll be prompted interactively.
 
 **Available Templates:**
-
-Motia provides several project templates to help you get started quickly:
 
 | Template | Description | Use Case |
 |----------|-------------|----------|
@@ -49,219 +42,91 @@ Motia provides several project templates to help you get started quickly:
 
 **Examples:**
 
-Create a TypeScript starter project:
 ```bash
-npx motia@latest create my-app --template starter-typescript
+motia create my-app --template starter-typescript
+motia create my-tutorial --template motia-tutorial-python
+motia create
 ```
 
-Create a Python tutorial project:
-```bash
-npx motia@latest create my-tutorial --template motia-tutorial-python
-```
+---
 
-Use interactive mode (no template specified):
-```bash
-npx motia@latest create
-```
+## Build
 
-Create project without embedded Redis (use your own Redis):
-```bash
-npx motia@latest create my-app --skip-redis
-```
+### `motia build`
 
-
-### `build`
-
-Build your project, generating zip files for each step and creating a configuration file.
+Build your project, compiling all Steps and generating deployment artifacts.
 
 ```bash
 npx motia build
 ```
 
-This command:
+<Callout type="info">
+During development, iii's Shell Exec module runs this automatically when your Step files change. You typically only run this manually for deployment.
+</Callout>
 
-1. Compiles all your steps (both Node.js and Python)
-2. Bundles each step into a zip file
-3. Generates a `motia.steps.json` configuration file in the `dist` directory
-4. Organizes the output in the `dist` directory
+---
 
-### `deploy`
+## Deployment
 
-Deploy your built steps to the Motia deployment service.
+### `motia cloud deploy`
+
+Deploy to Motia Cloud.
 
 ```bash
-motia cloud deploy --api-key <api-key> --version-name <version> [options]
+npx motia cloud deploy --api-key <api-key> --version-name <version> [options]
 ```
 
-Options:
+**Options:**
 
 - `-k, --api-key <key>` (required): Your API key for authentication
-- `-n, --project-name <name>`: Project name (used when creating a new project)
-- `-s, --environment-id <id>`: Environment ID (can also be set via MOTIA_ENVIRONMENT_ID env var)
-- `--environment-name <name>`: Environment name (used when creating a new environment)
 - `-v, --version-name <version>` (required): The version to deploy
+- `-n, --project-name <name>`: Project name (used when creating a new project)
+- `-s, --environment-id <id>`: Environment ID (can also be set via `MOTIA_ENVIRONMENT_ID` env var)
+- `--environment-name <name>`: Environment name (used when creating a new environment)
 - `-d, --version-description <description>`: The description of the version
 - `-e, --env-file <path>`: Path to environment file
 
-Example:
+### Docker
+
+Tools for containerizing your Motia project.
 
 ```bash
-motia cloud deploy --api-key your-api-key-here --version-name 1.2.3 --environment-id env-uuid
+npx motia docker setup       # Generate Dockerfile and .dockerignore
+npx motia docker build        # Build Docker image
+npx motia docker run          # Build and run in a container
 ```
 
-The deployment process:
+---
 
-1. Build your project
-2. Uploads each zip file individually with its path information
-3. Starts the deployment process on the server
+## Utility Commands
 
-### `dev`
+### `motia generate step`
 
-Start the development server with hot reload and the iii console.
+Create a new Step with interactive prompts.
 
 ```bash
-npx motia dev [options]
+npx motia generate step [--dir <path>]
 ```
 
-Options:
+### `motia enqueue`
 
-- `-p, --port <port>`: The port to run the server on (default: 3000).
-- `-H, --host [host]`: The host address for the server (default: localhost).
-- `-d, --debug`: Enable debug logging.
-- `--motia-dir <path>`: Custom path for `.motia` folder.
-
-### `start`
-
-Start the production server without hot reload. The iii console is included by default (can be disabled via `MOTIA_DOCKER_DISABLE_WORKBENCH` environment variable).
+Manually enqueue a message for testing.
 
 ```bash
-npx motia start [options]
+npx motia enqueue --topic user.created --message '{"userId":"123"}'
 ```
 
-Options:
+### `motia state list`
 
-- `-p, --port <port>`: The port to run the server on (default: 3000).
-- `-H, --host [host]`: The host address for the server (default: localhost).
-- `-d, --debug`: Enable debug logging.
-- `--motia-dir <path>`: Custom path for `.motia` folder.
-
-Example:
-
-```bash
-# Start production server on port 8080
-npx motia start --port 8080
-
-# Start on a specific host
-npx motia start --host 0.0.0.0 --port 3000
-
-# Start without iii console
-MOTIA_DOCKER_DISABLE_WORKBENCH=true npx motia start
-```
-
-### `get-config`
-
-Get the generated config for your project.
-
-```bash
-npx motia get-config [options]
-```
-
-Options:
-
-- `-o, --output <path>`: Path to write the generated config file.
-
-### `enqueue`
-
-Enqueue a message to a topic on the Motia server.
-
-```bash
-npx motia enqueue [options]
-```
-
-Options:
-
-- `--topic <topic>` (required): Topic to enqueue to.
-- `--message <message>` (required): Message payload as a JSON string.
-- `-p, --port <number>`: Port number (default: 3000).
-
-### `generate`
-
-Generate Motia resources.
-
-#### `generate step`
-
-Create a new step with interactive prompts.
-
-```bash
-npx motia generate step [options]
-```
-
-Options:
-
-- `-d, --dir <step file path>`: The path relative to the src directory to create the step file.
-
-### `state`
-
-Manage application state.
-
-#### `state list`
-
-List the current file state.
+List current file state.
 
 ```bash
 npx motia state list
 ```
 
-## Debugging
-
-You can enable debug logging by passing the `-d` or `--debug` flag to the `dev` command:
-
-```bash
-npx motia dev --debug
-```
-
-This will set the `LOG_LEVEL` environment variable to `'debug'`, providing more detailed logging output.
-
-### `docker`
-
-Tools to help you setup your Motia project with docker and run it inside a container.
-
-#### `docker setup`
-
-Setup your Motia project for Docker
-
-```bash
-npx motia docker setup
-```
-
-#### `docker build`
-
-Build your Motia project Docker image
-
-```bash
-npx motia docker build
-```
-
-Options:
-
-- `--project-name <project name>` (required): The name of your project.
-
-#### `docker run`
-
-Run your Motia project inside a container
-
-```bash
-npx motia docker run
-```
-
-Options:
-
-- `--port <number>`: Port number (default: 3000).
-- `--project-name <project name>` (required): The name of your project.
-- `--skip-build`: Skip building the Docker image and used the last built image.
+---
 
 ## Next Steps
 
-- Explore the [Core Concepts](/docs/concepts) to learn more about Steps, Flows, Events, and Topics.
+- Explore the [Core Concepts](/docs/concepts) to learn more about Steps, Flows, and Topics.
 - Check out the [Examples](/docs/examples) for common patterns and use cases.
-- Join our [Community](/community) for help and discussions.

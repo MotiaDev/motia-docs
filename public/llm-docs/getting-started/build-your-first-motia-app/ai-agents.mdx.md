@@ -41,13 +41,13 @@ OPENAI_API_KEY=your_api_key_here
 **Important!** This tutorial requires an OpenAI API key. Get yours at [platform.openai.com/api-keys](https://platform.openai.com/api-keys). Without it, the agentic workflows won't work.
 </Callout>
 
-Start the iii console:
+Start the development console:
 
 ```bash
 npm run dev
 ```
 
-Your iii console will be available at `http://localhost:3000`.
+Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -99,7 +99,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/ai-agents) repository.
 
-You can follow this guide to learn how to build agentic workflows with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the iii console.
+You can follow this guide to learn how to build agentic workflows with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
 
 ![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-ai.png)
 
@@ -721,11 +721,11 @@ The key is the prompt engineering - we tell the AI exactly what fields we need a
 
 ## Testing Your Agentic Step
 
-The best way to test your agentic step is through the **iii console**. It lets you create pets, watch the AI enrichment happen in real-time, and see all the logs in one place.
+The best way to test your agentic step is through the **development console**. It lets you create pets, watch the AI enrichment happen in real-time, and see all the logs in one place.
 
 ### Create a Pet
 
-Open the iii console and test the CreatePet endpoint. The AI will automatically start enriching the profile in the background.
+Open the development console and test the CreatePet endpoint. The AI will automatically start enriching the profile in the background.
 
 <Callout type="tip">
 **Prefer using curl?**
@@ -737,7 +737,7 @@ curl -X POST http://localhost:3000/ts/pets \
 ```
 </Callout>
 
-Check the logs in the iii console to see the agentic step in action:
+Check the logs in the development console to see the agentic step in action:
 
 ![ai-enrichment-logs](../../img/build-your-first-app/ai-enrichment-logs.png)
 
@@ -748,7 +748,7 @@ You'll see:
 
 ### View the Enriched Profile
 
-Fetch the pet in the iii console to see the AI-generated profile, or use curl:
+Fetch the pet in the development console to see the AI-generated profile, or use curl:
 
 <Callout type="tip">
 **Using curl?**
@@ -1294,11 +1294,11 @@ The framework functions (`buildAgentContext`, `callAgentDecision`, `getAgentArti
 
 ## Testing the Health Review Agentic Step
 
-The best way to test decision-making agentic steps is through the **iii console**. You can create pets, trigger the health review, and watch the AI make decisions in real-time.
+The best way to test decision-making agentic steps is through the **development console**. You can create pets, trigger the health review, and watch the AI make decisions in real-time.
 
 ### Create a Pet
 
-Use the iii console to create a pet. The AI enrichment will automatically trigger.
+Use the development console to create a pet. The AI enrichment will automatically trigger.
 
 <Callout type="tip">
 **Prefer using curl?**
@@ -1316,7 +1316,7 @@ curl -X POST http://localhost:3000/ts/pets \
 
 ### Trigger the Health Review
 
-In the iii console, test the health review endpoint to see the AI make a decision.
+In the development console, test the health review endpoint to see the AI make a decision.
 
 <Callout type="tip">
 **Using curl?**
@@ -1353,7 +1353,7 @@ The AI evaluates the pet's data and makes a decision. The enqueue it fires will 
 
 ### Verify the Status Change
 
-Check the pet status in the iii console to see the AI's decision reflected in the workflow state.
+Check the pet status in the development console to see the AI's decision reflected in the workflow state.
 
 <Callout type="tip">
 **Using curl?**

@@ -5,7 +5,7 @@ description: A powerful event-driven financial analysis workflow that combines w
 
 ---
 
-## Explore the iii console
+## Explore the development console
 
 <div className="my-8">![Finance Agent](./../img/finance-agent.gif)</div>
 
@@ -142,7 +142,7 @@ Response:
    pnpm dev
    ```
 
-2. Access the Motia iii console:
+2. Access the Motia development console:
    ```
    http://localhost:3000
    ```

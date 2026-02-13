@@ -410,7 +410,7 @@ function calculateRiskScore(order) {
 
 ### Step 3: Human Approval Gate (Visual Noop)
 
-This creates a visual node in iii console showing where the workflow pauses:
+This creates a visual node in development console showing where the workflow pauses:
 
 ```typescript title="src/03-human-approval-gate.step.ts"
 import type { NoopConfig } from 'motia'
@@ -428,7 +428,7 @@ export const config: NoopConfig = {
   virtualEnqueues: ['human.decision'],
 }
 ```
-👉 **In iii console:** This Noop appears between AnalyzeRisk and ApprovalWebhook.
+👉 **In development console:** This Noop appears between AnalyzeRisk and ApprovalWebhook.
 
 
 ### Step 4: Approval Webhook (Re-Entry Point)
@@ -956,9 +956,9 @@ export const handler = async ({ state, logger }) => {
 
 ---
 
-## 🎨 Visual Flow in iii console
+## 🎨 Visual Flow in development console
 
-When you open the example in iii console, you'll see **5 nodes**:
+When you open the example in development console, you'll see **5 nodes**:
 
 ![HTL Example](../img/htl-example.png)
 
@@ -1002,7 +1002,7 @@ Start the Motia development server.
 npm run dev
 ```
 
-Open [`http://localhost:3000`](http://localhost:3000) in your browser to access the iii console. You'll see the **HumanApprovalGate** (Noop node) showing where the workflow pauses for human decisions.
+Open [`http://localhost:3000`](http://localhost:3000) in your browser to access the development console. You'll see the **HumanApprovalGate** (Noop node) showing where the workflow pauses for human decisions.
 
 ### Test High-Risk Order (Will Pause)
 
@@ -1026,7 +1026,7 @@ curl -X POST http://localhost:3000/orders \
 }
 ```
 
-**Check iii console:** The flow stops at HumanApprovalGate. No more steps run. The workflow is **paused** and waiting for human decision.
+**Check development console:** The flow stops at HumanApprovalGate. No more steps run. The workflow is **paused** and waiting for human decision.
 
 ### Resume via Webhook (Hours/Days Later)
 
@@ -1043,7 +1043,7 @@ curl -X POST http://localhost:3000/webhooks/orders/abc-123/approve \
   }'
 ```
 
-**Check iii console:** Flow resumes! It loads state, emits `order.approved`, and CompleteOrder runs to fulfill the order.
+**Check development console:** Flow resumes! It loads state, emits `order.approved`, and CompleteOrder runs to fulfill the order.
 
 ### Test Low-Risk Order (Bypasses Gate)
 
@@ -1059,7 +1059,7 @@ curl -X POST http://localhost:3000/orders \
   }'
 ```
 
-**Check iii console:** Flows straight through SubmitOrder → AnalyzeRisk → CompleteOrder. The HumanApprovalGate is completely bypassed!
+**Check development console:** Flows straight through SubmitOrder → AnalyzeRisk → CompleteOrder. The HumanApprovalGate is completely bypassed!
 
 </Steps>
 
@@ -1149,7 +1149,7 @@ Building Human-in-the-Loop workflows in Motia:
 1. **Save state when pausing** - Mark clearly with `status: 'awaiting_something'`
 2. **Don't enqueue** - Workflow stops naturally
 3. **Create webhook API** - This is your re-entry point
-4. **Use virtual connections** - Show the pause visually in iii console with Noops
+4. **Use virtual connections** - Show the pause visually in development console with Noops
 5. **External systems call webhook** - UI, Slack, etc. restart the flow
 6. **Idempotent steps** - Always check `completedSteps` before doing work
 
