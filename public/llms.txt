@@ -87,7 +87,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 When you create a new Motia project, the AI development guides are automatically included:
 
 ```bash
-motia create 
+npx motia@latest create 
 cd <your-project>
 ```
 
@@ -3083,6 +3083,10 @@ export const config = {
 
 ## What's Next?
 
+<Card title="Start building" href="/docs/getting-started/quick-start">
+  Steps are all you need to know to start building. Go to the Quickstart and start building right away.
+</Card>
+
 [Build your first app](/docs/getting-started/build-your-first-motia-app)
 
 
@@ -4567,7 +4571,7 @@ because the `redis-memory-server` package may require build tools (`make`, `gcc`
 ```bash
 docker run --rm node:24-slim bash -c "
   apt-get update && apt-get install -y ca-certificates git build-essential &&
-  motia create my-app --template starter-typescript
+  npx motia@latest create my-app --template starter-typescript
 "
 ```
 
@@ -4577,7 +4581,7 @@ docker run --rm node:24-slim bash -c "
 docker run --rm node:24-slim bash -c "
   apt-get update && apt-get install -y ca-certificates git redis-server &&
   export REDISMS_SYSTEM_BINARY=/usr/bin/redis-server &&
-  motia create my-app --template starter-typescript
+  npx motia@latest create my-app --template starter-typescript
 "
 ```
 
@@ -4897,12 +4901,12 @@ During development, `npm run dev` starts the [iii](https://iii.dev) runtime whic
 
 ## Project Creation
 
-### `motia create`
+### `npx motia@latest create`
 
 Scaffold a new Motia project.
 
 ```bash
-motia create [project-name] [options]
+npx motia@latest create [project-name] [options]
 ```
 
 **Arguments:**
@@ -4927,9 +4931,9 @@ motia create [project-name] [options]
 **Examples:**
 
 ```bash
-motia create my-app --template starter-typescript
-motia create my-tutorial --template motia-tutorial-python
-motia create
+npx motia@latest create my-app --template starter-typescript
+npx motia@latest create my-tutorial --template motia-tutorial-python
+npx motia@latest create
 ```
 
 ---
@@ -6609,7 +6613,7 @@ title: Configuration (config.yaml)
 description: Configure your Motia project within the iii config.yaml file.
 ---
 
-Motia projects run on [iii](https://iii.dev), which uses a `config.yaml` file for its modular runtime configuration. When you scaffold a project with `motia create`, this file is generated for you with sensible defaults.
+Motia projects run on [iii](https://iii.dev), which uses a `config.yaml` file for its modular runtime configuration. When you scaffold a project with `npx motia@latest create`, this file is generated for you with sensible defaults.
 
 <Callout type="info">
 The `config.yaml` is an iii configuration file. Most modules (API, queue, state, streams, cron, observability) are iii infrastructure concerns. Visit [iii.dev/docs](https://iii.dev/docs) for the full module reference.
@@ -7136,7 +7140,7 @@ The following are no longer available:
 - `MotiaPlugin` type and plugin architecture
 - `WorkbenchPlugin` configuration for custom tabs
 - `MotiaPluginContext` for accessing internal APIs
-- Plugin CLI generation (`pnpm dlx motia create --plugin`)
+- Plugin CLI generation (`pnpm dlx npx motia@latest create --plugin`)
 - Local plugins with `~/` package resolution
 - Plugin registration in `motia.config.ts`
 
@@ -17039,7 +17043,7 @@ Ready to build your first multi-language Motia application? Let's get it running
 Start by creating a new Motia project with the interactive setup.
 
 ```shell
-motia create
+npx motia@latest create
 ```
 
 ### Navigate and Start Development
@@ -17651,7 +17655,7 @@ Ready to build your first multi-language Motia application? Let's get it running
 Start by creating a new Motia project with the interactive setup.
 
 ```shell
-motia create
+npx motia@latest create
 ```
 
 ### Navigate and Start Development
@@ -25152,7 +25156,7 @@ That's it. No database setup, no complex config, no separate services to run.
 If you already have Redis running or prefer to use an external Redis instance, use the `--skip-redis` flag:
 
 ```bash
-motia create my-app --skip-redis
+npx motia@latest create my-app --skip-redis
 ```
 
 See [CLI documentation](/docs/development-guide/cli#create) for more details.
@@ -27692,67 +27696,64 @@ Let's continue building by adding intelligent decision-making to your workflows.
 ---
 title: Quick Start
 description: Get up and running with a new Motia project in just a few seconds.
+hideCards: true
 ---
+
+<Callout title="Start with a template" type="info">
+Make sure to create a new project with `npx motia@latest create -t quickstart` before proceeding.
+</Callout>
+
 <Steps>
 
 <Step>
-### 1. Create Your Project
+### 1. Start the project
 
-Create a new Motia project. This single command will scaffold a new application and install all necessary dependencies.
+Navigate into your new project directory and start iii. The `config.yaml` in the project folder tells iii how to run Motia so starting iii starts both!
 
 ```bash
-motia create
+cd <your-project-name> 
+iii -c config.yaml
 ```
-
-The installer will guide you through a few questions to set up your project, including choosing a template. Once it's done, you will have a new project directory ready to go.
-
-<Callout>
-Choose a **Tutorial** template for an interactive walkthrough, or a **Starter** template to skip the walkthrough.
-</Callout>
 
 </Step>
 
 <Step>
-### 2. Start the Development Server
+### 2. Run Your First Flow
 
-Navigate into your new project directory and start the Motia development server.
+This example is a ticketing system for user issues. Try out part of the flow:
+   ```bash
+   # Create a ticket
+   curl -X POST http://localhost:3111/tickets \
+     -H "Content-Type: application/json" \
+     -d '{"title":"Login issue","description":"Cannot access account","priority":"high","customerEmail":"user@example.com"}'
 
-```bash
-cd <your-project-name> # If you've created a new folder for the project, navigate into it
-
-npm run dev
-```
-
-![run dev command](/docs-images/motia-terminal.gif)
-
-<Callout>
-The `create` command uses `npm` by default. If you chose a different package manager during setup, use `pnpm dev` or `yarn dev`.
-</Callout>
-
-This command starts the iii runtime and the iii development console, a powerful UI for developing and debugging your workflows. By default, it's available at [`http://localhost:3000`](http://localhost:3000).
+   # List all tickets
+   curl http://localhost:3111/tickets
+   ```
 
 </Step>
 
 <Step>
-### 3. Run Your First Flow
+### 3. Read the code
 
-Tutorial projects come with a pre-built Tutorial flow. To step through the tutorial:
-
-1.  **Open the iii development console** in your browser at [`http://localhost:3000`](http://localhost:3000).
-2.  **Click the `Tutorial`** button on the top right of the iii development console.
-3.  **Complete the `Tutorial`** to get an understanding of the basics of Motia and the iii development console.
-
-![run starter app](/docs-images/motia-build-your-app.gif)
+The application code is in the `steps` folder and `config.yaml` describes the infrastructure that iii sets up to power Motia.
 
 </Step>
 
 <Step>
 ### Next Steps
 
-Congratulations! You've successfully ran, and observed your first Motia workflow.
+Congratulations! You've successfully ran, your first Motia workflow.
 
-- Build your first application from scratch, follow our **[Build Your First Motia App](/docs/getting-started/build-your-first-motia-app)** guide.
-- To learn about Motia, dive into our **[Core Concepts](/docs/concepts/overview)**.
+{/* - Build your first application from scratch, follow our **[Build Your First Motia App](/getting-started/build-your-first-motia-app)** guide. */}
+<Cards>
+  <Card title="Core Concepts" href="/docs/concepts/overview">
+    Learn about Motia's architecture and how Steps, Flows, and the event-driven model work together.
+  </Card>
+  <Card title="iii Documentation" href="https://iii.dev/">
+    Learn more about the iii runtime that powers Motia.
+  </Card>
+</Cards>
 
 </Step>
 </Steps>
@@ -27762,215 +27763,46 @@ Congratulations! You've successfully ran, and observed your first Motia workflow
 ---
 title: Welcome to Motia
 description: "Build production-grade backends with a single primitive. APIs, background jobs, Queues, Workflows, and AI agents - unified in one system with built-in State management, Streaming, and Observability."
+hideCards: true
 ---
 
-# Welcome to Motia
+**Motia** is a unified backend framework that combines APIs, background jobs, workflows, AI agents, streaming, and observability into a single runtime. Instead of juggling separate frameworks and services, everything is built around one core primitive: the **Step**.
 
-<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/1-motia-welcome.gif">
-  <source src="https://assets.motia.dev/videos/mp4/site/v1/1-motia-welcome.mp4" type="video/mp4" />
-</video>
+A Step is just a file with a `config` and a `handler`. Motia auto-discovers these files from your project and connects them automatically — no manual registration, no boilerplate wiring.
 
-## Why Motia?
+## Getting Started
 
-**Build production-grade backends with a single primitive.**
+The best way to understand Motia is to try it:
 
-Modern backends shouldn't require juggling frameworks, queues, and services. Motia unifies everything: API endpoints, background jobs, durable workflows, AI agents, streaming, and observability into one runtime with a single core primitive.
+### Prerequisites
 
-**Motia** is your complete backend solution:
-- 🌐 **API** - RESTful endpoints with validation and routing
-- ⚡ **Background Jobs** - Async processing with built-in queues
-- 🔄 **Durable Workflows** - Complex multi-step orchestration
-- 🤖 **Agentic** - AI agent workflows with streaming support
-- 🏪 **State** - Built-in persistent storage across Steps
-- 📊 **Streaming** - Real-time data updates to clients
-- 📝 **Logging** - Structured, traceable logs
-- 👁️ **Observability** - End-to-end tracing and monitoring
+- **iii** is required
+- **Node.js 18+** is required
+- **Python 3** is optional
 
-Just as React made frontend development simple by introducing components, **Motia redefines backend development with Steps** - a single primitive that powers everything.
+<Callout title="iii" type="info">
+  Motia is powered by iii. Install iii by following the instructions at [iii.dev/docs](https://iii.dev/docs).
+</Callout>
 
-To read more about this, check out our [manifesto](/manifesto).
+### Create a project
 
----
-## The Core Primitive: the Step
-
-At the heart of Motia is a single primitive: the **Step**.  
-
-A Step is just a file with a `config` and a `handler`. Motia auto-discovers these files from your project's `src/` directory and connects them automatically - no manual registration required.
-
-Here's a simple example of two Steps working together: an API Step that enqueues a message, and a Queue Step that processes it.
-
-<Tabs items={['TypeScript', 'Python', 'JavaScript']}>
-<Tab value='TypeScript'>
-
-```ts title="src/send-message.step.ts"
-export const config = {
-  name: 'SendMessage',
-  triggers: [{ type: 'api', path: '/messages', method: 'POST' }],
-  enqueues: ['message.sent']
-} as const satisfies StepConfig
-
-export const handler: Handlers<typeof config> = async (req, { enqueue }) => {
-  await enqueue({
-    topic: 'message.sent',
-    data: { text: req.body.text }
-  })
-  return { status: 200, body: { ok: true } }
-}
+```bash
+npx motia@latest create -t quickstart
 ```
 
-```ts title="src/process-message.step.ts"
-export const config = {
-  name: 'ProcessMessage',
-  triggers: [{ type: 'queue', topic: 'message.sent' }],
-} as const satisfies StepConfig
+The installer will guide you through setting up your project.
 
-export const handler: Handlers<typeof config> = async (input, { logger }) => {
-  logger.info('Processing message', input)
-}
-```
-</Tab>
+## Next Steps
 
-<Tab value='Python'>
+<Cards>
+  <Card title="Quickstart Tutorial" href="/docs/getting-started/quick-start">
+    Get up and running with your first Motia project in just a few minutes.
+  </Card>
+  <Card title="Core Concepts" href="/docs/concepts/overview">
+    Learn how Steps, Flows, and the event-driven model simplify backend development.
+  </Card>
+</Cards>
 
-```python title="send_message_step.py"
-config = {
-    "name": "SendMessage",
-    "triggers": [{"type": "api", "path": "/messages", "method": "POST"}],
-    "enqueues": ["message.sent"]
-}
-
-async def handler(req, ctx):
-    await ctx.enqueue({
-        "topic": "message.sent",
-        "data": {"text": req.body["text"]}
-    })
-    return {"status": 200, "body": {"ok": True}}
-```
-
-```python title="process_message_step.py"
-config = {
-    "name": "ProcessMessage",
-    "triggers": [{"type": "queue", "topic": "message.sent"}],
-}
-
-async def handler(input, ctx):
-    ctx.logger.info("Processing message", input)
-```
-</Tab>
-
-<Tab value='JavaScript'>
-
-```js title="src/send-message.step.js"
-export const config = {
-  name: 'SendMessage',
-  triggers: [{ type: 'api', path: '/messages', method: 'POST' }],
-  enqueues: ['message.sent']
-}
-
-export const handler = async (req, { enqueue }) => {
-  await enqueue({
-    topic: 'message.sent',
-    data: { text: req.body.text }
-  })
-  return { status: 200, body: { ok: true } }
-}
-```
-
-```js title="src/process-message.step.js"
-export const config = {
-  name: 'ProcessMessage',
-  triggers: [{ type: 'queue', topic: 'message.sent' }],
-}
-
-export const handler = async (input, { logger }) => {
-  logger.info('Processing message', input)
-}
-```
-</Tab>
-</Tabs>
-
-👉 With just two files, you’ve built an **API endpoint**, a **queue**, and a **worker**. No extra frameworks required.
-
-Learn more about Steps here: [What is a Step?](/docs/concepts/steps).
-
----
-
-### Working with multiple Languages
-
-The rapid advancement of AI has reshaped the software industry—many cutting-edge AI tools are available only in specific programming languages, this forces companies to decide if they either change their team's skillset to a different language or not leveraging these technologies at all.
-
-Motia removes this limitation by allowing each Step to be written in any language, while still sharing a common state.
-
-![Multi-language](./img/what-is-motia/multi-language.png)
-
-_Each rectangle in the diagram above represents a Step, some of them are in TypeScript and others in Python._
-
-## Scalability
-
-One of the biggest dilemmas in backend development is choosing between scalability and development velocity. In startup environments, speed often takes priority, resulting in systems that don't scale well and become problematic under increased load.
-
-Motia addresses scalability by leveraging the core primitive of **Steps**: Each step can scale independently avoiding the bottlenecks common in monolithic architectures.
-
-![Scalable](./img/what-is-motia/scalable.png)
-
-## Observability
-
-Observability in traditional backends often demands significant engineering effort to implement logging, alerting, and tracing. Typically, these tools are only configured for cloud environments, local development is generally neglected—leading to low productivity and poor dev experience.
-
-Motia offers a complete observability toolkit available in both cloud and local environments, including:
-
-- Logs visualization
-- Tracing tool to quickly visualize the flow of requests through the system
-- State visualization
-- Diagram representation of dependencies between steps and how they are connected
-
-## Fault tolerance
-
-With the rise of AI, many backend tasks have become less deterministic and more error-prone. These scenarios require robust error handling and retry mechanisms. In traditional systems, developers often need to set up and maintain queue infrastructures to ensure resilience, especially when dealing with unreliable responses from LLMs.
-
-Motia provides fault tolerance out of the box, eliminating the need to manually spin up queue infrastructure.
-
-- Using Queue Steps, you get retry mechanisms out of the box
-- Configuration of queue infrastructure is abstracted away
-
-## Building and Shipping
-
-Building and deploying backends is inherently complex—especially in polyglot environments. Shipping production systems requires tight collaboration between developers and operations, and automation often takes weeks to get right.
-
-Beyond that, cloud provider lock-in, complicated deployment strategies (e.g., rollbacks, blue/green deployments), and a lack of deployment tooling increase the risk of failure.
-
-Motia abstracts these concerns by providing:
-
-- True cloud-provider agnosticism
-- Atomic blue/green deployments and one-click rollbacks via Motia Cloud (canary support coming soon)
-- First-class polyglot backend support (currently Node.js and Python, with more on the way)
-
-![Deployments](./img/what-is-motia/deployments.png)
-
-_The image above shows several Steps being build to a single Motia deployable that are ultimately deployed to a cloud provider of your choice. 
-Currently we're supporting AWS and Kubernetes, more Cloud providers coming soon. Check our [roadmap](https://github.com/orgs/MotiaDev/projects/2/views/4?filterQuery=title%3A+BYOC) for more details._
-
-### Rollbacks and deployment strategies
-
-Deploying cloud-native, fault-tolerant applications often involves modifying queue systems and other infrastructure components. 
-These changes can introduce incompatibilities and lead to runtime failures.
-
-Motia Cloud solves this with **Atomic Deployments**, which:
-
-- Each deployment spins up a new isolated service that shares the same data layer
-- Ensures safe, rollback-capable deployments without risking service downtime
-- Instant rollbacks with one click since each deployment is isolated
-
-## Real-time data streaming
-
-Handling real-time data is one of the most common—and complex—challenges in backend development. It's necessary when building event-driven applications, 
-and it typically requires setting up and maintaining a significant amount of infrastructure.
-
-Motia provides what we call _Streams_: Developers define the structure of the data—any changes to these objects are streamed to all subscribed clients in real-time.
-
-![Real-time data streaming](./img/what-is-motia/streams.png)
-
-_The image above shows a Stream definition, a Node.js Step mutating the data and a client subscribing to the stream receiving real-time updates._
 
 -   ['ChessArena AI'](/docs/product-showcase/chessarena-ai): Documentation for 'ChessArena AI'.
 ---
@@ -28981,6 +28813,134 @@ To add more videos to this showcase, simply edit this file and add new video obj
   url: "https://youtu.be/YOUR_VIDEO_ID"
 }
 ```
+
+
+-   [why-motia](/docs/why-motia): Documentation for why-motia.
+---
+title: Why Motia?
+description: "Learn why Motia exists — a unified backend framework that replaces juggling separate systems for APIs, queues, workflows, and more."
+---
+
+<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/1-motia-welcome.gif">
+  <source src="https://assets.motia.dev/videos/mp4/site/v1/1-motia-welcome.mp4" type="video/mp4" />
+</video>
+
+## Why Motia?
+
+**Build production-grade backends with a single primitive.**
+
+Modern backends shouldn't require juggling frameworks, queues, and services. Motia unifies everything: API endpoints, background jobs, durable workflows, AI agents, streaming, and observability into one runtime with a single core primitive.
+
+**Motia** is your complete backend solution:
+- 🌐 **API** - RESTful endpoints with validation and routing
+- ⚡ **Background Jobs** - Async processing with built-in queues
+- 🔄 **Durable Workflows** - Complex multi-step orchestration
+- 🤖 **Agentic** - AI agent workflows with streaming support
+- 🏪 **State** - Built-in persistent storage across Steps
+- 📊 **Streaming** - Real-time data updates to clients
+- 📝 **Logging** - Structured, traceable logs
+- 👁️ **Observability** - End-to-end tracing and monitoring
+
+Just as React made frontend development simple by introducing components, **Motia redefines backend development with Steps** - a single primitive that powers everything.
+
+To read more about this, check out our [manifesto](/manifesto).
+
+---
+
+## The Core Primitive: the Step
+
+At the heart of Motia is a single primitive: the **Step** — a file with a `config` and a `handler`. Motia auto-discovers these files and connects them automatically.
+
+Learn more about Steps: [What is a Step?](/docs/concepts/steps)
+
+---
+
+## Working with Multiple Languages
+
+The rapid advancement of AI has reshaped the software industry — many cutting-edge AI tools are available only in specific programming languages, forcing companies to choose between changing their team's skillset or not leveraging these technologies at all.
+
+Motia removes this limitation by allowing each Step to be written in any language, while still sharing a common state.
+
+![Multi-language](./img/what-is-motia/multi-language.png)
+
+_Each rectangle in the diagram above represents a Step, some of them are in TypeScript and others in Python._
+
+Learn more: [Multi-language Support](/docs/concepts/overview#multi-language-support)
+
+---
+
+## Scalability
+
+One of the biggest dilemmas in backend development is choosing between scalability and development velocity. In startup environments, speed often takes priority, resulting in systems that don't scale well and become problematic under increased load.
+
+Motia addresses scalability by leveraging the core primitive of **Steps**: Each step can scale independently avoiding the bottlenecks common in monolithic architectures.
+
+![Scalable](./img/what-is-motia/scalable.png)
+
+---
+
+## Observability
+
+Observability in traditional backends often demands significant engineering effort to implement logging, alerting, and tracing. Typically, these tools are only configured for cloud environments, local development is generally neglected — leading to low productivity and poor dev experience.
+
+Motia offers a complete observability toolkit available in both cloud and local environments.
+
+Learn more: [Observability](/docs/development-guide/observability)
+
+---
+
+## Fault Tolerance
+
+With the rise of AI, many backend tasks have become less deterministic and more error-prone. These scenarios require robust error handling and retry mechanisms. In traditional systems, developers often need to set up and maintain queue infrastructures to ensure resilience, especially when dealing with unreliable responses from LLMs.
+
+Motia provides fault tolerance out of the box, eliminating the need to manually spin up queue infrastructure.
+
+- Using Queue Steps, you get retry mechanisms out of the box
+- Configuration of queue infrastructure is abstracted away
+
+---
+
+## Building and Shipping
+
+Building and deploying backends is inherently complex — especially in polyglot environments. Shipping production systems requires tight collaboration between developers and operations, and automation often takes weeks to get right.
+
+Beyond that, cloud provider lock-in, complicated deployment strategies (e.g., rollbacks, blue/green deployments), and a lack of deployment tooling increase the risk of failure.
+
+Motia abstracts these concerns by providing:
+
+- True cloud-provider agnosticism
+- Atomic blue/green deployments and one-click rollbacks via Motia Cloud (canary support coming soon)
+- First-class polyglot backend support (currently Node.js and Python, with more on the way)
+
+![Deployments](./img/what-is-motia/deployments.png)
+
+_The image above shows several Steps being built to a single Motia deployable that are ultimately deployed to a cloud provider of your choice.
+Currently we're supporting AWS and Kubernetes, more Cloud providers coming soon. Check our [roadmap](https://github.com/orgs/MotiaDev/projects/2/views/4?filterQuery=title%3A+BYOC) for more details._
+
+### Rollbacks and Deployment Strategies
+
+Deploying cloud-native, fault-tolerant applications often involves modifying queue systems and other infrastructure components.
+These changes can introduce incompatibilities and lead to runtime failures.
+
+Motia Cloud solves this with **Atomic Deployments**, which:
+
+- Each deployment spins up a new isolated service that shares the same data layer
+- Ensures safe, rollback-capable deployments without risking service downtime
+- Instant rollbacks with one click since each deployment is isolated
+
+---
+
+## Real-time Data Streaming
+
+Handling real-time data is one of the most common — and complex — challenges in backend development. It's necessary when building event-driven applications, and it typically requires setting up and maintaining a significant amount of infrastructure.
+
+Motia provides what we call _Streams_: Developers define the structure of the data — any changes to these objects are streamed to all subscribed clients in real-time.
+
+![Real-time data streaming](./img/what-is-motia/streams.png)
+
+_The image above shows a Stream definition, a Node.js Step mutating the data and a client subscribing to the stream receiving real-time updates._
+
+Learn more: [Streams](/docs/development-guide/streams)
 
 
 

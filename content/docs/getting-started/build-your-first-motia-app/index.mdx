@@ -32,7 +32,7 @@ That's it. No database setup, no complex config, no separate services to run.
 If you already have Redis running or prefer to use an external Redis instance, use the `--skip-redis` flag:
 
 ```bash
-motia create my-app --skip-redis
+npx motia@latest create my-app --skip-redis
 ```
 
 See [CLI documentation](/docs/development-guide/cli#create) for more details.

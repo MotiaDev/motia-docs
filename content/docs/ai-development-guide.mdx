@@ -10,7 +10,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 When you create a new Motia project, the AI development guides are automatically included:
 
 ```bash
-motia create 
+npx motia@latest create 
 cd <your-project>
 ```
 

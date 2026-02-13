@@ -191,7 +191,7 @@ because the `redis-memory-server` package may require build tools (`make`, `gcc`
 ```bash
 docker run --rm node:24-slim bash -c "
   apt-get update && apt-get install -y ca-certificates git build-essential &&
-  motia create my-app --template starter-typescript
+  npx motia@latest create my-app --template starter-typescript
 "
 ```
 
@@ -201,7 +201,7 @@ docker run --rm node:24-slim bash -c "
 docker run --rm node:24-slim bash -c "
   apt-get update && apt-get install -y ca-certificates git redis-server &&
   export REDISMS_SYSTEM_BINARY=/usr/bin/redis-server &&
-  motia create my-app --template starter-typescript
+  npx motia@latest create my-app --template starter-typescript
 "
 ```
 

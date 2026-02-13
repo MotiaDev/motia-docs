@@ -1,212 +1,42 @@
 ---
 title: Welcome to Motia
 description: "Build production-grade backends with a single primitive. APIs, background jobs, Queues, Workflows, and AI agents - unified in one system with built-in State management, Streaming, and Observability."
+hideCards: true
 ---
 
-# Welcome to Motia
+**Motia** is a unified backend framework that combines APIs, background jobs, workflows, AI agents, streaming, and observability into a single runtime. Instead of juggling separate frameworks and services, everything is built around one core primitive: the **Step**.
 
-<video controls className="mb-8 w-full rounded-xl" poster="https://assets.motia.dev/images/gifs/v1/1-motia-welcome.gif">
-  <source src="https://assets.motia.dev/videos/mp4/site/v1/1-motia-welcome.mp4" type="video/mp4" />
-</video>
+A Step is just a file with a `config` and a `handler`. Motia auto-discovers these files from your project and connects them automatically — no manual registration, no boilerplate wiring.
 
-## Why Motia?
+## Getting Started
 
-**Build production-grade backends with a single primitive.**
+The best way to understand Motia is to try it:
 
-Modern backends shouldn't require juggling frameworks, queues, and services. Motia unifies everything: API endpoints, background jobs, durable workflows, AI agents, streaming, and observability into one runtime with a single core primitive.
+### Prerequisites
 
-**Motia** is your complete backend solution:
-- 🌐 **API** - RESTful endpoints with validation and routing
-- ⚡ **Background Jobs** - Async processing with built-in queues
-- 🔄 **Durable Workflows** - Complex multi-step orchestration
-- 🤖 **Agentic** - AI agent workflows with streaming support
-- 🏪 **State** - Built-in persistent storage across Steps
-- 📊 **Streaming** - Real-time data updates to clients
-- 📝 **Logging** - Structured, traceable logs
-- 👁️ **Observability** - End-to-end tracing and monitoring
+- **iii** is required
+- **Node.js 18+** is required
+- **Python 3** is optional
 
-Just as React made frontend development simple by introducing components, **Motia redefines backend development with Steps** - a single primitive that powers everything.
+<Callout title="iii" type="info">
+  Motia is powered by iii. Install iii by following the instructions at [iii.dev/docs](https://iii.dev/docs).
+</Callout>
 
-To read more about this, check out our [manifesto](/manifesto).
+### Create a project
 
----
-## The Core Primitive: the Step
-
-At the heart of Motia is a single primitive: the **Step**.  
-
-A Step is just a file with a `config` and a `handler`. Motia auto-discovers these files from your project's `src/` directory and connects them automatically - no manual registration required.
-
-Here's a simple example of two Steps working together: an API Step that enqueues a message, and a Queue Step that processes it.
-
-<Tabs items={['TypeScript', 'Python', 'JavaScript']}>
-<Tab value='TypeScript'>
-
-```ts title="src/send-message.step.ts"
-export const config = {
-  name: 'SendMessage',
-  triggers: [{ type: 'api', path: '/messages', method: 'POST' }],
-  enqueues: ['message.sent']
-} as const satisfies StepConfig
-
-export const handler: Handlers<typeof config> = async (req, { enqueue }) => {
-  await enqueue({
-    topic: 'message.sent',
-    data: { text: req.body.text }
-  })
-  return { status: 200, body: { ok: true } }
-}
+```bash
+npx motia@latest create -t quickstart
 ```
 
-```ts title="src/process-message.step.ts"
-export const config = {
-  name: 'ProcessMessage',
-  triggers: [{ type: 'queue', topic: 'message.sent' }],
-} as const satisfies StepConfig
+The installer will guide you through setting up your project.
 
-export const handler: Handlers<typeof config> = async (input, { logger }) => {
-  logger.info('Processing message', input)
-}
-```
-</Tab>
+## Next Steps
 
-<Tab value='Python'>
-
-```python title="send_message_step.py"
-config = {
-    "name": "SendMessage",
-    "triggers": [{"type": "api", "path": "/messages", "method": "POST"}],
-    "enqueues": ["message.sent"]
-}
-
-async def handler(req, ctx):
-    await ctx.enqueue({
-        "topic": "message.sent",
-        "data": {"text": req.body["text"]}
-    })
-    return {"status": 200, "body": {"ok": True}}
-```
-
-```python title="process_message_step.py"
-config = {
-    "name": "ProcessMessage",
-    "triggers": [{"type": "queue", "topic": "message.sent"}],
-}
-
-async def handler(input, ctx):
-    ctx.logger.info("Processing message", input)
-```
-</Tab>
-
-<Tab value='JavaScript'>
-
-```js title="src/send-message.step.js"
-export const config = {
-  name: 'SendMessage',
-  triggers: [{ type: 'api', path: '/messages', method: 'POST' }],
-  enqueues: ['message.sent']
-}
-
-export const handler = async (req, { enqueue }) => {
-  await enqueue({
-    topic: 'message.sent',
-    data: { text: req.body.text }
-  })
-  return { status: 200, body: { ok: true } }
-}
-```
-
-```js title="src/process-message.step.js"
-export const config = {
-  name: 'ProcessMessage',
-  triggers: [{ type: 'queue', topic: 'message.sent' }],
-}
-
-export const handler = async (input, { logger }) => {
-  logger.info('Processing message', input)
-}
-```
-</Tab>
-</Tabs>
-
-👉 With just two files, you’ve built an **API endpoint**, a **queue**, and a **worker**. No extra frameworks required.
-
-Learn more about Steps here: [What is a Step?](/docs/concepts/steps).
-
----
-
-### Working with multiple Languages
-
-The rapid advancement of AI has reshaped the software industry—many cutting-edge AI tools are available only in specific programming languages, this forces companies to decide if they either change their team's skillset to a different language or not leveraging these technologies at all.
-
-Motia removes this limitation by allowing each Step to be written in any language, while still sharing a common state.
-
-![Multi-language](./img/what-is-motia/multi-language.png)
-
-_Each rectangle in the diagram above represents a Step, some of them are in TypeScript and others in Python._
-
-## Scalability
-
-One of the biggest dilemmas in backend development is choosing between scalability and development velocity. In startup environments, speed often takes priority, resulting in systems that don't scale well and become problematic under increased load.
-
-Motia addresses scalability by leveraging the core primitive of **Steps**: Each step can scale independently avoiding the bottlenecks common in monolithic architectures.
-
-![Scalable](./img/what-is-motia/scalable.png)
-
-## Observability
-
-Observability in traditional backends often demands significant engineering effort to implement logging, alerting, and tracing. Typically, these tools are only configured for cloud environments, local development is generally neglected—leading to low productivity and poor dev experience.
-
-Motia offers a complete observability toolkit available in both cloud and local environments, including:
-
-- Logs visualization
-- Tracing tool to quickly visualize the flow of requests through the system
-- State visualization
-- Diagram representation of dependencies between steps and how they are connected
-
-## Fault tolerance
-
-With the rise of AI, many backend tasks have become less deterministic and more error-prone. These scenarios require robust error handling and retry mechanisms. In traditional systems, developers often need to set up and maintain queue infrastructures to ensure resilience, especially when dealing with unreliable responses from LLMs.
-
-Motia provides fault tolerance out of the box, eliminating the need to manually spin up queue infrastructure.
-
-- Using Queue Steps, you get retry mechanisms out of the box
-- Configuration of queue infrastructure is abstracted away
-
-## Building and Shipping
-
-Building and deploying backends is inherently complex—especially in polyglot environments. Shipping production systems requires tight collaboration between developers and operations, and automation often takes weeks to get right.
-
-Beyond that, cloud provider lock-in, complicated deployment strategies (e.g., rollbacks, blue/green deployments), and a lack of deployment tooling increase the risk of failure.
-
-Motia abstracts these concerns by providing:
-
-- True cloud-provider agnosticism
-- Atomic blue/green deployments and one-click rollbacks via Motia Cloud (canary support coming soon)
-- First-class polyglot backend support (currently Node.js and Python, with more on the way)
-
-![Deployments](./img/what-is-motia/deployments.png)
-
-_The image above shows several Steps being build to a single Motia deployable that are ultimately deployed to a cloud provider of your choice. 
-Currently we're supporting AWS and Kubernetes, more Cloud providers coming soon. Check our [roadmap](https://github.com/orgs/MotiaDev/projects/2/views/4?filterQuery=title%3A+BYOC) for more details._
-
-### Rollbacks and deployment strategies
-
-Deploying cloud-native, fault-tolerant applications often involves modifying queue systems and other infrastructure components. 
-These changes can introduce incompatibilities and lead to runtime failures.
-
-Motia Cloud solves this with **Atomic Deployments**, which:
-
-- Each deployment spins up a new isolated service that shares the same data layer
-- Ensures safe, rollback-capable deployments without risking service downtime
-- Instant rollbacks with one click since each deployment is isolated
-
-## Real-time data streaming
-
-Handling real-time data is one of the most common—and complex—challenges in backend development. It's necessary when building event-driven applications, 
-and it typically requires setting up and maintaining a significant amount of infrastructure.
-
-Motia provides what we call _Streams_: Developers define the structure of the data—any changes to these objects are streamed to all subscribed clients in real-time.
-
-![Real-time data streaming](./img/what-is-motia/streams.png)
-
-_The image above shows a Stream definition, a Node.js Step mutating the data and a client subscribing to the stream receiving real-time updates._
+<Cards>
+  <Card title="Quickstart Tutorial" href="/docs/getting-started/quick-start">
+    Get up and running with your first Motia project in just a few minutes.
+  </Card>
+  <Card title="Core Concepts" href="/docs/concepts/overview">
+    Learn how Steps, Flows, and the event-driven model simplify backend development.
+  </Card>
+</Cards>

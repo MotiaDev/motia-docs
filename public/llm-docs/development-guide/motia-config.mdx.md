@@ -3,7 +3,7 @@ title: Configuration (config.yaml)
 description: Configure your Motia project within the iii config.yaml file.
 ---
 
-Motia projects run on [iii](https://iii.dev), which uses a `config.yaml` file for its modular runtime configuration. When you scaffold a project with `motia create`, this file is generated for you with sensible defaults.
+Motia projects run on [iii](https://iii.dev), which uses a `config.yaml` file for its modular runtime configuration. When you scaffold a project with `npx motia@latest create`, this file is generated for you with sensible defaults.
 
 <Callout type="info">
 The `config.yaml` is an iii configuration file. Most modules (API, queue, state, streams, cron, observability) are iii infrastructure concerns. Visit [iii.dev/docs](https://iii.dev/docs) for the full module reference.

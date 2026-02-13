@@ -774,4 +774,8 @@ export const config = {
 
 ## What's Next?
 
+<Card title="Start building" href="/docs/getting-started/quick-start">
+  Steps are all you need to know to start building. Go to the Quickstart and start building right away.
+</Card>
+
 [Build your first app](/docs/getting-started/build-your-first-motia-app)

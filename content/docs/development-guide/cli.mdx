@@ -13,12 +13,12 @@ During development, `npm run dev` starts the [iii](https://iii.dev) runtime whic
 
 ## Project Creation
 
-### `motia create`
+### `npx motia@latest create`
 
 Scaffold a new Motia project.
 
 ```bash
-motia create [project-name] [options]
+npx motia@latest create [project-name] [options]
 ```
 
 **Arguments:**
@@ -43,9 +43,9 @@ motia create [project-name] [options]
 **Examples:**
 
 ```bash
-motia create my-app --template starter-typescript
-motia create my-tutorial --template motia-tutorial-python
-motia create
+npx motia@latest create my-app --template starter-typescript
+npx motia@latest create my-tutorial --template motia-tutorial-python
+npx motia@latest create
 ```
 
 ---
