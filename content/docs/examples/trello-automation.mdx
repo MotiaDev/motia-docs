@@ -5,7 +5,7 @@ description: Build an automated card progression system for Trello boards with A
 
 ---
 
-## Explore the iii console
+## Explore the development console
 
 <div className="my-8">![Trello Automation](./../img/trello.png)</div>
 

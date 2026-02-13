@@ -7,7 +7,7 @@ In modern application development, workflows are rarely linear. Whether you're b
 
 ---
 
-## Explore the iii console
+## Explore the development console
 
 <div className="my-8">![motia workbench for sentiment analysis](./../img/sentimental-analyzer-workbench.gif)</div>
 
@@ -236,15 +236,15 @@ Our application will be composed of four steps. Let's explore each one.
 
 ---
 
-## Explore the iii console
+## Explore the development console
 
-You can explore the workflow in the iii console.
+You can explore the workflow in the development console.
 
 <div className="my-8">![Flow](./../img/sentimental-analyzer.png)</div>
 
-You can also read your files and watch logs, traces, debug your architecture directly in the iii console.
+You can also read your files and watch logs, traces, debug your architecture directly in the development console.
 
-<div className="my-8">![iii console](./../img/sentimental-analyzer-workbench.gif)</div>
+<div className="my-8">![development console](./../img/sentimental-analyzer-workbench.gif)</div>
 
 ---
 

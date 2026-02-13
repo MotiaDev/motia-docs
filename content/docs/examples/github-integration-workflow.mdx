@@ -5,7 +5,7 @@ description: Build an automated GitHub issue and PR management system with AI-po
 
 ---
 
-## Explore the iii console
+## Explore the development console
 
 <div className="my-8">![GitHub Issue Workflow](./../img/github-issue-workflow.png)</div>
 
