@@ -1,11 +1,11 @@
 ---
 title: API Reference
-description: Complete API reference for the iii framework
+description: Complete API reference for the Motia framework
 ---
 
-Everything you need to know about iii's APIs. This reference covers all the types, methods, and configurations available when building with iii.
+Everything you need to know about Motia's APIs. This reference covers all the types, methods, and configurations available when building with Motia.
 
-If you're new to iii, start with the [Steps guide](/docs/concepts/steps) to understand the basics.
+If you're new to Motia, start with the [Steps guide](/docs/concepts/steps) to understand the basics.
 
 ## Step Configuration
 
@@ -33,9 +33,9 @@ type StepConfig = {
 **Optional fields:**
 - `description` - Human-readable description
 - `enqueues` - Topics this Step can enqueue
-- `virtualEnqueues` - Topics shown in the console but not actually enqueued (gray connections)
-- `virtualSubscribes` - Topics shown in the console for flow visualization
-- `flows` - Flow names for console grouping
+- `virtualEnqueues` - Topics shown in the development console but not actually enqueued (gray connections)
+- `virtualSubscribes` - Topics shown in the development console for flow visualization
+- `flows` - Flow names for development console grouping
 - `includeFiles` - Files to bundle with this Step (supports glob patterns, relative to Step file)
 
 ---
@@ -328,7 +328,7 @@ config = {
 </Tab>
 </Tabs>
 
-**Infrastructure config** (iii Cloud only):
+**Infrastructure config** (Motia Cloud only):
 - `handler.ram` - Memory in MB (128-10240, required)
 - `handler.cpu` - CPU vCPUs (optional, auto-calculated from RAM if not provided, must be proportional)
 - `handler.timeout` - Timeout in seconds (1-900, required)
@@ -453,7 +453,7 @@ export const config = {
 
 ### NoopConfig
 
-Use this for visual-only nodes in the console (no code execution).
+Use this for visual-only nodes in the development console (no code execution).
 
 <Tabs items={['TypeScript', 'JavaScript', 'Python']}>
 <Tab value='TypeScript'>
@@ -502,7 +502,7 @@ config = {
 </Tab>
 </Tabs>
 
-**No handler needed** - Noop Steps don't execute code. They exist for console visualization only.
+**No handler needed** - Noop Steps don't execute code. They exist for development console visualization only.
 
 ---
 
@@ -1555,215 +1555,7 @@ File naming:
 
 ## CLI Commands
 
-iii's command-line tools for development and deployment.
-
-### `iii version`
-
-Show iii CLI version.
-
-```bash
-iii version
-iii -V
-iii --version
-```
-
----
-
-### `iii create`
-
-Create a new iii project.
-
-```bash
-npx iii create my-app
-npx iii create .
-npx iii create --template iii-tutorial-python my-python-app
-```
-
-**Options:**
-- `[name]` - Project name (or `.` for current directory)
-- `-t, --template <name>` - Template to use. Available options:
-
-| Template | Description | Use Case |
-|----------|-------------|----------|
-| `iii-tutorial-typescript` | Tutorial (TypeScript only) | Interactive tutorial project in TypeScript |
-| `iii-tutorial-python` | Tutorial (Python only) | Interactive tutorial project in Python |
-| `starter-multilang` | Starter (All languages; TS/JS + Python) | Polyglot project with TypeScript API, Python queue processing, and JavaScript logging |
-| `starter-typescript` | Starter (TypeScript only) | Minimal TypeScript project with basic examples |
-| `starter-javascript` | Starter (JavaScript only) | Minimal JavaScript project with basic examples |
-| `starter-python` | Starter (Python only) | Minimal Python project with basic examples |
-
-- `-c, --cursor` - Add Cursor IDE rules
-
----
-
-### `iii rules pull`
-
-Install AI development guides (AGENTS.md, CLAUDE.md) and Cursor IDE rules.
-
-```bash
-iii rules pull
-iii rules pull --force
-```
-
-**Options:**
-- `-f, --force` - Overwrite existing files
-
----
-
-### `iii dev`
-
-Start development server with console and hot reload.
-
-```bash
-npm run dev
-iii dev --port 4000 --host 0.0.0.0
-```
-
-**Options:**
-- `-p, --port <number>` - Port number (default: 3000)
-- `-H, --host <address>` - Host address (default: localhost)
-- `-d, --debug` - Enable debug logging
-- `--iii-dir <path>` - Custom path for `.iii` folder
-
----
-
-### `iii start`
-
-Start production server without hot reload. Console is included by default (can be disabled via `III_DOCKER_DISABLE_CONSOLE` environment variable).
-
-```bash
-iii start
-iii start --port 8080 --host 0.0.0.0
-```
-
-**Options:**
-- `-p, --port <number>` - Port number (default: 3000)
-- `-H, --host <address>` - Host address (default: localhost)
-- `-d, --debug` - Enable debug logging
-- `--iii-dir <path>` - Custom path for `.iii` folder
-
----
-
-### `iii build`
-
-Build your project for deployment.
-
-```bash
-iii build
-```
-
-Compiles all Steps and generates deployment artifacts.
-
----
-
-### `iii generate-types`
-
-Generate TypeScript types from your Step configs.
-
-```bash
-iii generate-types
-```
-
-Creates `types.d.ts` with type-safe `Handlers` interface. Run this after changing Step configs.
-
----
-
-### `iii generate step`
-
-Create a new Step interactively.
-
-```bash
-iii generate step
-iii generate step --dir users/create-user
-```
-
-**Options:**
-- `-d, --dir <path>` - Path relative to `src/` directory
-
----
-
-### `iii install`
-
-Set up Python virtual environment and install dependencies.
-
-```bash
-iii install
-npm run dev
-```
-
----
-
-### `iii enqueue`
-
-Manually enqueue a message (for testing).
-
-```bash
-iii enqueue --topic user.created --message '{"userId":"123"}'
-iii enqueue --topic order.created --message '{"orderId":"456"}' --port 3000
-```
-
-**Options:**
-- `--topic <topic>` - Topic name
-- `--message <json>` - Message data as JSON string
-- `-p, --port <number>` - Server port (default: 3000)
-
----
-
-### `iii docker setup`
-
-Generate Dockerfile and .dockerignore.
-
-```bash
-iii docker setup
-```
-
----
-
-### `iii docker build`
-
-Build Docker image.
-
-```bash
-iii docker build
-iii docker build --project-name my-app
-```
-
----
-
-### `iii docker run`
-
-Build and run Docker container.
-
-```bash
-iii docker run
-iii docker run --port 8080 --skip-build
-```
-
-**Options:**
-- `-p, --port <number>` - Host port to map (default: 3000)
-- `-n, --project-name <name>` - Docker image name
-- `-s, --skip-build` - Skip building the image
-
----
-
-### `iii cloud deploy`
-
-Deploy to iii Cloud.
-
-```bash
-iii cloud deploy -k YOUR_API_KEY -v v1.0.0
-iii cloud deploy --api-key YOUR_API_KEY --version-name v1.2.0 --environment-name production
-```
-
-**Options:**
-- `-k, --api-key <key>` - iii Cloud API key (or set `III_API_KEY` env var)
-- `-v, --version-name <version>` - Version name/tag for this deployment
-- `-n, --project-name <name>` - Project name (for new projects)
-- `-s, --environment-id <id>` - Environment ID
-- `--environment-name <name>` - Environment name
-- `-e, --env-file <path>` - Path to environment variables file
-- `-d, --version-description <desc>` - Version description
-- `-c, --ci` - CI mode (non-interactive)
+For CLI usage, see the [CLI Reference](/docs/development-guide/cli).
 
 ---
 
@@ -1812,13 +1604,13 @@ enqueues: [
 </Tab>
 </Tabs>
 
-The `label` and `conditional` fields are for console visualization only. They don't affect execution.
+The `label` and `conditional` fields are for development console visualization only. They don't affect execution.
 
 ---
 
 ### Query Parameters
 
-Document query params for the console.
+Document query params for the development console.
 
 ```typescript
 queryParams: [
@@ -1828,7 +1620,7 @@ queryParams: [
 ]
 ```
 
-This shows up in the console endpoint tester.
+This shows up in the development console's endpoint tester.
 
 ---
 
