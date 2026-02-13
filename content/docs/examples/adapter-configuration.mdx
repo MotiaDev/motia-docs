@@ -35,7 +35,7 @@ npm install @motiadev/adapter-redis-state \
 
 ### 2. Configure Adapters
 
-```typescript title="iii config.yml"
+```typescript title="motia.config.ts"
 import { config } from '@motiadev/core'
 import { RedisStateAdapter } from '@motiadev/adapter-redis-state'
 import { RedisStreamAdapterManager } from '@motiadev/adapter-redis-streams'
@@ -73,7 +73,7 @@ Each adapter supports additional configuration options for production use:
 
 ### Redis State Adapter
 
-```typescript title="iii config.yml"
+```typescript title="motia.config.ts"
 import { RedisStateAdapter } from '@motiadev/adapter-redis-state'
 
 export default config({
@@ -116,7 +116,7 @@ export default config({
 
 ### Redis Stream Adapter
 
-```typescript title="iii config.yml"
+```typescript title="motia.config.ts"
 import { RedisStreamAdapterManager } from '@motiadev/adapter-redis-streams'
 
 export default config({
@@ -157,7 +157,7 @@ export default config({
 
 ### RabbitMQ Event Adapter
 
-```typescript title="iii config.yml"
+```typescript title="motia.config.ts"
 import { RabbitMQEventAdapter } from '@motiadev/adapter-rabbitmq-events'
 
 export default config({
@@ -191,7 +191,7 @@ export default config({
 
 ### Redis Cron Adapter
 
-```typescript title="iii config.yml"
+```typescript title="motia.config.ts"
 import { RedisCronAdapter } from '@motiadev/adapter-redis-cron'
 
 export default config({
@@ -290,7 +290,7 @@ You don't need to configure all adapters. Mix and match based on your needs:
 
 If you only need shared state across instances:
 
-```typescript title="iii config.yml"
+```typescript title="motia.config.ts"
 import { config } from '@motiadev/core'
 import { RedisStateAdapter } from '@motiadev/adapter-redis-state'
 
@@ -309,7 +309,7 @@ export default config({
 
 If you only need distributed events:
 
-```typescript title="iii config.yml"
+```typescript title="motia.config.ts"
 import { config } from '@motiadev/core'
 import { RabbitMQEventAdapter } from '@motiadev/adapter-rabbitmq-events'
 
