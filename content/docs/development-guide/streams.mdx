@@ -318,9 +318,9 @@ const stream = new Stream(url.toString())
 
 ---
 
-## Testing Streams in the iii Console
+## Testing Streams in the development console
 
-Testing real-time features can be tricky. The iii console makes it easy.
+Testing real-time features can be tricky. The development console makes it easy.
 
 **How to test:**
 
@@ -333,9 +333,9 @@ return { status: 200, body: todo }
 2. Open [http://localhost:3000/endpoints](http://localhost:3000/endpoints)
 3. Watch the stream update in real-time
 
-![Stream Test in iii Console](./../img/todo-workbench.png)
+![Stream Test in development console](./../img/todo-workbench.png)
 
-The iii console automatically detects stream responses and subscribes to them for you.
+The development console automatically detects stream responses and subscribes to them for you.
 
 ---
 
@@ -474,7 +474,7 @@ await streams.chatMessage.send(
 - **Every `set()` call** pushes updates to connected clients instantly and returns `{ new_value, old_value }`
 - **Use `update()`** for atomic operations (increment, decrement, set fields)
 - **Use `send()`** for temporary events like typing indicators
-- **Test in the iii console** before building your frontend
+- **Test in the development console** before building your frontend
 - **No polling needed** - WebSocket connection handles everything
 
 ---

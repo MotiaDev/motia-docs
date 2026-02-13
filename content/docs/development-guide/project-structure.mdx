@@ -38,7 +38,7 @@ Here's what a typical Motia project looks like:
 | `requirements.txt` | Python dependencies (if using Python) | Config | - |
 | `tsconfig.json` | TypeScript config (if using TypeScript) | Config | - |
 | `types.d.ts` | **Type definitions for your project** | **Generated** | **By TypeScript** |
-| `motia-workbench.json` | **Visual workflow positioning** | **Generated** | **By Motia** |
+| `motia-workbench.json` | **Motia manages visual node positions in the development console** | **Generated** | **By Motia** |
 | `config.yaml` | iii configuration | Config | - |
 
 <Callout type="info">
@@ -76,7 +76,7 @@ When you run `motia dev`, Motia will:
 - **Find all files** matching `*.step.*` or `*_step.*` patterns in the `src/` directory
 - Parse their `config` exports to understand step types and connections
 - Register them in the workflow engine
-- Make them available in the iii console
+- Make them available in the development console
 
 <Callout type="success">
 **No directory requirement** - Steps are discoverable from anywhere within `src/`, regardless of folder depth or organization pattern.
@@ -387,7 +387,7 @@ async function sendPush(data) { /* implementation */ }
 Some files in your Motia project are automatically generated:
 
 - `types.d.ts` - TypeScript generates this for type definitions
-- `motia-workbench.json` - Motia manages visual node positions in the iii console
+- `motia-workbench.json` - Motia manages visual node positions in the development console
 
 ## Discovery Troubleshooting
 
