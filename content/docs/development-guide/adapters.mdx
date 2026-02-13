@@ -9,13 +9,11 @@ description: Adapters configuration has been removed from motia
 
 ## What Changed
 
-In previous versions, you could configure adapters for state, streams, events, and cron in `motia.config.ts`. This configuration has been removed as part of the migration to `iii config.yaml`.
-
-Adapter configuration is now handled through the modular `config.yaml` file, where each module declares its own adapter.
+In previous versions, you could configure adapters for state, streams, events, and cron in `motia.config.ts`. This configuration has been removed. Adapter configuration is now handled through the `config.yaml` file, where each iii module declares its own adapter.
 
 ## Migration
 
-Remove the `adapters` configuration from `motia.config.ts` and configure adapters in `config.yaml` modules instead.
+Remove the `adapters` configuration from `motia.config.ts` and configure adapters in `config.yaml` modules instead. See [iii.dev/docs](https://iii.dev/docs) for the full module reference.
 
 **Before (removed):**
 ```typescript
@@ -48,6 +46,6 @@ modules:
           redis_url: ${REDIS_URL:redis://localhost:6379}
 ```
 
-Each module in `config.yaml` configures its own adapter. See [iii Configuration](/docs/development-guide/motia-config) for the full module reference.
+Each module in `config.yaml` configures its own adapter. See [Configuration](/docs/development-guide/motia-config) for details.
 
 ---
