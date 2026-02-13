@@ -33,9 +33,9 @@ type StepConfig = {
 **Optional fields:**
 - `description` - Human-readable description
 - `enqueues` - Topics this Step can enqueue
-- `virtualEnqueues` - Topics shown in the development console but not actually enqueued (gray connections)
-- `virtualSubscribes` - Topics shown in the development console for flow visualization
-- `flows` - Flow names for development console grouping
+- `virtualEnqueues` - Topics shown in the iii development console but not actually enqueued (gray connections)
+- `virtualSubscribes` - Topics shown in the iii development console for flow visualization
+- `flows` - Flow names for iii development console grouping
 - `includeFiles` - Files to bundle with this Step (supports glob patterns, relative to Step file)
 
 ---
@@ -453,7 +453,7 @@ export const config = {
 
 ### NoopConfig
 
-Use this for visual-only nodes in the development console (no code execution).
+Use this for visual-only nodes in the iii development console (no code execution).
 
 <Tabs items={['TypeScript', 'JavaScript', 'Python']}>
 <Tab value='TypeScript'>
@@ -502,7 +502,7 @@ config = {
 </Tab>
 </Tabs>
 
-**No handler needed** - Noop Steps don't execute code. They exist for development console visualization only.
+**No handler needed** - Noop Steps don't execute code. They exist for iii development console visualization only.
 
 ---
 
@@ -1604,13 +1604,13 @@ enqueues: [
 </Tab>
 </Tabs>
 
-The `label` and `conditional` fields are for development console visualization only. They don't affect execution.
+The `label` and `conditional` fields are for iii development console visualization only. They don't affect execution.
 
 ---
 
 ### Query Parameters
 
-Document query params for the development console.
+Document query params for the iii development console.
 
 ```typescript
 queryParams: [
@@ -1620,7 +1620,7 @@ queryParams: [
 ]
 ```
 
-This shows up in the development console's endpoint tester.
+This metadata is used by the iii development console.
 
 ---
 

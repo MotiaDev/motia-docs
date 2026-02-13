@@ -15,7 +15,7 @@ Let's build a monitoring system that actually works for you.
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![Uptime Monitor](./../img/uptime-monitor-architecture.png)</div>
 
@@ -591,13 +591,13 @@ Our application consists of five specialized steps, each handling a specific par
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The development console provides a visual representation of your monitoring pipeline, making it easy to understand the event flow and debug issues in real-time.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your monitoring pipeline, making it easy to understand the event flow and debug issues in real-time.
 
-<div className="my-8">![Uptime Monitor in development console](./../img/uptime-monitor.gif)</div>
+<div className="my-8">![Uptime Monitor workflow](./../img/uptime-monitor.gif)</div>
 
-You can monitor real-time status checks, view Discord alert logs, and trace the execution of each step directly in the development console. This makes development and debugging significantly easier compared to traditional monitoring solutions.
+You can monitor real-time status checks, view Discord alert logs, and trace the execution of each step directly in the iii development console. This makes development and debugging significantly easier compared to traditional monitoring solutions.
 
 ---
 

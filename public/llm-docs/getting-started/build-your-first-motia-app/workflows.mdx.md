@@ -31,13 +31,11 @@ Install dependencies:
 npm install
 ```
 
-Start the development console:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
-
-Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -80,9 +78,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/workflow-orchestration) repository.
 
-You can follow this guide to learn how to build workflow orchestration with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
 
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-workflow.png)
 
 ---
 
@@ -881,13 +877,17 @@ The orchestrator has three main responsibilities:
 
 ## Testing Your Orchestrator
 
-The best way to test your orchestrator is through the **development console**. It lets you send requests, watch the workflow execute in real-time, and see all the logs in one place.
+Test your orchestrator by sending requests to the API endpoints directly.
 
 ### Create a Pet
 
-Open the development console and test the CreatePet endpoint:
+Send a POST request to create a pet:
 
-![post-pet-test](../../img/build-your-first-app/post-pet.png)
+```bash
+curl -X POST http://localhost:3000/ts/pets \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
+```
 
 You'll see in the logs:
 ```
@@ -898,21 +898,15 @@ You'll see in the logs:
 ✅ Lifecycle transition completed { oldStatus: 'new', newStatus: 'in_quarantine' }
 ```
 
-<Callout type="tip">
-**Prefer using curl?** You can also test with command line:
-
-```bash
-curl -X POST http://localhost:3000/ts/pets \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
-```
-</Callout>
-
 ### Staff Health Check
 
-Test the UpdatePet endpoint in the development console to mark the pet as healthy:
+Mark the pet as healthy:
 
-![update-status-test](../../img/build-your-first-app/update-status.png)
+```bash
+curl -X PUT http://localhost:3000/ts/pets/1 \
+  -H "Content-Type: application/json" \
+  -d '{"status": "healthy"}'
+```
 
 Watch the automatic progression:
 ```
@@ -923,21 +917,15 @@ Watch the automatic progression:
 ✅ Automatic progression completed { oldStatus: 'healthy', newStatus: 'available' }
 ```
 
-<Callout type="tip">
-**Using curl?**
+### Test Invalid Transitions
+
+Try to skip a step:
 
 ```bash
 curl -X PUT http://localhost:3000/ts/pets/1 \
   -H "Content-Type: application/json" \
-  -d '{"status": "healthy"}'
+  -d '{"status": "available"}'
 ```
-</Callout>
-
-### Test Invalid Transitions
-
-Try to skip a step in the development console:
-
-![skip-status-test](../../img/build-your-first-app/skip-status.png)
 
 The orchestrator rejects it:
 ```
@@ -948,21 +936,15 @@ The orchestrator rejects it:
 }
 ```
 
-<Callout type="tip">
-**Using curl?**
+### Test the Illness Workflow
+
+Mark a pet as ill:
 
 ```bash
 curl -X PUT http://localhost:3000/ts/pets/1 \
   -H "Content-Type: application/json" \
-  -d '{"status": "available"}'
+  -d '{"status": "ill"}'
 ```
-</Callout>
-
-### Test the Illness Workflow
-
-Mark a pet as ill in the development console:
-
-![update-status-ill-test](../../img/build-your-first-app/update-status-ill.png)
 
 Watch the automatic treatment start:
 ```
@@ -971,19 +953,13 @@ Watch the automatic treatment start:
 ✅ Automatic progression completed { oldStatus: 'ill', newStatus: 'under_treatment' }
 ```
 
-<Callout type="tip">
-**Using curl?**
+Then mark the pet as recovered:
 
 ```bash
 curl -X PUT http://localhost:3000/ts/pets/1 \
   -H "Content-Type: application/json" \
-  -d '{"status": "ill"}'
+  -d '{"status": "recovered"}'
 ```
-</Callout>
-
-Then mark the pet as recovered in the development console:
-
-![update-status-recovered-test](../../img/build-your-first-app/update-status-recovered.png)
 
 Watch the chained automatic progressions:
 ```
@@ -994,21 +970,11 @@ Watch the chained automatic progressions:
 ✅ Automatic progression completed { oldStatus: 'healthy', newStatus: 'available' }
 ```
 
-<Callout type="tip">
-**Using curl?**
-
-```bash
-curl -X PUT http://localhost:3000/ts/pets/1 \
-  -H "Content-Type: application/json" \
-  -d '{"status": "recovered"}'
-```
-</Callout>
-
 ---
 
 ## Monitoring Your Orchestrator
 
-Use the development console to visualize the entire flow:
+Use the [iii development console](https://iii.dev/docs) to visualize the entire flow:
 
 ### Tracing
 

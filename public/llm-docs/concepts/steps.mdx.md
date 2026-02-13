@@ -633,9 +633,9 @@ await streams.chat.set('room-123', 'msg-456', { text: 'Hello!' })
 
 [Learn more about Streams](/docs/development-guide/streams)
 
-### Flows -- Visualize in development console
+### Flows -- Visualize in the iii Development Console
 
-Group Steps together for diagram visualization in development console.
+Group Steps together for diagram visualization in the iii development console.
 
 <Tabs items={['TypeScript', 'Python', 'JavaScript']}>
 <Tab value='TypeScript'>

@@ -175,9 +175,9 @@ type StepConfig = {
 **Optional fields:**
 - `description` - Human-readable description
 - `enqueues` - Topics this Step can enqueue
-- `virtualEnqueues` - Topics shown in the development console but not actually enqueued (gray connections)
-- `virtualSubscribes` - Topics shown in the development console for flow visualization
-- `flows` - Flow names for development console grouping
+- `virtualEnqueues` - Topics shown in the iii development console but not actually enqueued (gray connections)
+- `virtualSubscribes` - Topics shown in the iii development console for flow visualization
+- `flows` - Flow names for iii development console grouping
 - `includeFiles` - Files to bundle with this Step (supports glob patterns, relative to Step file)
 
 ---
@@ -595,7 +595,7 @@ export const config = {
 
 ### NoopConfig
 
-Use this for visual-only nodes in the development console (no code execution).
+Use this for visual-only nodes in the iii development console (no code execution).
 
 <Tabs items={['TypeScript', 'JavaScript', 'Python']}>
 <Tab value='TypeScript'>
@@ -644,7 +644,7 @@ config = {
 </Tab>
 </Tabs>
 
-**No handler needed** - Noop Steps don't execute code. They exist for development console visualization only.
+**No handler needed** - Noop Steps don't execute code. They exist for iii development console visualization only.
 
 ---
 
@@ -1746,13 +1746,13 @@ enqueues: [
 </Tab>
 </Tabs>
 
-The `label` and `conditional` fields are for development console visualization only. They don't affect execution.
+The `label` and `conditional` fields are for iii development console visualization only. They don't affect execution.
 
 ---
 
 ### Query Parameters
 
-Document query params for the development console.
+Document query params for the iii development console.
 
 ```typescript
 queryParams: [
@@ -1762,7 +1762,7 @@ queryParams: [
 ]
 ```
 
-This shows up in the development console's endpoint tester.
+This metadata is used by the iii development console.
 
 ---
 
@@ -2280,18 +2280,16 @@ Every handler gets a context object with everything you need:
 
 ---
 
-## Development Tool - development console
+## Development Tool - iii Development Console
 
-![create-pet](../img/build-your-first-app/create-api.png)
-
-Visual interface for testing APIs, building and debugging flows:
+Visual interface for building and debugging flows:
 
 - See your entire flow as a beautiful diagram
-- Test API endpoints in the browser
 - Watch logs in real-time
 - Inspect state as it changes
+- View stream updates in real-time
 
-[Learn about development console](/docs/concepts/workbench)
+[Learn about the iii development console](/docs/concepts/workbench) | [Full iii docs](https://iii.dev/docs)
 
 ---
 
@@ -2944,9 +2942,9 @@ await streams.chat.set('room-123', 'msg-456', { text: 'Hello!' })
 
 [Learn more about Streams](/docs/development-guide/streams)
 
-### Flows -- Visualize in development console
+### Flows -- Visualize in the iii Development Console
 
-Group Steps together for diagram visualization in development console.
+Group Steps together for diagram visualization in the iii development console.
 
 <Tabs items={['TypeScript', 'Python', 'JavaScript']}>
 <Tab value='TypeScript'>
@@ -3090,11 +3088,11 @@ export const config = {
 
 -   [workbench](/docs/concepts/workbench): Documentation for workbench.
 ---
-title: Development Console
-description: The visual development environment for building, testing, and debugging Motia apps, powered by iii.
+title: iii Development Console
+description: The visual development environment for building and debugging Motia apps, powered by iii.
 ---
 
-When you run your Motia project with `npm run dev`, a development console is available at [`http://localhost:3000`](http://localhost:3000). This console is powered by [iii](https://iii.dev) and provides visual tooling for your Motia workflows.
+When you run your Motia project with `npm run dev`, the iii development console is available at [`http://localhost:3000`](http://localhost:3000). This console is powered by [iii](https://iii.dev) and provides visual tooling for your Motia workflows.
 
 <Callout type="info">
 The development console is provided by iii. For full documentation on console features, visit [iii.dev/docs](https://iii.dev/docs).
@@ -3103,10 +3101,10 @@ The development console is provided by iii. For full documentation on console fe
 ## What You Get
 
 - **Flow visualization** -- see your entire backend as an interactive diagram where every Step is a node
-- **API endpoint testing** -- test endpoints directly in the browser without Postman or curl
 - **Real-time logs** -- watch `logger.info()`, `logger.warn()`, and `logger.error()` calls stream in
 - **Tracing** -- follow the execution timeline of every request across Steps
 - **State inspector** -- view and edit data stored with `state.set()`
+- **Stream viewer** -- monitor real-time stream updates
 - **Hot reload** -- changes to Step files refresh automatically
 
 ## Getting Started
@@ -3793,14 +3791,14 @@ motia cloud deploy --api-key your-api-key-here \
 
 ## Using Web interface
 
-Through the web interface, you can deploy your project from development console to a live environment with one click.
+Through the web interface, you can deploy your project from the iii development console to a live environment with one click.
 
 ![One Click Deployment](../../img/cloud/one-click-deploy.gif)
 
 Steps to deploy from web interface:
 
 1. Have your local project running (make sure your Motia version is 0.6.4 or higher)
-2. Go to import from development console on Motia Cloud
+2. Go to import from the iii development console on Motia Cloud
 3. Select the port your local project is running on
 4. Choose the project and environment name
 5. Add any environment variables you need (you can upload from .env file or paste the content to auto-fill)
@@ -3993,13 +3991,13 @@ on deployments, if anything fails, quickly rollback to a previous stable version
 
 ## One-click deployment
 
-Deploy your project from development console to a live environment with one click.
+Deploy your project from the iii development console to a live environment with one click.
 
 ![One Click Deployment](../../img/cloud/one-click-deploy.gif)
 
 ## Observability
 
-Have the same experience you have with development console locally in cloud. Such as:
+Have the same experience you have with the iii development console locally in cloud. Such as:
 
 - Logs visualization
 - Tracing tool
@@ -4198,8 +4196,8 @@ Create a `railway.json` in your project root:
 }
 ```
 
-<Callout type="warn">
-**Healthchecks:** Railway's default healthcheck expects a `200` response on `/`. Motia's development console serves the root path, so this should work out of the box.
+<Callout type="info">
+**Healthchecks:** Railway's default healthcheck expects a `200` response on `/`. This is Motia's default behavior as well. Check the configuration if Railway's healthcheck fails.
 </Callout>
 
 ---
@@ -4392,7 +4390,7 @@ railway logs --tail
 
 **Options:**
 1. Remove healthcheck settings from `railway.json`
-2. Motia development console serves `/` by default which returns 200
+2. The iii runtime serves `/` by default which returns 200
 3. Increase the healthcheck timeout
 
 ### Still Seeing "Redis Memory Server Started"
@@ -4621,7 +4619,7 @@ Open [http://localhost:3000](http://localhost:3000) - your app should be running
 
 ### Using Minimal Docker Images (node:24-slim)
 
-If you're using a minimal Docker image like `node:24-slim` instead of the official `motiadev/motia:latest` image, you may encounter errors when creating a new Motia project or running `motia dev`, 
+If you're using a minimal Docker image like `node:24-slim` instead of the official `motiadev/motia:latest` image, you may encounter errors when creating a new Motia project or running the dev server, 
 because the `redis-memory-server` package may require build tools (`make`, `gcc`, etc.) to compile Redis from source. These are not included in minimal images.
 
 **Solution:** Install the required dependencies before running Motia:
@@ -5081,15 +5079,15 @@ npx motia state list
 -   [customizing-flows](/docs/development-guide/customizing-flows): Documentation for customizing-flows.
 ---
 title: Customizing Flows
-description: Make your development console flows look exactly how you want
+description: Make your iii development console flows look exactly how you want
 ---
 
-By default, the development console shows your Steps with their code. Great for developers. But what if you're sharing with:
+By default, the iii development console shows your Steps with their code. Great for developers. But what if you're sharing with:
 - Frontend developers who just need to know the API
 - Product managers who want to see the big picture
 - Designers who care about the flow, not the code
 
-You can override how Steps look in the development console with custom React components.
+You can override how Steps look in the iii development console with custom React components.
 
 ---
 
@@ -5411,8 +5409,7 @@ NODE_ENV=development
 PORT=3000
 
 # Redis (optional - only needed if using external Redis)
-MOTIA_REDIS_HOST=localhost
-MOTIA_REDIS_PORT=6379
+REDIS_URL=redis://localhost:6379
 ```
 
 ### 2. Add to `.gitignore`
@@ -5490,31 +5487,46 @@ async def handler(input_data, ctx):
 
 ## Redis Configuration
 
-Motia uses Redis for internal coordination. By default, it includes an embedded in-memory Redis server for development, so you don't need to install or configure Redis separately.
+Motia uses Redis for internal coordination. By default, it includes an embedded in-memory server for development, so you don't need to install or configure Redis separately.
 
-### Environment Variables
-
-If you want to use your own Redis instance (created with `--skip-redis` flag or for production), you can configure it using these environment variables:
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `MOTIA_REDIS_HOST` | Redis host | `127.0.0.1` |
-| `MOTIA_REDIS_PORT` | Redis port | `6379` |
-| `MOTIA_REDIS_PASSWORD` | Redis password | - |
-| `MOTIA_REDIS_USERNAME` | Redis username (Redis 6.0+) | - |
-| `MOTIA_REDIS_DB` | Redis database number | `0` |
-| `MOTIA_DISABLE_MEMORY_SERVER` | Disable embedded Redis | `false` |
-
-### Example: Using External Redis
+For production or when using an external Redis instance, configure Redis via your `config.yaml` file using the `REDIS_URL` environment variable:
 
 ```bash title=".env"
-MOTIA_REDIS_HOST=redis.example.com
-MOTIA_REDIS_PORT=6379
-MOTIA_REDIS_PASSWORD=your-redis-password
-MOTIA_REDIS_DB=0
+REDIS_URL=redis://redis.example.com:6379
 ```
 
-Alternatively, you can configure Redis in your `config.yaml` file. See [Configuration](/docs/development-guide/motia-config) for more details.
+```yaml title="config.yaml"
+modules:
+  - class: modules::state::StateModule
+    config:
+      adapter:
+        class: modules::state::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
+
+  - class: modules::queue::QueueModule
+    config:
+      adapter:
+        class: modules::queue::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
+
+  - class: modules::stream::StreamModule
+    config:
+      adapter:
+        class: modules::stream::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
+
+  - class: modules::pubsub::PubSubModule
+    config:
+      adapter:
+        class: modules::pubsub::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
+```
+
+The `${REDIS_URL:redis://localhost:6379}` syntax uses environment variable interpolation with a default value. See the [Configuration](/docs/development-guide/motia-config) and [Deployment Guide](/docs/deployment-guide) for complete examples.
 
 ## Deployment
 
@@ -5542,10 +5554,10 @@ That's it! Environment variables are simple - just put them in `.env` and use `p
 -   [flows](/docs/development-guide/flows): Documentation for flows.
 ---
 title: Flows
-description: Group multiple steps to be visible in diagrams in the development console
+description: Group multiple steps to be visible in diagrams in the iii development console
 ---
 
-Flows group related Steps together so you can see them as connected workflows in the development console. Add `flows` to your Step config - it's an array of flow names.
+Flows group related Steps together so you can see them as connected workflows in the [iii development console](https://iii.dev/docs). Add `flows` to your Step config - it's an array of flow names.
 
 ## How It Works
 
@@ -5756,7 +5768,7 @@ export const handler = async (input, { logger }) => {
 </Tab>
 </Tabs>
 
-Both Steps have `flows: ['resource-management']`. In the development console, they appear connected.
+Both Steps have `flows: ['resource-management']`. In the iii development console, they appear connected.
 
 ---
 
@@ -5814,7 +5826,7 @@ export const config = {
 </Tab>
 </Tabs>
 
-This Step appears in both flows in the development console.
+This Step appears in both flows in the iii development console.
 
 ## Steps Without Flows
 
@@ -5869,11 +5881,11 @@ export const config = {
 
 ---
 
-## Flows in the development console
+## Flows in the iii Development Console
 
-The development console has a dropdown to filter by flow. Select a flow to see only the Steps that belong to it.
+The iii development console has a dropdown to filter by flow. Select a flow to see only the Steps that belong to it.
 
-![Flow dropdown in development console](../img/drop-down-flow.png)
+![Flow dropdown in iii development console](../img/drop-down-flow.png)
 
 ### Virtual Connections
 
@@ -5932,13 +5944,13 @@ export const config = {
 </Tab>
 </Tabs>
 
-Virtual connections show as gray/dashed lines in the development console. Real connections (from `enqueues` and queue triggers) show as dark solid lines.
+Virtual connections show as gray/dashed lines in the iii development console. Real connections (from `enqueues` and queue triggers) show as dark solid lines.
 
-![Virtual connections with labels in development console](../img/virtual-emit-subscribe.png)
+![Virtual connections with labels in iii development console](../img/virtual-emit-subscribe.png)
 
 ### Labels
 
-Add labels to connections in the development console:
+Add labels to connections in the iii development console:
 
 <Tabs items={['TypeScript', 'Python', 'JavaScript']}>
 <Tab value='TypeScript'>
@@ -7024,15 +7036,13 @@ See logs right where you ran `npm run dev`:
 [INFO] Payment successful
 ```
 
-### 2. The development console
+### 2. The iii Development Console
 
-Open [http://localhost:3000](http://localhost:3000) and click on your flow. Logs show up in real-time with:
+Open the [iii development console](https://iii.dev/docs) and click on your flow. Logs show up in real-time with:
 - Timestamps
 - Which Step logged it
 - The trace ID (to follow a request through the entire flow)
 - Full context data
-
-![development console Logs](./../img/build-your-first-app/ai-enrichment-logs.png)
 
 ---
 
@@ -7053,7 +7063,7 @@ export const handler: Handlers<typeof config> = async (req, { logger, traceId, e
 }
 ```
 
-**In the development console:**
+**In the iii development console:**
 - Click any log entry
 - See all logs with the same `traceId`
 - Follow the request from start to finish
@@ -7133,7 +7143,7 @@ try {
 **Steps to debug:**
 
 1. **Check terminal logs** - See which Steps ran
-2. **Open the development console** at [http://localhost:3000](http://localhost:3000)
+2. **Open the iii development console** at [http://localhost:3000](http://localhost:3000)
 3. **Click your flow** - See the visual diagram
 4. **Expand logs panel** - See all logs in chronological order
 5. **Click a log** - Filter by that `traceId` to follow the request
@@ -7159,7 +7169,7 @@ try {
 
 - **Log everything important** - But not everything (no sensitive data!)
 - **Use `traceId`** - Follow requests through your entire flow
-- **Check the development console** - Visual debugging is easier
+- **Check the iii development console** - Visual debugging is easier
 - **Use objects** - Don't log strings, log objects
 - **Debug mode** - Only for development, never in production
 
@@ -7222,7 +7232,6 @@ Here's what a typical Motia project looks like:
   <File name="requirements.txt" />
   <File name="tsconfig.json" />
   <File name="types.d.ts" />
-  <File name="motia-workbench.json" />
   <File name="config.yaml" />
 </Folder>
 
@@ -7238,7 +7247,6 @@ Here's what a typical Motia project looks like:
 | `requirements.txt` | Python dependencies (if using Python) | Config | - |
 | `tsconfig.json` | TypeScript config (if using TypeScript) | Config | - |
 | `types.d.ts` | **Type definitions for your project** | **Generated** | **By TypeScript** |
-| `motia-workbench.json` | **Motia manages visual node positions in the development console** | **Generated** | **By Motia** |
 | `config.yaml` | iii configuration | Config | - |
 
 <Callout type="info">
@@ -7271,12 +7279,11 @@ Motia scans your project and automatically registers files as steps based on the
 3. **File must export a `handler` function** containing the step logic
 4. **File extension determines the runtime** (`.ts` = TypeScript, `.py` = Python, `.js` = JavaScript)
 
-When you run `motia dev`, Motia will:
+When you start the dev server, Motia will:
 - **Recursively scan** the `src/` directory
 - **Find all files** matching `*.step.*` or `*_step.*` patterns in the `src/` directory
 - Parse their `config` exports to understand step types and connections
 - Register them in the workflow engine
-- Make them available in the development console
 
 <Callout type="success">
 **No directory requirement** - Steps are discoverable from anywhere within `src/`, regardless of folder depth or organization pattern.
@@ -7441,7 +7448,7 @@ For Node.js-based steps, you'll need:
   "name": "my-motia-app",
   "version": "1.0.0",
   "scripts": {
-    "dev": "motia dev",
+    "dev": "iii",
     "build": "motia build",
     "start": "motia start"
   },
@@ -7587,7 +7594,6 @@ async function sendPush(data) { /* implementation */ }
 Some files in your Motia project are automatically generated:
 
 - `types.d.ts` - TypeScript generates this for type definitions
-- `motia-workbench.json` - Motia manages visual node positions in the development console
 
 ## Discovery Troubleshooting
 
@@ -7689,7 +7695,7 @@ Will be discovered:
 Check if your steps are discovered:
 
 ```bash
-motia dev
+npm run dev
 
 # Look for step creation in your console:
 # [CREATED] Step (Cron) src/petstore/state-audit-cron.step.ts created
@@ -8486,7 +8492,7 @@ Provide an auth token when creating the stream client by embedding it in the Web
 
 ```tsx title="App.tsx"
 import { useMemo } from 'react'
-import { MotiaStreamProvider } from '@motiadev/stream-client-react'
+import { MotiaStreamProvider } from 'motia/stream-client-react'
 
 function AppShell({ session }: { session?: { streamToken?: string } }) {
   const streamAddress = useMemo(() => new URL('ws://localhost:3000').toString(), [])
@@ -8505,7 +8511,7 @@ function AppShell({ session }: { session?: { streamToken?: string } }) {
 Using the browser/node clients directly:
 
 ```ts
-import { Stream } from '@motiadev/stream-client-node'
+import { Stream } from 'motia/stream-client-node'
 
 const url = new URL('wss://api.example.com/streams')
 if (process.env.STREAM_TOKEN) {
@@ -8517,11 +8523,9 @@ const stream = new Stream(url.toString())
 
 ---
 
-## Testing Streams in the development console
+## Viewing Streams in the iii Development Console
 
-Testing real-time features can be tricky. The development console makes it easy.
-
-**How to test:**
+The [iii development console](https://iii.dev/docs) can display stream updates in real-time:
 
 1. Make sure your API Step returns the stream object:
 
@@ -8529,12 +8533,10 @@ Testing real-time features can be tricky. The development console makes it easy.
 return { status: 200, body: todo }
 ```
 
-2. Open [http://localhost:3000/endpoints](http://localhost:3000/endpoints)
+2. Open the iii development console
 3. Watch the stream update in real-time
 
-![Stream Test in development console](./../img/todo-workbench.png)
-
-The development console automatically detects stream responses and subscribes to them for you.
+The console automatically detects stream responses and subscribes to them for you.
 
 ---
 
@@ -8545,7 +8547,7 @@ Once you have streams working on the backend, connect them to your React app.
 ### Install
 
 ```bash
-npm install @motiadev/stream-client-react
+npm install motia
 ```
 
 ### Setup Provider
@@ -8553,7 +8555,7 @@ npm install @motiadev/stream-client-react
 Wrap your app with the provider:
 
 ```tsx title="App.tsx"
-import { MotiaStreamProvider } from '@motiadev/stream-client-react'
+import { MotiaStreamProvider } from 'motia/stream-client-react'
 
 function App() {
   const authToken = useAuthToken()
@@ -8569,7 +8571,7 @@ function App() {
 ### Subscribe to Stream Updates
 
 ```tsx title="App.tsx"
-import { useStreamGroup } from '@motiadev/stream-client-react'
+import { useStreamGroup } from 'motia/stream-client-react'
 import { useTodoEndpoints, type Todo } from './hook/useTodoEndpoints'
 
 function App() {
@@ -8673,7 +8675,7 @@ await streams.chatMessage.send(
 - **Every `set()` call** pushes updates to connected clients instantly and returns `{ new_value, old_value }`
 - **Use `update()`** for atomic operations (increment, decrement, set fields)
 - **Use `send()`** for temporary events like typing indicators
-- **Test in the development console** before building your frontend
+- **View in the iii development console** before building your frontend
 - **No polling needed** - WebSocket connection handles everything
 
 ---
@@ -8701,7 +8703,7 @@ You built an API. You added some queue handlers. Everything seems to work. But d
 
 Without tests, you're guessing. With tests, you know.
 
-Motia has `@motiadev/test` built in. It helps you:
+Motia has `motia/test` built in. It helps you:
 - Test API triggers (hit endpoints, check responses)
 - Test Queue triggers (verify messages get enqueued)
 - Mock contexts for unit tests
@@ -8709,13 +8711,8 @@ Motia has `@motiadev/test` built in. It helps you:
 ---
 
 ## Install
-```bash
-npm install @motiadev/test --save-dev
-```
 
-```bash
-pnpm add @motiadev/test --save-dev
-```
+The test utilities are included in the `motia` package. No extra install needed.
 
 ---
 
@@ -8749,7 +8746,7 @@ export const handler: Handlers<typeof config> = async (req, { enqueue }) => {
 Now let's test it:
 
 ```typescript title="src/create-todo.step.test.ts"
-import { createMotiaTester } from '@motiadev/test'
+import { createMotiaTester } from 'motia/test'
 import { describe, it, expect, afterAll } from 'vitest'
 
 describe('CreateTodo', () => {
@@ -8828,7 +8825,7 @@ export const handler: Handlers<typeof config> = async (input, { enqueue, logger 
 **The Test:**
 
 ```typescript title="src/process-todo.step.test.ts"
-import { createMotiaTester } from '@motiadev/test'
+import { createMotiaTester } from 'motia/test'
 import { describe, it, expect, afterAll } from 'vitest'
 
 describe('ProcessTodo', () => {
@@ -8869,7 +8866,7 @@ Use `tester.enqueue()` to manually fire messages and test Queue triggers without
 Don't want to spin up the whole app? Test handler functions directly:
 
 ```typescript title="src/calculate-total.step.test.ts"
-import { createMockContext } from '@motiadev/test'
+import { createMockContext } from 'motia/test'
 import { handler } from './calculate-total.step'
 import { describe, it, expect } from 'vitest'
 
@@ -8993,443 +8990,47 @@ description: 'Configure distributed adapters for horizontal scaling in productio
 ---
 
 <Callout type="warn">
-**Deprecated** - Adapter configuration has been removed from Motia. This page is kept for reference only.
+**Deprecated** - The `@motiadev/adapter-*` packages and `motia.config.ts` adapter configuration have been removed. Adapters are now configured through `config.yaml` modules.
 </Callout>
 
-This guide shows you how to configure distributed adapters for Motia to enable horizontal scaling and production-ready deployments. We'll cover setting up Redis and RabbitMQ adapters for state, streams, events, and cron.
+## Migration
 
-## Why Distributed Adapters?
+Adapter configuration is now handled in `config.yaml`, where each iii module declares its own adapter. See [Adapters (Removed)](/docs/development-guide/adapters) for migration details.
 
-By default, Motia uses file-based and in-memory adapters that work great for single-instance deployments. However, when you need to:
+### Example: Redis Adapters in config.yaml
 
-- Run multiple Motia instances
-- Scale horizontally
-- Share state/events/streams across instances
-- Deploy to production with high availability
+```yaml title="config.yaml"
+modules:
+  - class: modules::state::StateModule
+    config:
+      adapter:
+        class: modules::state::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
-You need distributed adapters that use shared infrastructure like Redis or RabbitMQ.
+  - class: modules::queue::QueueModule
+    config:
+      adapter:
+        class: modules::queue::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
----
+  - class: modules::stream::StreamModule
+    config:
+      adapter:
+        class: modules::stream::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
-## Quick Setup
-
-### 1. Install Adapter Packages
-
-```bash
-npm install @motiadev/adapter-redis-state \
-            @motiadev/adapter-redis-streams \
-            @motiadev/adapter-rabbitmq-events \
-            @motiadev/adapter-redis-cron
+  - class: modules::pubsub::PubSubModule
+    config:
+      adapter:
+        class: modules::pubsub::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 ```
 
-### 2. Configure Adapters
-
-```typescript title="motia.config.ts"
-import { config } from '@motiadev/core'
-import { RedisStateAdapter } from '@motiadev/adapter-redis-state'
-import { RedisStreamAdapterManager } from '@motiadev/adapter-redis-streams'
-import { RabbitMQEventAdapter } from '@motiadev/adapter-rabbitmq-events'
-import { RedisCronAdapter } from '@motiadev/adapter-redis-cron'
-
-export default config({
-  adapters: {
-    state: new RedisStateAdapter({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-    }),
-    streams: new RedisStreamAdapterManager({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-    }),
-    events: new RabbitMQEventAdapter({
-      url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-      exchangeName: process.env.RABBITMQ_EXCHANGE || 'motia.events',
-      exchangeType: 'topic',
-    }),
-    cron: new RedisCronAdapter({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-    }),
-  },
-})
-```
-
----
-
-## Configuration Options
-
-Each adapter supports additional configuration options for production use:
-
-### Redis State Adapter
-
-```typescript title="motia.config.ts"
-import { RedisStateAdapter } from '@motiadev/adapter-redis-state'
-
-export default config({
-  adapters: {
-    state: new RedisStateAdapter({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      password: process.env.REDIS_PASSWORD,
-      username: process.env.REDIS_USERNAME,
-      database: parseInt(process.env.REDIS_DATABASE || '0'),
-      keyPrefix: process.env.STATE_KEY_PREFIX || 'motia:state:',
-      ttl: parseInt(process.env.STATE_TTL || '3600'),
-      socket: {
-        connectTimeout: 10000,
-        reconnectStrategy: (retries) => {
-          if (retries > 20) {
-            return new Error('Too many retries')
-          }
-          return Math.min(retries * 50, 2000)
-        },
-      },
-    }),
-  },
-})
-```
-
-**Configuration Options:**
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `host` | `string` | `'localhost'` | Redis server host |
-| `port` | `number` | `6379` | Redis server port |
-| `password` | `string` | `undefined` | Redis authentication password |
-| `username` | `string` | `undefined` | Redis authentication username |
-| `database` | `number` | `0` | Redis database number |
-| `keyPrefix` | `string` | `'motia:state:'` | Prefix for all state keys |
-| `ttl` | `number` | `undefined` | Time-to-live in seconds for state entries |
-| `socket.reconnectStrategy` | `function` | Auto-retry | Custom reconnection strategy |
-| `socket.connectTimeout` | `number` | `10000` | Connection timeout in milliseconds |
-
-### Redis Stream Adapter
-
-```typescript title="motia.config.ts"
-import { RedisStreamAdapterManager } from '@motiadev/adapter-redis-streams'
-
-export default config({
-  adapters: {
-    streams: new RedisStreamAdapterManager({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      password: process.env.REDIS_PASSWORD,
-      username: process.env.REDIS_USERNAME,
-      database: parseInt(process.env.REDIS_DATABASE || '0'),
-      keyPrefix: process.env.STREAM_KEY_PREFIX || 'motia:stream:',
-      socket: {
-        connectTimeout: 10000,
-        reconnectStrategy: (retries) => {
-          if (retries > 20) {
-            return new Error('Too many retries')
-          }
-          return Math.min(retries * 50, 2000)
-        },
-      },
-    }),
-  },
-})
-```
-
-**Configuration Options:**
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `host` | `string` | `'localhost'` | Redis server host |
-| `port` | `number` | `6379` | Redis server port |
-| `password` | `string` | `undefined` | Redis authentication password |
-| `username` | `string` | `undefined` | Redis authentication username |
-| `database` | `number` | `0` | Redis database number |
-| `keyPrefix` | `string` | `'motia:stream:'` | Prefix for all stream keys |
-| `socket.reconnectStrategy` | `function` | Auto-retry | Custom reconnection strategy |
-| `socket.connectTimeout` | `number` | `10000` | Connection timeout in milliseconds |
-
-### RabbitMQ Event Adapter
-
-```typescript title="motia.config.ts"
-import { RabbitMQEventAdapter } from '@motiadev/adapter-rabbitmq-events'
-
-export default config({
-  adapters: {
-    events: new RabbitMQEventAdapter({
-      url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-      exchangeName: process.env.RABBITMQ_EXCHANGE || 'motia.events',
-      exchangeType: 'topic',
-      durable: true,
-      autoDelete: false,
-      connectionTimeout: 10000,
-      reconnectDelay: 5000,
-      prefetch: 10,
-    }),
-  },
-})
-```
-
-**Configuration Options:**
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `url` | `string` | Required | RabbitMQ connection URL (e.g., `amqp://localhost`) |
-| `exchangeName` | `string` | Required | Name of the exchange to use |
-| `exchangeType` | `'direct' \| 'topic' \| 'fanout' \| 'headers'` | Required | Type of exchange |
-| `durable` | `boolean` | `true` | Whether the exchange should survive broker restarts |
-| `autoDelete` | `boolean` | `false` | Whether to delete the exchange when all queues are unbound |
-| `connectionTimeout` | `number` | `10000` | Connection timeout in milliseconds |
-| `reconnectDelay` | `number` | `5000` | Delay before attempting reconnection in milliseconds |
-| `prefetch` | `number` | `10` | Number of messages to prefetch |
-
-### Redis Cron Adapter
-
-```typescript title="motia.config.ts"
-import { RedisCronAdapter } from '@motiadev/adapter-redis-cron'
-
-export default config({
-  adapters: {
-    cron: new RedisCronAdapter({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      password: process.env.REDIS_PASSWORD,
-      username: process.env.REDIS_USERNAME,
-      database: parseInt(process.env.REDIS_DATABASE || '0'),
-      keyPrefix: process.env.CRON_KEY_PREFIX || 'motia:cron:lock:',
-      lockTTL: parseInt(process.env.CRON_LOCK_TTL || '300000'),
-      lockRetryDelay: 1000,
-      lockRetryAttempts: 0,
-      instanceId: process.env.INSTANCE_ID,
-      enableHealthCheck: true,
-      socket: {
-        connectTimeout: 10000,
-        reconnectStrategy: (retries) => {
-          if (retries > 20) {
-            return new Error('Too many retries')
-          }
-          return Math.min(retries * 50, 2000)
-        },
-      },
-    }),
-  },
-})
-```
-
-**Configuration Options:**
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `host` | `string` | `'localhost'` | Redis server host |
-| `port` | `number` | `6379` | Redis server port |
-| `password` | `string` | `undefined` | Redis authentication password |
-| `username` | `string` | `undefined` | Redis authentication username |
-| `database` | `number` | `0` | Redis database number |
-| `keyPrefix` | `string` | `'motia:cron:lock:'` | Prefix for all lock keys |
-| `lockTTL` | `number` | `300000` | Lock time-to-live in milliseconds (5 minutes) |
-| `lockRetryDelay` | `number` | `1000` | Delay between lock retry attempts in milliseconds |
-| `lockRetryAttempts` | `number` | `0` | Number of times to retry acquiring a lock |
-| `instanceId` | `string` | Auto-generated UUID | Unique identifier for this instance |
-| `enableHealthCheck` | `boolean` | `true` | Whether to perform periodic health checks |
-| `socket.reconnectStrategy` | `function` | Auto-retry | Custom reconnection strategy |
-| `socket.connectTimeout` | `number` | `10000` | Connection timeout in milliseconds |
-
----
-
-## Docker Compose Setup
-
-For local development and production, use Docker Compose to run Redis and RabbitMQ:
-
-```yaml title="docker-compose.yml"
-version: '3.8'
-
-services:
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    command: redis-server --appendonly yes
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
-
-volumes:
-  redis-data:
-  rabbitmq-data:
-```
-
-Start the services:
-
-```bash
-docker-compose up -d
-```
-
----
-
-## Partial Adapter Configuration
-
-You don't need to configure all adapters. Mix and match based on your needs:
-
-### Only State Adapter
-
-If you only need shared state across instances:
-
-```typescript title="motia.config.ts"
-import { config } from '@motiadev/core'
-import { RedisStateAdapter } from '@motiadev/adapter-redis-state'
-
-export default config({
-  adapters: {
-    state: new RedisStateAdapter({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: 6379,
-    }),
-    // Streams, events, and cron use defaults
-  },
-})
-```
-
-### Only Event Adapter
-
-If you only need distributed events:
-
-```typescript title="motia.config.ts"
-import { config } from '@motiadev/core'
-import { RabbitMQEventAdapter } from '@motiadev/adapter-rabbitmq-events'
-
-export default config({
-  adapters: {
-    events: new RabbitMQEventAdapter({
-      url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-      exchangeName: process.env.RABBITMQ_EXCHANGE || 'motia.events',
-      exchangeType: 'topic',
-    }),
-    // State, streams, and cron use defaults
-  },
-})
-```
-
----
-
-## Production Deployment
-
-### Scaling Multiple Instances
-
-With distributed adapters, you can run multiple Motia instances:
-
-```yaml title="docker-compose.yml"
-services:
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    ports:
-      - "5672:5672"
-
-  motia-1:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
-    depends_on:
-      - redis
-      - rabbitmq
-
-  motia-2:
-    build: .
-    ports:
-      - "3001:3000"
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
-    depends_on:
-      - redis
-      - rabbitmq
-
-  motia-3:
-    build: .
-    ports:
-      - "3002:3000"
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
-    depends_on:
-      - redis
-      - rabbitmq
-```
-
-All instances share the same state, events, and streams.
-
-### Cloud Provider Configuration
-
-For cloud deployments, use managed services:
-
-**AWS ElastiCache (Redis):**
-```typescript
-state: new RedisStateAdapter({
-  host: process.env.REDIS_HOST, // ElastiCache endpoint
-  port: 6379,
-  password: process.env.REDIS_PASSWORD,
-})
-```
-
-**CloudAMQP (RabbitMQ):**
-```typescript
-events: new RabbitMQEventAdapter({
-  url: process.env.CLOUDAMQP_URL, // CloudAMQP connection string
-  exchangeName: process.env.RABBITMQ_EXCHANGE || 'motia.events',
-  exchangeType: 'topic',
-})
-```
-
----
-
-## Testing Adapter Configuration
-
-Your application code doesn't change when switching adapters. Test with defaults first:
-
-```typescript
-// This works with both file and Redis adapters
-export const handler: Handlers<typeof config> = async (req, { state, streams, enqueue }) => {
-  await state.set('orders', 'order-123', { id: 'order-123' })
-  await streams.messages.set('chat-123', 'msg-1', { text: 'Hello' })
-  await enqueue({ topic: 'order.created', data: { orderId: '123' } })
-}
-```
-
-Then switch to distributed adapters for production without changing your code.
-
----
-
-## What's Next?
-
-<Cards>
-  <Card href="/docs/development-guide/adapters/usage" title="📖 Using Adapters">
-    Learn more about using adapters in your application
-  </Card>
-  
-  <Card href="/docs/development-guide/adapters/creating-adapters" title="🔧 Creating Adapters">
-    Build custom adapters for your infrastructure
-  </Card>
-  
-  <Card href="/docs/deployment-guide/self-hosted" title="🚀 Deployment Guide">
-    Learn about deploying Motia to production
-  </Card>
-</Cards>
-
+See [Configuration](/docs/development-guide/motia-config) for the full reference, and the [Deployment Guide](/docs/deployment-guide) for production examples.
 
 
 
@@ -9441,443 +9042,47 @@ description: 'Configure distributed adapters for horizontal scaling in productio
 ---
 
 <Callout type="warn">
-**Deprecated** - Adapter configuration has been removed from Motia. This page is kept for reference only.
+**Deprecated** - The `@motiadev/adapter-*` packages and `motia.config.ts` adapter configuration have been removed. Adapters are now configured through `config.yaml` modules.
 </Callout>
 
-This guide shows you how to configure distributed adapters for Motia to enable horizontal scaling and production-ready deployments. We'll cover setting up Redis and RabbitMQ adapters for state, streams, events, and cron.
+## Migration
 
-## Why Distributed Adapters?
+Adapter configuration is now handled in `config.yaml`, where each iii module declares its own adapter. See [Adapters (Removed)](/docs/development-guide/adapters) for migration details.
 
-By default, Motia uses file-based and in-memory adapters that work great for single-instance deployments. However, when you need to:
+### Example: Redis Adapters in config.yaml
 
-- Run multiple Motia instances
-- Scale horizontally
-- Share state/events/streams across instances
-- Deploy to production with high availability
+```yaml title="config.yaml"
+modules:
+  - class: modules::state::StateModule
+    config:
+      adapter:
+        class: modules::state::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
-You need distributed adapters that use shared infrastructure like Redis or RabbitMQ.
+  - class: modules::queue::QueueModule
+    config:
+      adapter:
+        class: modules::queue::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
----
+  - class: modules::stream::StreamModule
+    config:
+      adapter:
+        class: modules::stream::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 
-## Quick Setup
-
-### 1. Install Adapter Packages
-
-```bash
-npm install @motiadev/adapter-redis-state \
-            @motiadev/adapter-redis-streams \
-            @motiadev/adapter-rabbitmq-events \
-            @motiadev/adapter-redis-cron
+  - class: modules::pubsub::PubSubModule
+    config:
+      adapter:
+        class: modules::pubsub::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
 ```
 
-### 2. Configure Adapters
-
-```typescript title="motia.config.ts"
-import { config } from '@motiadev/core'
-import { RedisStateAdapter } from '@motiadev/adapter-redis-state'
-import { RedisStreamAdapterManager } from '@motiadev/adapter-redis-streams'
-import { RabbitMQEventAdapter } from '@motiadev/adapter-rabbitmq-events'
-import { RedisCronAdapter } from '@motiadev/adapter-redis-cron'
-
-export default config({
-  adapters: {
-    state: new RedisStateAdapter({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-    }),
-    streams: new RedisStreamAdapterManager({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-    }),
-    events: new RabbitMQEventAdapter({
-      url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-      exchangeName: process.env.RABBITMQ_EXCHANGE || 'motia.events',
-      exchangeType: 'topic',
-    }),
-    cron: new RedisCronAdapter({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-    }),
-  },
-})
-```
-
----
-
-## Configuration Options
-
-Each adapter supports additional configuration options for production use:
-
-### Redis State Adapter
-
-```typescript title="motia.config.ts"
-import { RedisStateAdapter } from '@motiadev/adapter-redis-state'
-
-export default config({
-  adapters: {
-    state: new RedisStateAdapter({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      password: process.env.REDIS_PASSWORD,
-      username: process.env.REDIS_USERNAME,
-      database: parseInt(process.env.REDIS_DATABASE || '0'),
-      keyPrefix: process.env.STATE_KEY_PREFIX || 'motia:state:',
-      ttl: parseInt(process.env.STATE_TTL || '3600'),
-      socket: {
-        connectTimeout: 10000,
-        reconnectStrategy: (retries) => {
-          if (retries > 20) {
-            return new Error('Too many retries')
-          }
-          return Math.min(retries * 50, 2000)
-        },
-      },
-    }),
-  },
-})
-```
-
-**Configuration Options:**
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `host` | `string` | `'localhost'` | Redis server host |
-| `port` | `number` | `6379` | Redis server port |
-| `password` | `string` | `undefined` | Redis authentication password |
-| `username` | `string` | `undefined` | Redis authentication username |
-| `database` | `number` | `0` | Redis database number |
-| `keyPrefix` | `string` | `'motia:state:'` | Prefix for all state keys |
-| `ttl` | `number` | `undefined` | Time-to-live in seconds for state entries |
-| `socket.reconnectStrategy` | `function` | Auto-retry | Custom reconnection strategy |
-| `socket.connectTimeout` | `number` | `10000` | Connection timeout in milliseconds |
-
-### Redis Stream Adapter
-
-```typescript title="motia.config.ts"
-import { RedisStreamAdapterManager } from '@motiadev/adapter-redis-streams'
-
-export default config({
-  adapters: {
-    streams: new RedisStreamAdapterManager({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      password: process.env.REDIS_PASSWORD,
-      username: process.env.REDIS_USERNAME,
-      database: parseInt(process.env.REDIS_DATABASE || '0'),
-      keyPrefix: process.env.STREAM_KEY_PREFIX || 'motia:stream:',
-      socket: {
-        connectTimeout: 10000,
-        reconnectStrategy: (retries) => {
-          if (retries > 20) {
-            return new Error('Too many retries')
-          }
-          return Math.min(retries * 50, 2000)
-        },
-      },
-    }),
-  },
-})
-```
-
-**Configuration Options:**
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `host` | `string` | `'localhost'` | Redis server host |
-| `port` | `number` | `6379` | Redis server port |
-| `password` | `string` | `undefined` | Redis authentication password |
-| `username` | `string` | `undefined` | Redis authentication username |
-| `database` | `number` | `0` | Redis database number |
-| `keyPrefix` | `string` | `'motia:stream:'` | Prefix for all stream keys |
-| `socket.reconnectStrategy` | `function` | Auto-retry | Custom reconnection strategy |
-| `socket.connectTimeout` | `number` | `10000` | Connection timeout in milliseconds |
-
-### RabbitMQ Event Adapter
-
-```typescript title="motia.config.ts"
-import { RabbitMQEventAdapter } from '@motiadev/adapter-rabbitmq-events'
-
-export default config({
-  adapters: {
-    events: new RabbitMQEventAdapter({
-      url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-      exchangeName: process.env.RABBITMQ_EXCHANGE || 'motia.events',
-      exchangeType: 'topic',
-      durable: true,
-      autoDelete: false,
-      connectionTimeout: 10000,
-      reconnectDelay: 5000,
-      prefetch: 10,
-    }),
-  },
-})
-```
-
-**Configuration Options:**
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `url` | `string` | Required | RabbitMQ connection URL (e.g., `amqp://localhost`) |
-| `exchangeName` | `string` | Required | Name of the exchange to use |
-| `exchangeType` | `'direct' \| 'topic' \| 'fanout' \| 'headers'` | Required | Type of exchange |
-| `durable` | `boolean` | `true` | Whether the exchange should survive broker restarts |
-| `autoDelete` | `boolean` | `false` | Whether to delete the exchange when all queues are unbound |
-| `connectionTimeout` | `number` | `10000` | Connection timeout in milliseconds |
-| `reconnectDelay` | `number` | `5000` | Delay before attempting reconnection in milliseconds |
-| `prefetch` | `number` | `10` | Number of messages to prefetch |
-
-### Redis Cron Adapter
-
-```typescript title="motia.config.ts"
-import { RedisCronAdapter } from '@motiadev/adapter-redis-cron'
-
-export default config({
-  adapters: {
-    cron: new RedisCronAdapter({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      password: process.env.REDIS_PASSWORD,
-      username: process.env.REDIS_USERNAME,
-      database: parseInt(process.env.REDIS_DATABASE || '0'),
-      keyPrefix: process.env.CRON_KEY_PREFIX || 'motia:cron:lock:',
-      lockTTL: parseInt(process.env.CRON_LOCK_TTL || '300000'),
-      lockRetryDelay: 1000,
-      lockRetryAttempts: 0,
-      instanceId: process.env.INSTANCE_ID,
-      enableHealthCheck: true,
-      socket: {
-        connectTimeout: 10000,
-        reconnectStrategy: (retries) => {
-          if (retries > 20) {
-            return new Error('Too many retries')
-          }
-          return Math.min(retries * 50, 2000)
-        },
-      },
-    }),
-  },
-})
-```
-
-**Configuration Options:**
-
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `host` | `string` | `'localhost'` | Redis server host |
-| `port` | `number` | `6379` | Redis server port |
-| `password` | `string` | `undefined` | Redis authentication password |
-| `username` | `string` | `undefined` | Redis authentication username |
-| `database` | `number` | `0` | Redis database number |
-| `keyPrefix` | `string` | `'motia:cron:lock:'` | Prefix for all lock keys |
-| `lockTTL` | `number` | `300000` | Lock time-to-live in milliseconds (5 minutes) |
-| `lockRetryDelay` | `number` | `1000` | Delay between lock retry attempts in milliseconds |
-| `lockRetryAttempts` | `number` | `0` | Number of times to retry acquiring a lock |
-| `instanceId` | `string` | Auto-generated UUID | Unique identifier for this instance |
-| `enableHealthCheck` | `boolean` | `true` | Whether to perform periodic health checks |
-| `socket.reconnectStrategy` | `function` | Auto-retry | Custom reconnection strategy |
-| `socket.connectTimeout` | `number` | `10000` | Connection timeout in milliseconds |
-
----
-
-## Docker Compose Setup
-
-For local development and production, use Docker Compose to run Redis and RabbitMQ:
-
-```yaml title="docker-compose.yml"
-version: '3.8'
-
-services:
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    command: redis-server --appendonly yes
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
-    volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
-
-volumes:
-  redis-data:
-  rabbitmq-data:
-```
-
-Start the services:
-
-```bash
-docker-compose up -d
-```
-
----
-
-## Partial Adapter Configuration
-
-You don't need to configure all adapters. Mix and match based on your needs:
-
-### Only State Adapter
-
-If you only need shared state across instances:
-
-```typescript title="motia.config.ts"
-import { config } from '@motiadev/core'
-import { RedisStateAdapter } from '@motiadev/adapter-redis-state'
-
-export default config({
-  adapters: {
-    state: new RedisStateAdapter({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: 6379,
-    }),
-    // Streams, events, and cron use defaults
-  },
-})
-```
-
-### Only Event Adapter
-
-If you only need distributed events:
-
-```typescript title="motia.config.ts"
-import { config } from '@motiadev/core'
-import { RabbitMQEventAdapter } from '@motiadev/adapter-rabbitmq-events'
-
-export default config({
-  adapters: {
-    events: new RabbitMQEventAdapter({
-      url: process.env.RABBITMQ_URL || 'amqp://localhost:5672',
-      exchangeName: process.env.RABBITMQ_EXCHANGE || 'motia.events',
-      exchangeType: 'topic',
-    }),
-    // State, streams, and cron use defaults
-  },
-})
-```
-
----
-
-## Production Deployment
-
-### Scaling Multiple Instances
-
-With distributed adapters, you can run multiple Motia instances:
-
-```yaml title="docker-compose.yml"
-services:
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    ports:
-      - "5672:5672"
-
-  motia-1:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
-    depends_on:
-      - redis
-      - rabbitmq
-
-  motia-2:
-    build: .
-    ports:
-      - "3001:3000"
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
-    depends_on:
-      - redis
-      - rabbitmq
-
-  motia-3:
-    build: .
-    ports:
-      - "3002:3000"
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - RABBITMQ_URL=amqp://rabbitmq:5672
-    depends_on:
-      - redis
-      - rabbitmq
-```
-
-All instances share the same state, events, and streams.
-
-### Cloud Provider Configuration
-
-For cloud deployments, use managed services:
-
-**AWS ElastiCache (Redis):**
-```typescript
-state: new RedisStateAdapter({
-  host: process.env.REDIS_HOST, // ElastiCache endpoint
-  port: 6379,
-  password: process.env.REDIS_PASSWORD,
-})
-```
-
-**CloudAMQP (RabbitMQ):**
-```typescript
-events: new RabbitMQEventAdapter({
-  url: process.env.CLOUDAMQP_URL, // CloudAMQP connection string
-  exchangeName: process.env.RABBITMQ_EXCHANGE || 'motia.events',
-  exchangeType: 'topic',
-})
-```
-
----
-
-## Testing Adapter Configuration
-
-Your application code doesn't change when switching adapters. Test with defaults first:
-
-```typescript
-// This works with both file and Redis adapters
-export const handler: Handlers<typeof config> = async (req, { state, streams, enqueue }) => {
-  await state.set('orders', 'order-123', { id: 'order-123' })
-  await streams.messages.set('chat-123', 'msg-1', { text: 'Hello' })
-  await enqueue({ topic: 'order.created', data: { orderId: '123' } })
-}
-```
-
-Then switch to distributed adapters for production without changing your code.
-
----
-
-## What's Next?
-
-<Cards>
-  <Card href="/docs/development-guide/adapters/usage" title="📖 Using Adapters">
-    Learn more about using adapters in your application
-  </Card>
-  
-  <Card href="/docs/development-guide/adapters/creating-adapters" title="🔧 Creating Adapters">
-    Build custom adapters for your infrastructure
-  </Card>
-  
-  <Card href="/docs/deployment-guide/self-hosted" title="🚀 Deployment Guide">
-    Learn about deploying Motia to production
-  </Card>
-</Cards>
-
+See [Configuration](/docs/development-guide/motia-config) for the full reference, and the [Deployment Guide](/docs/deployment-guide) for production examples.
 
 
 -   [ai-content-moderation](/docs/examples/ai-content-moderation): Documentation for ai-content-moderation.
@@ -9899,7 +9104,7 @@ Let's build a content moderation system that scales intelligently.
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![AI Content Moderation Workflow](./../img/ai-content-moderation-workflow.png)</div>
 
@@ -10588,13 +9793,13 @@ Our application consists of six specialized steps, each handling a specific part
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The Motia development console provides a visual representation of your content moderation pipeline, making it easy to understand the flow and monitor moderation decisions in real-time.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your content moderation pipeline, making it easy to understand the flow and monitor moderation decisions in real-time.
 
 <div className="my-8">![AI Content Moderation Workflow](./../img/ai-content-moderation-workflow.png)</div>
 
-You can monitor real-time content analysis, view Slack notifications, and trace the execution of each moderation decision directly in the development console interface. This makes development and debugging significantly easier compared to traditional monolithic moderation systems.
+You can monitor real-time content analysis, view Slack notifications, and trace the execution of each moderation decision directly in the iii development console. This makes development and debugging significantly easier compared to traditional monolithic moderation systems.
 
 ## Human-in-the-Loop Workflow Demo
 
@@ -10860,7 +10065,7 @@ Let's build a content moderation system that scales intelligently.
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![AI Content Moderation Workflow](./../img/ai-content-moderation-workflow.png)</div>
 
@@ -11549,13 +10754,13 @@ Our application consists of six specialized steps, each handling a specific part
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The Motia development console provides a visual representation of your content moderation pipeline, making it easy to understand the flow and monitor moderation decisions in real-time.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your content moderation pipeline, making it easy to understand the flow and monitor moderation decisions in real-time.
 
 <div className="my-8">![AI Content Moderation Workflow](./../img/ai-content-moderation-workflow.png)</div>
 
-You can monitor real-time content analysis, view Slack notifications, and trace the execution of each moderation decision directly in the development console interface. This makes development and debugging significantly easier compared to traditional monolithic moderation systems.
+You can monitor real-time content analysis, view Slack notifications, and trace the execution of each moderation decision directly in the iii development console. This makes development and debugging significantly easier compared to traditional monolithic moderation systems.
 
 ## Human-in-the-Loop Workflow Demo
 
@@ -11808,7 +11013,7 @@ description: A powerful research assistant that leverages the Motia Framework to
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![AI Deep Research Agent](./../img/ai-deep-research-agent.png)</div>
 
@@ -11991,12 +11196,7 @@ Response:
    pnpm dev
    ```
 
-2. Access the Motia development console:
-   ```
-   http://localhost:3000
-   ```
-
-3. Make a test request:
+2. Make a test request:
    ```bash
    curl --request POST \
    --url http://localhost:3000/research \
@@ -12023,7 +11223,7 @@ description: A powerful research assistant that leverages the Motia Framework to
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![AI Deep Research Agent](./../img/ai-deep-research-agent.png)</div>
 
@@ -12206,12 +11406,7 @@ Response:
    pnpm dev
    ```
 
-2. Access the Motia development console:
-   ```
-   http://localhost:3000
-   ```
-
-3. Make a test request:
+2. Make a test request:
    ```bash
    curl --request POST \
    --url http://localhost:3000/research \
@@ -12236,7 +11431,7 @@ description: A powerful event-driven financial analysis workflow that combines w
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![Finance Agent](./../img/finance-agent.gif)</div>
 
@@ -12373,12 +11568,7 @@ Response:
    pnpm dev
    ```
 
-2. Access the Motia development console:
-   ```
-   http://localhost:3000
-   ```
-
-3. Make a test request:
+2. Make a test request:
    ```bash
    curl -X POST http://localhost:3000/finance-query \
      -H "Content-Type: application/json" \
@@ -12401,7 +11591,7 @@ description: A powerful event-driven financial analysis workflow that combines w
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![Finance Agent](./../img/finance-agent.gif)</div>
 
@@ -12538,12 +11728,7 @@ Response:
    pnpm dev
    ```
 
-2. Access the Motia development console:
-   ```
-   http://localhost:3000
-   ```
-
-3. Make a test request:
+2. Make a test request:
    ```bash
    curl -X POST http://localhost:3000/finance-query \
      -H "Content-Type: application/json" \
@@ -12564,7 +11749,7 @@ description: Build an automated GitHub issue and PR management system with AI-po
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![GitHub Issue Workflow](./../img/github-issue-workflow.png)</div>
 
@@ -12708,7 +11893,7 @@ description: Build an automated GitHub issue and PR management system with AI-po
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![GitHub Issue Workflow](./../img/github-issue-workflow.png)</div>
 
@@ -13315,7 +12500,7 @@ Test your webhook by starring/unstarring your repository:
 1. **Star your repository** on GitHub
 2. **Check the logs** - you should see webhook processing
 3. **Access the stream** - query `/api/streams/stars` to see current data
-4. **Watch real-time updates** in the Motia development console
+4. **Watch real-time updates** in the [iii development console](https://iii.dev/docs)
 
 ### Access Real-Time Data
 
@@ -13349,7 +12534,7 @@ motia cloud deploy --api-key your-api-key \
 
 **Option 2: One-Click Web Deployment**
 1. Ensure your local project is running (`npm run dev`)
-2. Go to [Motia Cloud -> Import from development console](https://motia.cloud)
+2. Go to [Motia Cloud](https://motia.cloud) and import your project
 3. Select your local project port
 4. Choose project and environment name
 5. Upload environment variables (optional)
@@ -13946,7 +13131,7 @@ Test your webhook by starring/unstarring your repository:
 1. **Star your repository** on GitHub
 2. **Check the logs** - you should see webhook processing
 3. **Access the stream** - query `/api/streams/stars` to see current data
-4. **Watch real-time updates** in the Motia development console
+4. **Watch real-time updates** in the [iii development console](https://iii.dev/docs)
 
 ### Access Real-Time Data
 
@@ -13980,7 +13165,7 @@ motia cloud deploy --api-key your-api-key \
 
 **Option 2: One-Click Web Deployment**
 1. Ensure your local project is running (`npm run dev`)
-2. Go to [Motia Cloud -> Import from development console](https://motia.cloud)
+2. Go to [Motia Cloud](https://motia.cloud) and import your project
 3. Select your local project port
 4. Choose project and environment name
 5. Upload environment variables (optional)
@@ -14110,7 +13295,7 @@ description: Build an automated email system with smart labeling, auto-responses
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![Gmail Automation](./../img/gmail-automation.png)</div>
 
@@ -14258,9 +13443,9 @@ The Gmail Account Manager workflow consists of the following steps:
    pnpm dev
    ```
 
-6. **Open the Motia development console**
+6. **Open the iii development console**
    
-   Navigate to [http://localhost:3000](http://localhost:3000) to access the workflow UI.
+   Navigate to [http://localhost:3000](http://localhost:3000) to view the workflow.
 
 ## 🔧 Detailed Setup
 
@@ -14326,7 +13511,7 @@ To enable real-time email notifications, you need to set up a Google Cloud Pub/S
 This project includes a complete OAuth2 authentication flow for the Gmail API:
 
 1. Start the development server: `pnpm dev`
-2. Navigate to the authentication workflow in the Motia development console
+2. Navigate to the authentication workflow in the iii development console
 3. The workflow will generate an authorization URL
 4. Open the URL in your browser and authorize the application
 5. The application will receive and store your authentication tokens
@@ -14403,7 +13588,7 @@ To receive daily email summaries in Discord, follow these steps to set up a webh
 ## 📦 Dependencies
 
 ### Node.js Dependencies
-- **@motiadev/core**, **@motiadev/workbench**, **motia**: Motia framework
+- **motia**: Motia framework
 - **googleapis**, **google-auth-library**: Google API integration
 - **gmail-api-parse-message-ts**: Gmail message parsing
 - **axios**: HTTP client
@@ -14456,7 +13641,7 @@ description: Build an automated email system with smart labeling, auto-responses
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![Gmail Automation](./../img/gmail-automation.png)</div>
 
@@ -14604,9 +13789,9 @@ The Gmail Account Manager workflow consists of the following steps:
    pnpm dev
    ```
 
-6. **Open the Motia development console**
+6. **Open the iii development console**
    
-   Navigate to [http://localhost:3000](http://localhost:3000) to access the workflow UI.
+   Navigate to [http://localhost:3000](http://localhost:3000) to view the workflow.
 
 ## 🔧 Detailed Setup
 
@@ -14672,7 +13857,7 @@ To enable real-time email notifications, you need to set up a Google Cloud Pub/S
 This project includes a complete OAuth2 authentication flow for the Gmail API:
 
 1. Start the development server: `pnpm dev`
-2. Navigate to the authentication workflow in the Motia development console
+2. Navigate to the authentication workflow in the iii development console
 3. The workflow will generate an authorization URL
 4. Open the URL in your browser and authorize the application
 5. The application will receive and store your authentication tokens
@@ -14749,7 +13934,7 @@ To receive daily email summaries in Discord, follow these steps to set up a webh
 ## 📦 Dependencies
 
 ### Node.js Dependencies
-- **@motiadev/core**, **@motiadev/workbench**, **motia**: Motia framework
+- **motia**: Motia framework
 - **googleapis**, **google-auth-library**: Google API integration
 - **gmail-api-parse-message-ts**: Gmail message parsing
 - **axios**: HTTP client
@@ -15205,7 +14390,7 @@ function calculateRiskScore(order) {
 
 ### Step 3: Human Approval Gate (Visual Noop)
 
-This creates a visual node in development console showing where the workflow pauses:
+This creates a visual node in the iii development console showing where the workflow pauses:
 
 ```typescript title="src/03-human-approval-gate.step.ts"
 import type { NoopConfig } from 'motia'
@@ -15223,7 +14408,7 @@ export const config: NoopConfig = {
   virtualEnqueues: ['human.decision'],
 }
 ```
-👉 **In development console:** This Noop appears between AnalyzeRisk and ApprovalWebhook.
+👉 **In the iii development console:** This Noop appears between AnalyzeRisk and ApprovalWebhook.
 
 
 ### Step 4: Approval Webhook (Re-Entry Point)
@@ -15751,9 +14936,9 @@ export const handler = async ({ state, logger }) => {
 
 ---
 
-## 🎨 Visual Flow in development console
+## 🎨 Visual Flow in the iii Development Console
 
-When you open the example in development console, you'll see **5 nodes**:
+When you open the example in the iii development console, you'll see **5 nodes**:
 
 ![HTL Example](../img/htl-example.png)
 
@@ -15797,7 +14982,7 @@ Start the Motia development server.
 npm run dev
 ```
 
-Open [`http://localhost:3000`](http://localhost:3000) in your browser to access the development console. You'll see the **HumanApprovalGate** (Noop node) showing where the workflow pauses for human decisions.
+Open [`http://localhost:3000`](http://localhost:3000) in your browser to access the iii development console. You'll see the **HumanApprovalGate** (Noop node) showing where the workflow pauses for human decisions.
 
 ### Test High-Risk Order (Will Pause)
 
@@ -15821,7 +15006,7 @@ curl -X POST http://localhost:3000/orders \
 }
 ```
 
-**Check development console:** The flow stops at HumanApprovalGate. No more steps run. The workflow is **paused** and waiting for human decision.
+**Check the iii development console:** The flow stops at HumanApprovalGate. No more steps run. The workflow is **paused** and waiting for human decision.
 
 ### Resume via Webhook (Hours/Days Later)
 
@@ -15838,7 +15023,7 @@ curl -X POST http://localhost:3000/webhooks/orders/abc-123/approve \
   }'
 ```
 
-**Check development console:** Flow resumes! It loads state, emits `order.approved`, and CompleteOrder runs to fulfill the order.
+**Check the iii development console:** Flow resumes! It loads state, emits `order.approved`, and CompleteOrder runs to fulfill the order.
 
 ### Test Low-Risk Order (Bypasses Gate)
 
@@ -15854,7 +15039,7 @@ curl -X POST http://localhost:3000/orders \
   }'
 ```
 
-**Check development console:** Flows straight through SubmitOrder → AnalyzeRisk → CompleteOrder. The HumanApprovalGate is completely bypassed!
+**Check the iii development console:** Flows straight through SubmitOrder → AnalyzeRisk → CompleteOrder. The HumanApprovalGate is completely bypassed!
 
 </Steps>
 
@@ -15944,7 +15129,7 @@ Building Human-in-the-Loop workflows in Motia:
 1. **Save state when pausing** - Mark clearly with `status: 'awaiting_something'`
 2. **Don't enqueue** - Workflow stops naturally
 3. **Create webhook API** - This is your re-entry point
-4. **Use virtual connections** - Show the pause visually in development console with Noops
+4. **Use virtual connections** - Show the pause visually in the iii development console with Noops
 5. **External systems call webhook** - UI, Slack, etc. restart the flow
 6. **Idempotent steps** - Always check `completedSteps` before doing work
 
@@ -16379,7 +15564,7 @@ function calculateRiskScore(order) {
 
 ### Step 3: Human Approval Gate (Visual Noop)
 
-This creates a visual node in development console showing where the workflow pauses:
+This creates a visual node in the iii development console showing where the workflow pauses:
 
 ```typescript title="src/03-human-approval-gate.step.ts"
 import type { NoopConfig } from 'motia'
@@ -16397,7 +15582,7 @@ export const config: NoopConfig = {
   virtualEnqueues: ['human.decision'],
 }
 ```
-👉 **In development console:** This Noop appears between AnalyzeRisk and ApprovalWebhook.
+👉 **In the iii development console:** This Noop appears between AnalyzeRisk and ApprovalWebhook.
 
 
 ### Step 4: Approval Webhook (Re-Entry Point)
@@ -16925,9 +16110,9 @@ export const handler = async ({ state, logger }) => {
 
 ---
 
-## 🎨 Visual Flow in development console
+## 🎨 Visual Flow in the iii Development Console
 
-When you open the example in development console, you'll see **5 nodes**:
+When you open the example in the iii development console, you'll see **5 nodes**:
 
 ![HTL Example](../img/htl-example.png)
 
@@ -16971,7 +16156,7 @@ Start the Motia development server.
 npm run dev
 ```
 
-Open [`http://localhost:3000`](http://localhost:3000) in your browser to access the development console. You'll see the **HumanApprovalGate** (Noop node) showing where the workflow pauses for human decisions.
+Open [`http://localhost:3000`](http://localhost:3000) in your browser to access the iii development console. You'll see the **HumanApprovalGate** (Noop node) showing where the workflow pauses for human decisions.
 
 ### Test High-Risk Order (Will Pause)
 
@@ -16995,7 +16180,7 @@ curl -X POST http://localhost:3000/orders \
 }
 ```
 
-**Check development console:** The flow stops at HumanApprovalGate. No more steps run. The workflow is **paused** and waiting for human decision.
+**Check the iii development console:** The flow stops at HumanApprovalGate. No more steps run. The workflow is **paused** and waiting for human decision.
 
 ### Resume via Webhook (Hours/Days Later)
 
@@ -17012,7 +16197,7 @@ curl -X POST http://localhost:3000/webhooks/orders/abc-123/approve \
   }'
 ```
 
-**Check development console:** Flow resumes! It loads state, emits `order.approved`, and CompleteOrder runs to fulfill the order.
+**Check the iii development console:** Flow resumes! It loads state, emits `order.approved`, and CompleteOrder runs to fulfill the order.
 
 ### Test Low-Risk Order (Bypasses Gate)
 
@@ -17028,7 +16213,7 @@ curl -X POST http://localhost:3000/orders \
   }'
 ```
 
-**Check development console:** Flows straight through SubmitOrder → AnalyzeRisk → CompleteOrder. The HumanApprovalGate is completely bypassed!
+**Check the iii development console:** Flows straight through SubmitOrder → AnalyzeRisk → CompleteOrder. The HumanApprovalGate is completely bypassed!
 
 </Steps>
 
@@ -17118,7 +16303,7 @@ Building Human-in-the-Loop workflows in Motia:
 1. **Save state when pausing** - Mark clearly with `status: 'awaiting_something'`
 2. **Don't enqueue** - Workflow stops naturally
 3. **Create webhook API** - This is your re-entry point
-4. **Use virtual connections** - Show the pause visually in development console with Noops
+4. **Use virtual connections** - Show the pause visually in the iii development console with Noops
 5. **External systems call webhook** - UI, Slack, etc. restart the flow
 6. **Idempotent steps** - Always check `completedSteps` before doing work
 
@@ -17433,9 +16618,9 @@ Let's build a production-ready data processing system where steps unify TypeScri
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
-<div className="my-8">![Multi-Language Data Processing in Motia development console](/docs-images/motia-build-your-app-2.gif)</div>
+<div className="my-8">![Multi-Language Data Processing](/docs-images/motia-build-your-app-2.gif)</div>
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/multi-language-data-processing)
@@ -17858,11 +17043,11 @@ export interface AppSummary {
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The Motia development console provides a visual representation of your multi-language pipeline, making it easy to trace data flow between TypeScript, Python, and JavaScript steps.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your multi-language pipeline, making it easy to trace data flow between TypeScript, Python, and JavaScript steps.
 
-<div className="my-8">![Multi-Language Workflow in Motia development console](/docs-images/motia-build-your-app-2.gif)</div>
+<div className="my-8">![Multi-Language Workflow](/docs-images/motia-build-your-app-2.gif)</div>
 
 You can monitor real-time execution, view logs from all languages in a unified interface, and trace the complete data flow from the TypeScript API through Python processing to JavaScript summary generation.
 
@@ -17930,9 +17115,9 @@ cd my-app  # Replace with your project name
 npm run dev
 ```
 
-### Open the development console
+### Open the iii Development Console
 
-Navigate to [`http://localhost:3000`](http://localhost:3000) to access the development console and run your workflow.
+Navigate to [`http://localhost:3000`](http://localhost:3000) to access the iii development console and view your workflow.
 
 ### Test the Multi-Language Pipeline
 
@@ -17944,7 +17129,7 @@ Send a request to your API endpoint to see the multi-language workflow in action
      -d '{"data": {"test": "value"}, "message": "Hello!"}'
 ```
 
-Watch in the development console as your data flows through:
+Watch in the iii development console as your data flows through:
 1. **TypeScript** validation and event emission
 2. **TypeScript** bridge processing and forwarding  
 3. **Python** data processing with rich logging
@@ -18045,9 +17230,9 @@ Let's build a production-ready data processing system where steps unify TypeScri
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
-<div className="my-8">![Multi-Language Data Processing in Motia development console](/docs-images/motia-build-your-app-2.gif)</div>
+<div className="my-8">![Multi-Language Data Processing](/docs-images/motia-build-your-app-2.gif)</div>
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/multi-language-data-processing)
@@ -18470,11 +17655,11 @@ export interface AppSummary {
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The Motia development console provides a visual representation of your multi-language pipeline, making it easy to trace data flow between TypeScript, Python, and JavaScript steps.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your multi-language pipeline, making it easy to trace data flow between TypeScript, Python, and JavaScript steps.
 
-<div className="my-8">![Multi-Language Workflow in Motia development console](/docs-images/motia-build-your-app-2.gif)</div>
+<div className="my-8">![Multi-Language Workflow](/docs-images/motia-build-your-app-2.gif)</div>
 
 You can monitor real-time execution, view logs from all languages in a unified interface, and trace the complete data flow from the TypeScript API through Python processing to JavaScript summary generation.
 
@@ -18542,9 +17727,9 @@ cd my-app  # Replace with your project name
 npm run dev
 ```
 
-### Open the development console
+### Open the iii Development Console
 
-Navigate to [`http://localhost:3000`](http://localhost:3000) to access the development console and run your workflow.
+Navigate to [`http://localhost:3000`](http://localhost:3000) to access the iii development console and view your workflow.
 
 ### Test the Multi-Language Pipeline
 
@@ -18556,7 +17741,7 @@ Send a request to your API endpoint to see the multi-language workflow in action
      -d '{"data": {"test": "value"}, "message": "Hello!"}'
 ```
 
-Watch in the development console as your data flows through:
+Watch in the iii development console as your data flows through:
 1. **TypeScript** validation and event emission
 2. **TypeScript** bridge processing and forwarding  
 3. **Python** data processing with rich logging
@@ -18656,9 +17841,9 @@ Let's transform your documents into an intelligent AI assistant.
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
-<div className="my-8">![RAG Workflow in Motia development console](./../img/rag-docling-weaviate-agent.png)</div>
+<div className="my-8">![RAG Workflow](./../img/rag-docling-weaviate-agent.png)</div>
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/rag-and-search/rag-fundamentals/rag-docling-weaviate-agent)
@@ -19175,13 +18360,13 @@ Our application consists of seven specialized steps, each handling a specific pa
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The Motia development console provides a visual representation of your RAG pipeline, making it easy to understand the flow and debug any issues.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your RAG pipeline, making it easy to understand the flow and debug any issues.
 
-<div className="my-8">![RAG Workflow in Motia development console](./../img/rag-example.gif)</div>
+<div className="my-8">![RAG Workflow](./../img/rag-example.gif)</div>
 
-You can monitor real-time processing, view logs, and trace the execution of each step directly in the development console interface. This makes development and debugging significantly easier compared to traditional monolithic approaches.
+You can monitor real-time processing, view logs, and trace the execution of each step directly in the iii development console. This makes development and debugging significantly easier compared to traditional monolithic approaches.
 
 ---
 
@@ -19419,9 +18604,9 @@ Let's transform your documents into an intelligent AI assistant.
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
-<div className="my-8">![RAG Workflow in Motia development console](./../img/rag-docling-weaviate-agent.png)</div>
+<div className="my-8">![RAG Workflow](./../img/rag-docling-weaviate-agent.png)</div>
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/rag-and-search/rag-fundamentals/rag-docling-weaviate-agent)
@@ -19938,13 +19123,13 @@ Our application consists of seven specialized steps, each handling a specific pa
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The Motia development console provides a visual representation of your RAG pipeline, making it easy to understand the flow and debug any issues.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your RAG pipeline, making it easy to understand the flow and debug any issues.
 
-<div className="my-8">![RAG Workflow in Motia development console](./../img/rag-example.gif)</div>
+<div className="my-8">![RAG Workflow](./../img/rag-example.gif)</div>
 
-You can monitor real-time processing, view logs, and trace the execution of each step directly in the development console interface. This makes development and debugging significantly easier compared to traditional monolithic approaches.
+You can monitor real-time processing, view logs, and trace the execution of each step directly in the iii development console. This makes development and debugging significantly easier compared to traditional monolithic approaches.
 
 ---
 
@@ -20170,9 +19355,9 @@ In modern application development, workflows are rarely linear. Whether you're b
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
-<div className="my-8">![motia workbench for sentiment analysis](./../img/sentimental-analyzer-workbench.gif)</div>
+<div className="my-8">![Sentiment analysis workflow](./../img/sentimental-analyzer-workbench.gif)</div>
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/api-patterns/sentimental-analysis)
@@ -20193,7 +19378,7 @@ Let's dive in.
 
 ## A Step at a Time
 
-<div className="my-8">![motia workbench for sentiment analysis](./../img/sentimental-analyzer-workbench.png)</div>
+<div className="my-8">![Sentiment analysis workflow](./../img/sentimental-analyzer-workbench.png)</div>
 
 At the heart of the Motia framework is a simple but powerful idea: the **`step`**. A step is a self-contained, independent unit of logic that listens for an event, performs a task, and, optionally, emits a new event. This concept is the core primitive that allows you to break down even the most complex architectures into a series of simple, manageable components.
 
@@ -20399,15 +19584,13 @@ Our application will be composed of four steps. Let's explore each one.
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-You can explore the workflow in the development console.
+You can explore the workflow visually in the [iii development console](https://iii.dev/docs).
 
 <div className="my-8">![Flow](./../img/sentimental-analyzer.png)</div>
 
-You can also read your files and watch logs, traces, debug your architecture directly in the development console.
-
-<div className="my-8">![development console](./../img/sentimental-analyzer-workbench.gif)</div>
+You can also read your files and watch logs, traces, and debug your architecture directly in the console.
 
 ---
 
@@ -20532,9 +19715,9 @@ In modern application development, workflows are rarely linear. Whether you're b
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
-<div className="my-8">![motia workbench for sentiment analysis](./../img/sentimental-analyzer-workbench.gif)</div>
+<div className="my-8">![Sentiment analysis workflow](./../img/sentimental-analyzer-workbench.gif)</div>
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/api-patterns/sentimental-analysis)
@@ -20555,7 +19738,7 @@ Let's dive in.
 
 ## A Step at a Time
 
-<div className="my-8">![motia workbench for sentiment analysis](./../img/sentimental-analyzer-workbench.png)</div>
+<div className="my-8">![Sentiment analysis workflow](./../img/sentimental-analyzer-workbench.png)</div>
 
 At the heart of the Motia framework is a simple but powerful idea: the **`step`**. A step is a self-contained, independent unit of logic that listens for an event, performs a task, and, optionally, emits a new event. This concept is the core primitive that allows you to break down even the most complex architectures into a series of simple, manageable components.
 
@@ -20761,15 +19944,13 @@ Our application will be composed of four steps. Let's explore each one.
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-You can explore the workflow in the development console.
+You can explore the workflow visually in the [iii development console](https://iii.dev/docs).
 
 <div className="my-8">![Flow](./../img/sentimental-analyzer.png)</div>
 
-You can also read your files and watch logs, traces, debug your architecture directly in the development console.
-
-<div className="my-8">![development console](./../img/sentimental-analyzer-workbench.gif)</div>
+You can also read your files and watch logs, traces, and debug your architecture directly in the console.
 
 ---
 
@@ -20890,7 +20071,7 @@ description: Build an automated card progression system for Trello boards with A
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![Trello Automation](./../img/trello.png)</div>
 
@@ -21041,7 +20222,7 @@ description: Build an automated card progression system for Trello boards with A
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![Trello Automation](./../img/trello.png)</div>
 
@@ -21200,7 +20381,7 @@ Let's build a monitoring system that actually works for you.
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![Uptime Monitor](./../img/uptime-monitor-architecture.png)</div>
 
@@ -21776,13 +20957,13 @@ Our application consists of five specialized steps, each handling a specific par
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The development console provides a visual representation of your monitoring pipeline, making it easy to understand the event flow and debug issues in real-time.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your monitoring pipeline, making it easy to understand the event flow and debug issues in real-time.
 
-<div className="my-8">![Uptime Monitor in development console](./../img/uptime-monitor.gif)</div>
+<div className="my-8">![Uptime Monitor workflow](./../img/uptime-monitor.gif)</div>
 
-You can monitor real-time status checks, view Discord alert logs, and trace the execution of each step directly in the development console. This makes development and debugging significantly easier compared to traditional monitoring solutions.
+You can monitor real-time status checks, view Discord alert logs, and trace the execution of each step directly in the iii development console. This makes development and debugging significantly easier compared to traditional monitoring solutions.
 
 ---
 
@@ -22142,7 +21323,7 @@ Let's build a monitoring system that actually works for you.
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![Uptime Monitor](./../img/uptime-monitor-architecture.png)</div>
 
@@ -22718,13 +21899,13 @@ Our application consists of five specialized steps, each handling a specific par
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The development console provides a visual representation of your monitoring pipeline, making it easy to understand the event flow and debug issues in real-time.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your monitoring pipeline, making it easy to understand the event flow and debug issues in real-time.
 
-<div className="my-8">![Uptime Monitor in development console](./../img/uptime-monitor.gif)</div>
+<div className="my-8">![Uptime Monitor workflow](./../img/uptime-monitor.gif)</div>
 
-You can monitor real-time status checks, view Discord alert logs, and trace the execution of each step directly in the development console. This makes development and debugging significantly easier compared to traditional monitoring solutions.
+You can monitor real-time status checks, view Discord alert logs, and trace the execution of each step directly in the iii development console. This makes development and debugging significantly easier compared to traditional monitoring solutions.
 
 ---
 
@@ -23108,13 +22289,11 @@ OPENAI_API_KEY=your_api_key_here
 **Important!** This tutorial requires an OpenAI API key. Get yours at [platform.openai.com/api-keys](https://platform.openai.com/api-keys). Without it, the agentic workflows won't work.
 </Callout>
 
-Start the development console:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
-
-Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -23166,9 +22345,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/ai-agents) repository.
 
-You can follow this guide to learn how to build agentic workflows with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
-
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-ai.png)
+You can follow this guide to learn how to build agentic workflows with Motia step by step, or clone the repository and get started immediately.
 
 ---
 
@@ -23788,25 +22965,17 @@ The key is the prompt engineering - we tell the AI exactly what fields we need a
 
 ## Testing Your Agentic Step
 
-The best way to test your agentic step is through the **development console**. It lets you create pets, watch the AI enrichment happen in real-time, and see all the logs in one place.
+Test your agentic step by sending requests to the API endpoints and watching the logs.
 
 ### Create a Pet
 
-Open the development console and test the CreatePet endpoint. The AI will automatically start enriching the profile in the background.
-
-<Callout type="tip">
-**Prefer using curl?**
+Create a pet -- the AI will automatically start enriching the profile in the background:
 
 ```bash
 curl -X POST http://localhost:3000/ts/pets \
   -H "Content-Type: application/json" \
   -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
 ```
-</Callout>
-
-Check the logs in the development console to see the agentic step in action:
-
-![ai-enrichment-logs](../../img/build-your-first-app/ai-enrichment-logs.png)
 
 You'll see:
 1. "Pet created" log from the API endpoint
@@ -23815,15 +22984,11 @@ You'll see:
 
 ### View the Enriched Profile
 
-Fetch the pet in the development console to see the AI-generated profile, or use curl:
-
-<Callout type="tip">
-**Using curl?**
+Fetch the pet to see the AI-generated profile:
 
 ```bash
 curl http://localhost:3000/ts/pets/1
 ```
-</Callout>
 
 You'll get back something like:
 
@@ -24361,14 +23526,11 @@ The framework functions (`buildAgentContext`, `callAgentDecision`, `getAgentArti
 
 ## Testing the Health Review Agentic Step
 
-The best way to test decision-making agentic steps is through the **development console**. You can create pets, trigger the health review, and watch the AI make decisions in real-time.
+Test the health review by sending requests to the API and watching the AI make decisions.
 
 ### Create a Pet
 
-Use the development console to create a pet. The AI enrichment will automatically trigger.
-
-<Callout type="tip">
-**Prefer using curl?**
+Create a pet -- the AI enrichment will automatically trigger:
 
 ```bash
 curl -X POST http://localhost:3000/ts/pets \
@@ -24379,20 +23541,15 @@ curl -X POST http://localhost:3000/ts/pets \
     "ageMonths": 36
   }'
 ```
-</Callout>
 
 ### Trigger the Health Review
 
-In the development console, test the health review endpoint to see the AI make a decision.
-
-<Callout type="tip">
-**Using curl?**
+Send a request to the health review endpoint to see the AI make a decision:
 
 ```bash
 curl -X POST http://localhost:3000/ts/pets/1/health-review \
   -H "Content-Type: application/json"
 ```
-</Callout>
 
 ![ai-health-review-create-pet](../../img/build-your-first-app/health-treatment-reqd-create-pet.png)
 
@@ -24420,15 +23577,11 @@ The AI evaluates the pet's data and makes a decision. The enqueue it fires will 
 
 ### Verify the Status Change
 
-Check the pet status in the development console to see the AI's decision reflected in the workflow state.
-
-<Callout type="tip">
-**Using curl?**
+Check the pet status to see the AI's decision reflected in the workflow state:
 
 ```bash
 curl http://localhost:3000/ts/pets/1
 ```
-</Callout>
 
 ![ai-health-review-status](../../img/build-your-first-app/ai-health-review-status.png)
 
@@ -24675,13 +23828,11 @@ Install dependencies:
 npm install
 ```
 
-Start the development console:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
-
-Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -24730,9 +23881,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/api-endpoints) repository.
 
-You can follow this guide to learn how to build a REST API with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
-
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial.png)
+You can follow this guide to learn how to build a REST API with Motia step by step, or clone the repository and get started immediately.
 
 ---
 
@@ -24868,9 +24017,7 @@ View on GitHub:
 
 ## Testing Your API
 
-You can test your endpoints using curl or the development console interface.
-
-### Using curl
+You can test your endpoints by sending requests directly to the API:
 
 ```bash
 # Create a pet
@@ -24878,12 +24025,6 @@ curl -X POST http://localhost:3000/pets \
   -H "Content-Type: application/json" \
   -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
 ```
-
-### Using the development console
-
-You can also test your endpoint directly in the development console, which provides an interactive interface to test your API endpoints with real requests and see the responses in real-time:
-
-![create-pet](../../img/build-your-first-app/create-api.png)
 
 ---
 ## Adding GET Endpoints
@@ -24972,10 +24113,6 @@ Test with curl:
 curl http://localhost:3000/pets
 ```
 
-Or use the development console interface:
-
-![create-pet](../../img/build-your-first-app/list-pets.png)
-
 ---
 
 ### Get Single Pet
@@ -25062,10 +24199,6 @@ View on GitHub:
   </Tab>
 </Tabs>
 
-<Callout type="info">
-**Testing tip:** When testing GET endpoints with path parameters like `/pets/:id`, switch to the **Params** tab (not Body) to enter the ID value.
-</Callout>
-
 The `:id` in the path creates a path parameter accessible via `req.pathParams.id`.
 
 ### Testing Get Single Pet
@@ -25076,10 +24209,6 @@ Test with curl:
 # Get specific pet (replace 1 with an actual pet ID)
 curl http://localhost:3000/pets/1
 ```
-
-Or use the development console interface:
-
-![create-pet](../../img/build-your-first-app/get-pet-by-id.png)
 
 ---
 
@@ -25207,10 +24336,6 @@ curl -X PUT http://localhost:3000/pets/1 \
   -d '{"status": "adopted"}'
 ```
 
-Or use the development console interface:
-
-![create-pet](../../img/build-your-first-app/update-pet.png)
-
 ---
 
 ## Adding DELETE Endpoint
@@ -25308,10 +24433,6 @@ Test with curl:
 curl -X DELETE http://localhost:3000/pets/1
 ```
 
-Or use the development console interface:
-
-![create-pet](../../img/build-your-first-app/delete-pet.png)
-
 ---
 
 As you can see in this example, Motia handles routing, validation, and error handling automatically. With just a few lines of code, you've built a complete REST API with:
@@ -25367,13 +24488,11 @@ Install dependencies:
 npm install
 ```
 
-Start the development console:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
-
-Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -25416,9 +24535,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/background-jobs) repository.
 
-You can follow this guide to learn how to build background jobs with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
-
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-bg.png)
+You can follow this guide to learn how to build background jobs with Motia step by step, or clone the repository and get started immediately.
 
 ---
 
@@ -25806,11 +24923,7 @@ curl -X POST http://localhost:3000/pets \
   -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
 ```
 
-Check the logs in the development console to see both the API call and the background job execution:
-
-![background-job-logs](../../img/build-your-first-app/bg-job-logs.png)
-
-You'll see:
+Check the logs to see both the API call and the background job execution. You'll see:
 1. "Pet created" log from the API endpoint
 2. "Setting next feeding reminder" log from the background job
 3. "Next feeding reminder set" log when the job completes
@@ -26046,7 +25159,7 @@ Common cron patterns:
 
 ## Monitoring Background Jobs
 
-The development console provides tools to monitor your background jobs:
+The [iii development console](https://iii.dev/docs) provides tools to monitor your background jobs:
 
 ### Tracing
 
@@ -26133,7 +25246,7 @@ See [CLI documentation](/docs/development-guide/cli#create) for more details.
 - How to define API Steps
 - Request validation with schemas
 - Returning proper HTTP responses
-- Testing endpoints in the development console
+- Testing endpoints with curl
 
 **Time:** 10 minutes
 
@@ -26151,7 +25264,7 @@ See [CLI documentation](/docs/development-guide/cli#create) for more details.
 - Queue Steps that trigger from your APIs
 - Cron Steps that run on a schedule
 - How queues connect your system
-- Monitoring jobs in the development console
+- Monitoring jobs in the iii development console
 
 **Time:** 15 minutes
 
@@ -26231,13 +25344,7 @@ It's a real system with the kind of complexity you'll face building production b
 
 ---
 
-## Interactive Tutorials
-
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-streaming.png)
-
-Each guide includes an **interactive tutorial** you can run directly in the development console. It walks you through the code, explains what's happening, and lets you test everything live.
-
-Prefer reading? The written guides cover everything too. They're detailed, with code examples and explanations for every concept.
+Each guide is detailed, with code examples and explanations for every concept.
 
 ---
 
@@ -26305,13 +25412,11 @@ Set up your OpenAI API key in `.env`:
 OPENAI_API_KEY=your_api_key_here
 ```
 
-Start the development console:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
-
-Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -26364,9 +25469,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/main) repository.
 
-You can follow this guide to learn how to build real-time streaming with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
-
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-streaming.png)
+You can follow this guide to learn how to build real-time streaming with Motia step by step, or clone the repository and get started immediately.
 
 ---
 
@@ -26631,7 +25734,7 @@ View on GitHub:
             'data': {'petId': pet['id'], 'enqueuedAt': int(time.time() * 1000), 'traceId': trace_id}
         })
 
-        # Return the stream result so it can be tracked in the development console
+        # Return the stream result so it can be tracked
         return {
             "status": 201,
             "body": result
@@ -27539,14 +26642,11 @@ This transforms a potentially slow AI operation into an engaging real-time exper
 
 ## Testing Streaming in Action
 
-The best way to test streams is through **development console**.
+Test streaming by sending requests to the API endpoints.
 
 ### Test 1: Create a Pet with Streaming
 
-Open development console and navigate to the Endpoints section, then test the Pet Creation endpoint:
-
-<Callout type="tip">
-**Prefer using curl?**
+Create a pet to see the streaming in action:
 
 ```bash
 curl -X POST http://localhost:3000/ts/pets \
@@ -27558,26 +26658,16 @@ curl -X POST http://localhost:3000/ts/pets \
     "symptoms": ["coughing"]
   }'
 ```
-</Callout>
 
 You'll get an immediate response with the stream result. The API returns right away while background jobs process asynchronously.
 
-### Test 2: Monitor Stream Updates in development console
+### Test 2: View Stream Updates
 
-After creating a pet, check the Tracing view in development console:
+You can view stream updates in the [iii development console](https://iii.dev/docs) Tracing view:
 
-1. Automatically switched to the **Tracing** tab so you can see the stream updates in real-time
-2. Click on the most recent trace
-3. Watch the timeline as steps execute
-4. See stream updates appear in real-time in the timeline
-
-![stream-tracing](../../img/build-your-first-app/stream-tracing.png)
-
-You'll observe:
-- Pet creation completes immediately
-- Feeding reminder job streams quarantine updates
-- AI enrichment streams progress updates
-- All updates visible in the trace timeline
+- Open the most recent trace
+- Watch the timeline as steps execute
+- See stream updates appear in real-time
 
 ### Test 3: Create Pet with Symptoms
 
@@ -27614,7 +26704,7 @@ The stream will show health check passed messages instead of treatment needed me
 
 ### Observing Stream Updates
 
-Watch the development console console logs to see the real-time stream updates as they're pushed:
+Watch the logs to see the real-time stream updates as they're pushed:
 
 ```
 🐾 Pet created { petId: '1', name: 'Max', species: 'dog', status: 'new' }
@@ -27692,13 +26782,11 @@ Install dependencies:
 npm install
 ```
 
-Start the development console:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
-
-Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -27741,9 +26829,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/workflow-orchestration) repository.
 
-You can follow this guide to learn how to build workflow orchestration with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
 
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-workflow.png)
 
 ---
 
@@ -28542,13 +27628,17 @@ The orchestrator has three main responsibilities:
 
 ## Testing Your Orchestrator
 
-The best way to test your orchestrator is through the **development console**. It lets you send requests, watch the workflow execute in real-time, and see all the logs in one place.
+Test your orchestrator by sending requests to the API endpoints directly.
 
 ### Create a Pet
 
-Open the development console and test the CreatePet endpoint:
+Send a POST request to create a pet:
 
-![post-pet-test](../../img/build-your-first-app/post-pet.png)
+```bash
+curl -X POST http://localhost:3000/ts/pets \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
+```
 
 You'll see in the logs:
 ```
@@ -28559,21 +27649,15 @@ You'll see in the logs:
 ✅ Lifecycle transition completed { oldStatus: 'new', newStatus: 'in_quarantine' }
 ```
 
-<Callout type="tip">
-**Prefer using curl?** You can also test with command line:
-
-```bash
-curl -X POST http://localhost:3000/ts/pets \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
-```
-</Callout>
-
 ### Staff Health Check
 
-Test the UpdatePet endpoint in the development console to mark the pet as healthy:
+Mark the pet as healthy:
 
-![update-status-test](../../img/build-your-first-app/update-status.png)
+```bash
+curl -X PUT http://localhost:3000/ts/pets/1 \
+  -H "Content-Type: application/json" \
+  -d '{"status": "healthy"}'
+```
 
 Watch the automatic progression:
 ```
@@ -28584,21 +27668,15 @@ Watch the automatic progression:
 ✅ Automatic progression completed { oldStatus: 'healthy', newStatus: 'available' }
 ```
 
-<Callout type="tip">
-**Using curl?**
+### Test Invalid Transitions
+
+Try to skip a step:
 
 ```bash
 curl -X PUT http://localhost:3000/ts/pets/1 \
   -H "Content-Type: application/json" \
-  -d '{"status": "healthy"}'
+  -d '{"status": "available"}'
 ```
-</Callout>
-
-### Test Invalid Transitions
-
-Try to skip a step in the development console:
-
-![skip-status-test](../../img/build-your-first-app/skip-status.png)
 
 The orchestrator rejects it:
 ```
@@ -28609,21 +27687,15 @@ The orchestrator rejects it:
 }
 ```
 
-<Callout type="tip">
-**Using curl?**
+### Test the Illness Workflow
+
+Mark a pet as ill:
 
 ```bash
 curl -X PUT http://localhost:3000/ts/pets/1 \
   -H "Content-Type: application/json" \
-  -d '{"status": "available"}'
+  -d '{"status": "ill"}'
 ```
-</Callout>
-
-### Test the Illness Workflow
-
-Mark a pet as ill in the development console:
-
-![update-status-ill-test](../../img/build-your-first-app/update-status-ill.png)
 
 Watch the automatic treatment start:
 ```
@@ -28632,19 +27704,13 @@ Watch the automatic treatment start:
 ✅ Automatic progression completed { oldStatus: 'ill', newStatus: 'under_treatment' }
 ```
 
-<Callout type="tip">
-**Using curl?**
+Then mark the pet as recovered:
 
 ```bash
 curl -X PUT http://localhost:3000/ts/pets/1 \
   -H "Content-Type: application/json" \
-  -d '{"status": "ill"}'
+  -d '{"status": "recovered"}'
 ```
-</Callout>
-
-Then mark the pet as recovered in the development console:
-
-![update-status-recovered-test](../../img/build-your-first-app/update-status-recovered.png)
 
 Watch the chained automatic progressions:
 ```
@@ -28655,21 +27721,11 @@ Watch the chained automatic progressions:
 ✅ Automatic progression completed { oldStatus: 'healthy', newStatus: 'available' }
 ```
 
-<Callout type="tip">
-**Using curl?**
-
-```bash
-curl -X PUT http://localhost:3000/ts/pets/1 \
-  -H "Content-Type: application/json" \
-  -d '{"status": "recovered"}'
-```
-</Callout>
-
 ---
 
 ## Monitoring Your Orchestrator
 
-Use the development console to visualize the entire flow:
+Use the [iii development console](https://iii.dev/docs) to visualize the entire flow:
 
 ### Tracing
 
@@ -28751,7 +27807,7 @@ npm run dev
 The `create` command uses `npm` by default. If you chose a different package manager during setup, use `pnpm dev` or `yarn dev`.
 </Callout>
 
-This command starts the iii runtime and the development console, a powerful UI for developing and debugging your workflows. By default, it's available at [`http://localhost:3000`](http://localhost:3000).
+This command starts the iii runtime and the iii development console, a powerful UI for developing and debugging your workflows. By default, it's available at [`http://localhost:3000`](http://localhost:3000).
 
 </Step>
 
@@ -28760,9 +27816,9 @@ This command starts the iii runtime and the development console, a powerful UI f
 
 Tutorial projects come with a pre-built Tutorial flow. To step through the tutorial:
 
-1.  **Open the development console** in your browser at [`http://localhost:3000`](http://localhost:3000).
-2.  **Click the `Tutorial`** button on the top right of the development console.
-3.  **Complete the `Tutorial`** to get an understanding of the basics of Motia and the development console.
+1.  **Open the iii development console** in your browser at [`http://localhost:3000`](http://localhost:3000).
+2.  **Click the `Tutorial`** button on the top right of the iii development console.
+3.  **Complete the `Tutorial`** to get an understanding of the basics of Motia and the iii development console.
 
 ![run starter app](/docs-images/motia-build-your-app.gif)
 
@@ -28946,10 +28002,10 @@ Motia offers a complete observability toolkit available in both cloud and local 
 - State visualization
 - Diagram representation of dependencies between steps and how they are connected
 
-_The image below shows the development console interface available when you run `motia dev`. On the top panel you can see a workflow diagram with multiple steps connected.
+_The image below shows the [iii development console](https://iii.dev/docs) interface. On the top panel you can see a workflow diagram with multiple steps connected.
 On the bottom panel you can see the trace view of a single request and what happened in each step._
 
-![development console](./img/new-workbench.png)
+![iii development console](./img/new-workbench.png)
 
 ## Fault tolerance
 
@@ -29020,7 +28076,7 @@ Let's build a chess platform that measures AI intelligence through gameplay qual
 
 ## 🏭 Production-Grade Chess Platform
 
-<div className="my-8">![ChessArena AI development console](./../img/chessarena-workbench.png)</div>
+<div className="my-8">![ChessArena AI](./../img/chessarena-workbench.png)</div>
 
 **This is not a tutorial project** - this is battle-tested, production-ready code that handles real traffic at scale. Every aspect has been designed for enterprise use:
 
@@ -29780,7 +28836,7 @@ motia cloud deploy --api-key your-api-key \
 
 **Option 2: One-Click Web Deployment**
 1. Ensure your local project is running (`pnpm dev`)
-2. Go to [Motia Cloud -> Import from development console](https://motia.cloud)
+2. Go to [Motia Cloud](https://motia.cloud) and import your project
 3. Select your local project port
 4. Choose project and environment name
 5. Upload environment variables (optional)

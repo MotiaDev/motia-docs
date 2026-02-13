@@ -7,7 +7,7 @@ You built an API. You added some queue handlers. Everything seems to work. But d
 
 Without tests, you're guessing. With tests, you know.
 
-Motia has `@motiadev/test` built in. It helps you:
+Motia has `motia/test` built in. It helps you:
 - Test API triggers (hit endpoints, check responses)
 - Test Queue triggers (verify messages get enqueued)
 - Mock contexts for unit tests
@@ -15,13 +15,8 @@ Motia has `@motiadev/test` built in. It helps you:
 ---
 
 ## Install
-```bash
-npm install @motiadev/test --save-dev
-```
 
-```bash
-pnpm add @motiadev/test --save-dev
-```
+The test utilities are included in the `motia` package. No extra install needed.
 
 ---
 
@@ -55,7 +50,7 @@ export const handler: Handlers<typeof config> = async (req, { enqueue }) => {
 Now let's test it:
 
 ```typescript title="src/create-todo.step.test.ts"
-import { createMotiaTester } from '@motiadev/test'
+import { createMotiaTester } from 'motia/test'
 import { describe, it, expect, afterAll } from 'vitest'
 
 describe('CreateTodo', () => {
@@ -134,7 +129,7 @@ export const handler: Handlers<typeof config> = async (input, { enqueue, logger 
 **The Test:**
 
 ```typescript title="src/process-todo.step.test.ts"
-import { createMotiaTester } from '@motiadev/test'
+import { createMotiaTester } from 'motia/test'
 import { describe, it, expect, afterAll } from 'vitest'
 
 describe('ProcessTodo', () => {
@@ -175,7 +170,7 @@ Use `tester.enqueue()` to manually fire messages and test Queue triggers without
 Don't want to spin up the whole app? Test handler functions directly:
 
 ```typescript title="src/calculate-total.step.test.ts"
-import { createMockContext } from '@motiadev/test'
+import { createMockContext } from 'motia/test'
 import { handler } from './calculate-total.step'
 import { describe, it, expect } from 'vitest'
 

@@ -5,7 +5,7 @@ description: Build an automated email system with smart labeling, auto-responses
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![Gmail Automation](./../img/gmail-automation.png)</div>
 
@@ -153,9 +153,9 @@ The Gmail Account Manager workflow consists of the following steps:
    pnpm dev
    ```
 
-6. **Open the Motia development console**
+6. **Open the iii development console**
    
-   Navigate to [http://localhost:3000](http://localhost:3000) to access the workflow UI.
+   Navigate to [http://localhost:3000](http://localhost:3000) to view the workflow.
 
 ## 🔧 Detailed Setup
 
@@ -221,7 +221,7 @@ To enable real-time email notifications, you need to set up a Google Cloud Pub/S
 This project includes a complete OAuth2 authentication flow for the Gmail API:
 
 1. Start the development server: `pnpm dev`
-2. Navigate to the authentication workflow in the Motia development console
+2. Navigate to the authentication workflow in the iii development console
 3. The workflow will generate an authorization URL
 4. Open the URL in your browser and authorize the application
 5. The application will receive and store your authentication tokens
@@ -298,7 +298,7 @@ To receive daily email summaries in Discord, follow these steps to set up a webh
 ## 📦 Dependencies
 
 ### Node.js Dependencies
-- **@motiadev/core**, **@motiadev/workbench**, **motia**: Motia framework
+- **motia**: Motia framework
 - **googleapis**, **google-auth-library**: Google API integration
 - **gmail-api-parse-message-ts**: Gmail message parsing
 - **axios**: HTTP client

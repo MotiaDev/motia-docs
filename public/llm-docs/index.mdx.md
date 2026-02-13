@@ -163,10 +163,10 @@ Motia offers a complete observability toolkit available in both cloud and local 
 - State visualization
 - Diagram representation of dependencies between steps and how they are connected
 
-_The image below shows the development console interface available when you run `motia dev`. On the top panel you can see a workflow diagram with multiple steps connected.
+_The image below shows the [iii development console](https://iii.dev/docs) interface. On the top panel you can see a workflow diagram with multiple steps connected.
 On the bottom panel you can see the trace view of a single request and what happened in each step._
 
-![development console](./img/new-workbench.png)
+![iii development console](./img/new-workbench.png)
 
 ## Fault tolerance
 

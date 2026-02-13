@@ -164,8 +164,8 @@ Create a `railway.json` in your project root:
 }
 ```
 
-<Callout type="warn">
-**Healthchecks:** Railway's default healthcheck expects a `200` response on `/`. Motia's development console serves the root path, so this should work out of the box.
+<Callout type="info">
+**Healthchecks:** Railway's default healthcheck expects a `200` response on `/`. This is Motia's default behavior as well. Check the configuration if Railway's healthcheck fails.
 </Callout>
 
 ---
@@ -358,7 +358,7 @@ railway logs --tail
 
 **Options:**
 1. Remove healthcheck settings from `railway.json`
-2. Motia development console serves `/` by default which returns 200
+2. The iii runtime serves `/` by default which returns 200
 3. Increase the healthcheck timeout
 
 ### Still Seeing "Redis Memory Server Started"

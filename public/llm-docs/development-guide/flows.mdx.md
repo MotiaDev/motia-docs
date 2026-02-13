@@ -1,9 +1,9 @@
 ---
 title: Flows
-description: Group multiple steps to be visible in diagrams in the development console
+description: Group multiple steps to be visible in diagrams in the iii development console
 ---
 
-Flows group related Steps together so you can see them as connected workflows in the development console. Add `flows` to your Step config - it's an array of flow names.
+Flows group related Steps together so you can see them as connected workflows in the [iii development console](https://iii.dev/docs). Add `flows` to your Step config - it's an array of flow names.
 
 ## How It Works
 
@@ -214,7 +214,7 @@ export const handler = async (input, { logger }) => {
 </Tab>
 </Tabs>
 
-Both Steps have `flows: ['resource-management']`. In the development console, they appear connected.
+Both Steps have `flows: ['resource-management']`. In the iii development console, they appear connected.
 
 ---
 
@@ -272,7 +272,7 @@ export const config = {
 </Tab>
 </Tabs>
 
-This Step appears in both flows in the development console.
+This Step appears in both flows in the iii development console.
 
 ## Steps Without Flows
 
@@ -327,11 +327,11 @@ export const config = {
 
 ---
 
-## Flows in the development console
+## Flows in the iii Development Console
 
-The development console has a dropdown to filter by flow. Select a flow to see only the Steps that belong to it.
+The iii development console has a dropdown to filter by flow. Select a flow to see only the Steps that belong to it.
 
-![Flow dropdown in development console](../img/drop-down-flow.png)
+![Flow dropdown in iii development console](../img/drop-down-flow.png)
 
 ### Virtual Connections
 
@@ -390,13 +390,13 @@ export const config = {
 </Tab>
 </Tabs>
 
-Virtual connections show as gray/dashed lines in the development console. Real connections (from `enqueues` and queue triggers) show as dark solid lines.
+Virtual connections show as gray/dashed lines in the iii development console. Real connections (from `enqueues` and queue triggers) show as dark solid lines.
 
-![Virtual connections with labels in development console](../img/virtual-emit-subscribe.png)
+![Virtual connections with labels in iii development console](../img/virtual-emit-subscribe.png)
 
 ### Labels
 
-Add labels to connections in the development console:
+Add labels to connections in the iii development console:
 
 <Tabs items={['TypeScript', 'Python', 'JavaScript']}>
 <Tab value='TypeScript'>

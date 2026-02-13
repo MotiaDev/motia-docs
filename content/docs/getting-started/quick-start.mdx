@@ -38,7 +38,7 @@ npm run dev
 The `create` command uses `npm` by default. If you chose a different package manager during setup, use `pnpm dev` or `yarn dev`.
 </Callout>
 
-This command starts the iii runtime and the development console, a powerful UI for developing and debugging your workflows. By default, it's available at [`http://localhost:3000`](http://localhost:3000).
+This command starts the iii runtime and the iii development console, a powerful UI for developing and debugging your workflows. By default, it's available at [`http://localhost:3000`](http://localhost:3000).
 
 </Step>
 
@@ -47,9 +47,9 @@ This command starts the iii runtime and the development console, a powerful UI f
 
 Tutorial projects come with a pre-built Tutorial flow. To step through the tutorial:
 
-1.  **Open the development console** in your browser at [`http://localhost:3000`](http://localhost:3000).
-2.  **Click the `Tutorial`** button on the top right of the development console.
-3.  **Complete the `Tutorial`** to get an understanding of the basics of Motia and the development console.
+1.  **Open the iii development console** in your browser at [`http://localhost:3000`](http://localhost:3000).
+2.  **Click the `Tutorial`** button on the top right of the iii development console.
+3.  **Complete the `Tutorial`** to get an understanding of the basics of Motia and the iii development console.
 
 ![run starter app](/docs-images/motia-build-your-app.gif)
 

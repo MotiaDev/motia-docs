@@ -16,9 +16,9 @@ Let's build a production-ready data processing system where steps unify TypeScri
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
-<div className="my-8">![Multi-Language Data Processing in Motia development console](/docs-images/motia-build-your-app-2.gif)</div>
+<div className="my-8">![Multi-Language Data Processing](/docs-images/motia-build-your-app-2.gif)</div>
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/multi-language-data-processing)
@@ -441,11 +441,11 @@ export interface AppSummary {
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The Motia development console provides a visual representation of your multi-language pipeline, making it easy to trace data flow between TypeScript, Python, and JavaScript steps.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your multi-language pipeline, making it easy to trace data flow between TypeScript, Python, and JavaScript steps.
 
-<div className="my-8">![Multi-Language Workflow in Motia development console](/docs-images/motia-build-your-app-2.gif)</div>
+<div className="my-8">![Multi-Language Workflow](/docs-images/motia-build-your-app-2.gif)</div>
 
 You can monitor real-time execution, view logs from all languages in a unified interface, and trace the complete data flow from the TypeScript API through Python processing to JavaScript summary generation.
 
@@ -513,9 +513,9 @@ cd my-app  # Replace with your project name
 npm run dev
 ```
 
-### Open the development console
+### Open the iii Development Console
 
-Navigate to [`http://localhost:3000`](http://localhost:3000) to access the development console and run your workflow.
+Navigate to [`http://localhost:3000`](http://localhost:3000) to access the iii development console and view your workflow.
 
 ### Test the Multi-Language Pipeline
 
@@ -527,7 +527,7 @@ Send a request to your API endpoint to see the multi-language workflow in action
      -d '{"data": {"test": "value"}, "message": "Hello!"}'
 ```
 
-Watch in the development console as your data flows through:
+Watch in the iii development console as your data flows through:
 1. **TypeScript** validation and event emission
 2. **TypeScript** bridge processing and forwarding  
 3. **Python** data processing with rich logging

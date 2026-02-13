@@ -1,9 +1,9 @@
 ---
-title: Development Console
-description: The visual development environment for building, testing, and debugging Motia apps, powered by iii.
+title: iii Development Console
+description: The visual development environment for building and debugging Motia apps, powered by iii.
 ---
 
-When you run your Motia project with `npm run dev`, a development console is available at [`http://localhost:3000`](http://localhost:3000). This console is powered by [iii](https://iii.dev) and provides visual tooling for your Motia workflows.
+When you run your Motia project with `npm run dev`, the iii development console is available at [`http://localhost:3000`](http://localhost:3000). This console is powered by [iii](https://iii.dev) and provides visual tooling for your Motia workflows.
 
 <Callout type="info">
 The development console is provided by iii. For full documentation on console features, visit [iii.dev/docs](https://iii.dev/docs).
@@ -12,10 +12,10 @@ The development console is provided by iii. For full documentation on console fe
 ## What You Get
 
 - **Flow visualization** -- see your entire backend as an interactive diagram where every Step is a node
-- **API endpoint testing** -- test endpoints directly in the browser without Postman or curl
 - **Real-time logs** -- watch `logger.info()`, `logger.warn()`, and `logger.error()` calls stream in
 - **Tracing** -- follow the execution timeline of every request across Steps
 - **State inspector** -- view and edit data stored with `state.set()`
+- **Stream viewer** -- monitor real-time stream updates
 - **Hot reload** -- changes to Step files refresh automatically
 
 ## Getting Started

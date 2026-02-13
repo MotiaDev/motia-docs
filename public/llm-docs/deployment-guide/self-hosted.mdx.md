@@ -183,7 +183,7 @@ Open [http://localhost:3000](http://localhost:3000) - your app should be running
 
 ### Using Minimal Docker Images (node:24-slim)
 
-If you're using a minimal Docker image like `node:24-slim` instead of the official `motiadev/motia:latest` image, you may encounter errors when creating a new Motia project or running `motia dev`, 
+If you're using a minimal Docker image like `node:24-slim` instead of the official `motiadev/motia:latest` image, you may encounter errors when creating a new Motia project or running the dev server, 
 because the `redis-memory-server` package may require build tools (`make`, `gcc`, etc.) to compile Redis from source. These are not included in minimal images.
 
 **Solution:** Install the required dependencies before running Motia:

@@ -26,8 +26,7 @@ NODE_ENV=development
 PORT=3000
 
 # Redis (optional - only needed if using external Redis)
-MOTIA_REDIS_HOST=localhost
-MOTIA_REDIS_PORT=6379
+REDIS_URL=redis://localhost:6379
 ```
 
 ### 2. Add to `.gitignore`
@@ -105,31 +104,46 @@ async def handler(input_data, ctx):
 
 ## Redis Configuration
 
-Motia uses Redis for internal coordination. By default, it includes an embedded in-memory Redis server for development, so you don't need to install or configure Redis separately.
+Motia uses Redis for internal coordination. By default, it includes an embedded in-memory server for development, so you don't need to install or configure Redis separately.
 
-### Environment Variables
-
-If you want to use your own Redis instance (created with `--skip-redis` flag or for production), you can configure it using these environment variables:
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `MOTIA_REDIS_HOST` | Redis host | `127.0.0.1` |
-| `MOTIA_REDIS_PORT` | Redis port | `6379` |
-| `MOTIA_REDIS_PASSWORD` | Redis password | - |
-| `MOTIA_REDIS_USERNAME` | Redis username (Redis 6.0+) | - |
-| `MOTIA_REDIS_DB` | Redis database number | `0` |
-| `MOTIA_DISABLE_MEMORY_SERVER` | Disable embedded Redis | `false` |
-
-### Example: Using External Redis
+For production or when using an external Redis instance, configure Redis via your `config.yaml` file using the `REDIS_URL` environment variable:
 
 ```bash title=".env"
-MOTIA_REDIS_HOST=redis.example.com
-MOTIA_REDIS_PORT=6379
-MOTIA_REDIS_PASSWORD=your-redis-password
-MOTIA_REDIS_DB=0
+REDIS_URL=redis://redis.example.com:6379
 ```
 
-Alternatively, you can configure Redis in your `config.yaml` file. See [Configuration](/docs/development-guide/motia-config) for more details.
+```yaml title="config.yaml"
+modules:
+  - class: modules::state::StateModule
+    config:
+      adapter:
+        class: modules::state::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
+
+  - class: modules::queue::QueueModule
+    config:
+      adapter:
+        class: modules::queue::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
+
+  - class: modules::stream::StreamModule
+    config:
+      adapter:
+        class: modules::stream::adapters::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
+
+  - class: modules::pubsub::PubSubModule
+    config:
+      adapter:
+        class: modules::pubsub::RedisAdapter
+        config:
+          redis_url: ${REDIS_URL:redis://localhost:6379}
+```
+
+The `${REDIS_URL:redis://localhost:6379}` syntax uses environment variable interpolation with a default value. See the [Configuration](/docs/development-guide/motia-config) and [Deployment Guide](/docs/deployment-guide) for complete examples.
 
 ## Deployment
 

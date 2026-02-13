@@ -12,7 +12,6 @@ An intelligent pet management system with agentic workflows that automate decisi
 - **Adoption Review Agentic Step** - Assesses adoption readiness and data completeness
 - **Orchestrator Integration** - AI decisions that drive real workflow changes
 
-![workbench](../../img/build-your-first-app/ai-agents-workbench.png)
 ---
 
 ## Getting Started
@@ -41,13 +40,11 @@ OPENAI_API_KEY=your_api_key_here
 **Important!** This tutorial requires an OpenAI API key. Get yours at [platform.openai.com/api-keys](https://platform.openai.com/api-keys). Without it, the agentic workflows won't work.
 </Callout>
 
-Start the development console:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
-
-Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -99,9 +96,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/ai-agents) repository.
 
-You can follow this guide to learn how to build agentic workflows with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
-
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-ai.png)
+You can follow this guide to learn how to build agentic workflows with Motia step by step, or clone the repository and get started immediately.
 
 ---
 
@@ -721,25 +716,17 @@ The key is the prompt engineering - we tell the AI exactly what fields we need a
 
 ## Testing Your Agentic Step
 
-The best way to test your agentic step is through the **development console**. It lets you create pets, watch the AI enrichment happen in real-time, and see all the logs in one place.
+Test your agentic step by sending requests to the API endpoints and watching the logs.
 
 ### Create a Pet
 
-Open the development console and test the CreatePet endpoint. The AI will automatically start enriching the profile in the background.
-
-<Callout type="tip">
-**Prefer using curl?**
+Create a pet -- the AI will automatically start enriching the profile in the background:
 
 ```bash
 curl -X POST http://localhost:3000/ts/pets \
   -H "Content-Type: application/json" \
   -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
 ```
-</Callout>
-
-Check the logs in the development console to see the agentic step in action:
-
-![ai-enrichment-logs](../../img/build-your-first-app/ai-enrichment-logs.png)
 
 You'll see:
 1. "Pet created" log from the API endpoint
@@ -748,15 +735,11 @@ You'll see:
 
 ### View the Enriched Profile
 
-Fetch the pet in the development console to see the AI-generated profile, or use curl:
-
-<Callout type="tip">
-**Using curl?**
+Fetch the pet to see the AI-generated profile:
 
 ```bash
 curl http://localhost:3000/ts/pets/1
 ```
-</Callout>
 
 You'll get back something like:
 
@@ -1294,14 +1277,11 @@ The framework functions (`buildAgentContext`, `callAgentDecision`, `getAgentArti
 
 ## Testing the Health Review Agentic Step
 
-The best way to test decision-making agentic steps is through the **development console**. You can create pets, trigger the health review, and watch the AI make decisions in real-time.
+Test the health review by sending requests to the API and watching the AI make decisions.
 
 ### Create a Pet
 
-Use the development console to create a pet. The AI enrichment will automatically trigger.
-
-<Callout type="tip">
-**Prefer using curl?**
+Create a pet -- the AI enrichment will automatically trigger:
 
 ```bash
 curl -X POST http://localhost:3000/ts/pets \
@@ -1312,20 +1292,15 @@ curl -X POST http://localhost:3000/ts/pets \
     "ageMonths": 36
   }'
 ```
-</Callout>
 
 ### Trigger the Health Review
 
-In the development console, test the health review endpoint to see the AI make a decision.
-
-<Callout type="tip">
-**Using curl?**
+Send a request to the health review endpoint to see the AI make a decision:
 
 ```bash
 curl -X POST http://localhost:3000/ts/pets/1/health-review \
   -H "Content-Type: application/json"
 ```
-</Callout>
 
 ![ai-health-review-create-pet](../../img/build-your-first-app/health-treatment-reqd-create-pet.png)
 
@@ -1353,15 +1328,11 @@ The AI evaluates the pet's data and makes a decision. The enqueue it fires will 
 
 ### Verify the Status Change
 
-Check the pet status in the development console to see the AI's decision reflected in the workflow state.
-
-<Callout type="tip">
-**Using curl?**
+Check the pet status to see the AI's decision reflected in the workflow state:
 
 ```bash
 curl http://localhost:3000/ts/pets/1
 ```
-</Callout>
 
 ![ai-health-review-status](../../img/build-your-first-app/ai-health-review-status.png)
 

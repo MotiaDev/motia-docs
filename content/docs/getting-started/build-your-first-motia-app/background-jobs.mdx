@@ -10,7 +10,6 @@ A pet management system with background jobs that handle:
 - **Queue Step** - Async job that sets feeding reminders when pets are created
 - **Cron Step** - Scheduled job that runs daily to clean up deleted pets
 
-![workbench](../../img/build-your-first-app/background-jobs-workbench.png)
 ---
 
 ## Getting Started
@@ -29,13 +28,11 @@ Install dependencies:
 npm install
 ```
 
-Start the development console:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
-
-Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -78,9 +75,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/background-jobs) repository.
 
-You can follow this guide to learn how to build background jobs with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
-
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-bg.png)
+You can follow this guide to learn how to build background jobs with Motia step by step, or clone the repository and get started immediately.
 
 ---
 
@@ -468,11 +463,7 @@ curl -X POST http://localhost:3000/pets \
   -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
 ```
 
-Check the logs in the development console to see both the API call and the background job execution:
-
-![background-job-logs](../../img/build-your-first-app/bg-job-logs.png)
-
-You'll see:
+Check the logs to see both the API call and the background job execution. You'll see:
 1. "Pet created" log from the API endpoint
 2. "Setting next feeding reminder" log from the background job
 3. "Next feeding reminder set" log when the job completes
@@ -708,7 +699,7 @@ Common cron patterns:
 
 ## Monitoring Background Jobs
 
-The development console provides tools to monitor your background jobs:
+The [iii development console](https://iii.dev/docs) provides tools to monitor your background jobs:
 
 ### Tracing
 

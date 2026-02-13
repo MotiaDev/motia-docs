@@ -41,13 +41,13 @@ on deployments, if anything fails, quickly rollback to a previous stable version
 
 ## One-click deployment
 
-Deploy your project from development console to a live environment with one click.
+Deploy your project from the iii development console to a live environment with one click.
 
 ![One Click Deployment](../../img/cloud/one-click-deploy.gif)
 
 ## Observability
 
-Have the same experience you have with development console locally in cloud. Such as:
+Have the same experience you have with the iii development console locally in cloud. Such as:
 
 - Logs visualization
 - Tracing tool

@@ -16,7 +16,7 @@ Let's build a content moderation system that scales intelligently.
 
 ---
 
-## Explore the development console
+## Workflow Overview
 
 <div className="my-8">![AI Content Moderation Workflow](./../img/ai-content-moderation-workflow.png)</div>
 
@@ -705,13 +705,13 @@ Our application consists of six specialized steps, each handling a specific part
 
 ---
 
-## Explore the development console
+## Explore the Workflow
 
-The Motia development console provides a visual representation of your content moderation pipeline, making it easy to understand the flow and monitor moderation decisions in real-time.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your content moderation pipeline, making it easy to understand the flow and monitor moderation decisions in real-time.
 
 <div className="my-8">![AI Content Moderation Workflow](./../img/ai-content-moderation-workflow.png)</div>
 
-You can monitor real-time content analysis, view Slack notifications, and trace the execution of each moderation decision directly in the development console interface. This makes development and debugging significantly easier compared to traditional monolithic moderation systems.
+You can monitor real-time content analysis, view Slack notifications, and trace the execution of each moderation decision directly in the iii development console. This makes development and debugging significantly easier compared to traditional monolithic moderation systems.
 
 ## Human-in-the-Loop Workflow Demo
 
