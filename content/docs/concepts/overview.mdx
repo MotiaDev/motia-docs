@@ -269,7 +269,7 @@ Every handler gets a context object with everything you need:
 
 ---
 
-## Development Tool - iii Console
+## Development Tool - development console
 
 ![create-pet](../img/build-your-first-app/create-api.png)
 
@@ -280,7 +280,7 @@ Visual interface for testing APIs, building and debugging flows:
 - Watch logs in real-time
 - Inspect state as it changes
 
-[Learn about iii Console](/docs/concepts/workbench)
+[Learn about development console](/docs/concepts/workbench)
 
 ---
 

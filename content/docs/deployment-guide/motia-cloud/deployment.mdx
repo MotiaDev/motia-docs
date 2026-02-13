@@ -50,14 +50,14 @@ motia cloud deploy --api-key your-api-key-here \
 
 ## Using Web interface
 
-Through the web interface, you can deploy your project from iii console to a live environment with one click.
+Through the web interface, you can deploy your project from development console to a live environment with one click.
 
 ![One Click Deployment](../../img/cloud/one-click-deploy.gif)
 
 Steps to deploy from web interface:
 
 1. Have your local project running (make sure your Motia version is 0.6.4 or higher)
-2. Go to import from iii console on Motia Cloud
+2. Go to import from development console on Motia Cloud
 3. Select the port your local project is running on
 4. Choose the project and environment name
 5. Add any environment variables you need (you can upload from .env file or paste the content to auto-fill)
