@@ -29,13 +29,13 @@ Install dependencies:
 npm install
 ```
 
-Start the iii console:
+Start the development console:
 
 ```bash
 npm run dev
 ```
 
-Your iii console will be available at `http://localhost:3000`.
+Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -78,7 +78,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/background-jobs) repository.
 
-You can follow this guide to learn how to build background jobs with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the iii console.
+You can follow this guide to learn how to build background jobs with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
 
 ![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-bg.png)
 
@@ -468,7 +468,7 @@ curl -X POST http://localhost:3000/pets \
   -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
 ```
 
-Check the logs in the iii console to see both the API call and the background job execution:
+Check the logs in the development console to see both the API call and the background job execution:
 
 ![background-job-logs](../../img/build-your-first-app/bg-job-logs.png)
 
@@ -708,7 +708,7 @@ Common cron patterns:
 
 ## Monitoring Background Jobs
 
-The iii console provides tools to monitor your background jobs:
+The development console provides tools to monitor your background jobs:
 
 ### Tracing
 

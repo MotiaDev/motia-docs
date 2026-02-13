@@ -32,13 +32,13 @@ Install dependencies:
 npm install
 ```
 
-Start the iii console:
+Start the development console:
 
 ```bash
 npm run dev
 ```
 
-Your iii console will be available at `http://localhost:3000`.
+Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -87,7 +87,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/api-endpoints) repository.
 
-You can follow this guide to learn how to build a REST API with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the iii console.
+You can follow this guide to learn how to build a REST API with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
 
 ![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial.png)
 
@@ -225,7 +225,7 @@ View on GitHub:
 
 ## Testing Your API
 
-You can test your endpoints using curl or the iii console interface.
+You can test your endpoints using curl or the development console interface.
 
 ### Using curl
 
@@ -236,9 +236,9 @@ curl -X POST http://localhost:3000/pets \
   -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
 ```
 
-### Using the iii console
+### Using the development console
 
-You can also test your endpoint directly in the iii console, which provides an interactive interface to test your API endpoints with real requests and see the responses in real-time:
+You can also test your endpoint directly in the development console, which provides an interactive interface to test your API endpoints with real requests and see the responses in real-time:
 
 ![create-pet](../../img/build-your-first-app/create-api.png)
 
@@ -329,7 +329,7 @@ Test with curl:
 curl http://localhost:3000/pets
 ```
 
-Or use the iii console interface:
+Or use the development console interface:
 
 ![create-pet](../../img/build-your-first-app/list-pets.png)
 
@@ -434,7 +434,7 @@ Test with curl:
 curl http://localhost:3000/pets/1
 ```
 
-Or use the iii console interface:
+Or use the development console interface:
 
 ![create-pet](../../img/build-your-first-app/get-pet-by-id.png)
 
@@ -564,7 +564,7 @@ curl -X PUT http://localhost:3000/pets/1 \
   -d '{"status": "adopted"}'
 ```
 
-Or use the iii console interface:
+Or use the development console interface:
 
 ![create-pet](../../img/build-your-first-app/update-pet.png)
 
@@ -665,7 +665,7 @@ Test with curl:
 curl -X DELETE http://localhost:3000/pets/1
 ```
 
-Or use the iii console interface:
+Or use the development console interface:
 
 ![create-pet](../../img/build-your-first-app/delete-pet.png)
 

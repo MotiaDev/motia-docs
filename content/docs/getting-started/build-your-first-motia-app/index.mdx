@@ -33,7 +33,7 @@ That's it. No database setup, no complex config, no separate services to run.
 If you already have Redis running or prefer to use an external Redis instance, use the `--skip-redis` flag:
 
 ```bash
-npx motia@latest create my-app --skip-redis
+motia create my-app --skip-redis
 ```
 
 See [CLI documentation](/docs/development-guide/cli#create) for more details.
@@ -51,7 +51,7 @@ See [CLI documentation](/docs/development-guide/cli#create) for more details.
 - How to define API Steps
 - Request validation with schemas
 - Returning proper HTTP responses
-- Testing endpoints in the iii console
+- Testing endpoints in the development console
 
 **Time:** 10 minutes
 
@@ -69,7 +69,7 @@ See [CLI documentation](/docs/development-guide/cli#create) for more details.
 - Queue Steps that trigger from your APIs
 - Cron Steps that run on a schedule
 - How queues connect your system
-- Monitoring jobs in the iii console
+- Monitoring jobs in the development console
 
 **Time:** 15 minutes
 
@@ -153,7 +153,7 @@ It's a real system with the kind of complexity you'll face building production b
 
 ![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-streaming.png)
 
-Each guide includes an **interactive tutorial** you can run directly in the iii console. It walks you through the code, explains what's happening, and lets you test everything live.
+Each guide includes an **interactive tutorial** you can run directly in the development console. It walks you through the code, explains what's happening, and lets you test everything live.
 
 Prefer reading? The written guides cover everything too. They're detailed, with code examples and explanations for every concept.
 

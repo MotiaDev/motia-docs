@@ -31,13 +31,13 @@ Install dependencies:
 npm install
 ```
 
-Start the iii console:
+Start the development console:
 
 ```bash
 npm run dev
 ```
 
-Your iii console will be available at `http://localhost:3000`.
+Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -80,7 +80,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/workflow-orchestration) repository.
 
-You can follow this guide to learn how to build workflow orchestration with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the iii console.
+You can follow this guide to learn how to build workflow orchestration with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
 
 ![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-workflow.png)
 
@@ -881,11 +881,11 @@ The orchestrator has three main responsibilities:
 
 ## Testing Your Orchestrator
 
-The best way to test your orchestrator is through the **iii console**. It lets you send requests, watch the workflow execute in real-time, and see all the logs in one place.
+The best way to test your orchestrator is through the **development console**. It lets you send requests, watch the workflow execute in real-time, and see all the logs in one place.
 
 ### Create a Pet
 
-Open the iii console and test the CreatePet endpoint:
+Open the development console and test the CreatePet endpoint:
 
 ![post-pet-test](../../img/build-your-first-app/post-pet.png)
 
@@ -910,7 +910,7 @@ curl -X POST http://localhost:3000/ts/pets \
 
 ### Staff Health Check
 
-Test the UpdatePet endpoint in the iii console to mark the pet as healthy:
+Test the UpdatePet endpoint in the development console to mark the pet as healthy:
 
 ![update-status-test](../../img/build-your-first-app/update-status.png)
 
@@ -935,7 +935,7 @@ curl -X PUT http://localhost:3000/ts/pets/1 \
 
 ### Test Invalid Transitions
 
-Try to skip a step in the iii console:
+Try to skip a step in the development console:
 
 ![skip-status-test](../../img/build-your-first-app/skip-status.png)
 
@@ -960,7 +960,7 @@ curl -X PUT http://localhost:3000/ts/pets/1 \
 
 ### Test the Illness Workflow
 
-Mark a pet as ill in the iii console:
+Mark a pet as ill in the development console:
 
 ![update-status-ill-test](../../img/build-your-first-app/update-status-ill.png)
 
@@ -981,7 +981,7 @@ curl -X PUT http://localhost:3000/ts/pets/1 \
 ```
 </Callout>
 
-Then mark the pet as recovered in the iii console:
+Then mark the pet as recovered in the development console:
 
 ![update-status-recovered-test](../../img/build-your-first-app/update-status-recovered.png)
 
@@ -1008,7 +1008,7 @@ curl -X PUT http://localhost:3000/ts/pets/1 \
 
 ## Monitoring Your Orchestrator
 
-Use the iii console to visualize the entire flow:
+Use the development console to visualize the entire flow:
 
 ### Tracing
 

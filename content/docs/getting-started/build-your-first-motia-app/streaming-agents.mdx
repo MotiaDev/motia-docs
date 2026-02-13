@@ -38,13 +38,13 @@ Set up your OpenAI API key in `.env`:
 OPENAI_API_KEY=your_api_key_here
 ```
 
-Start the iii console:
+Start the development console:
 
 ```bash
 npm run dev
 ```
 
-Your iii console will be available at `http://localhost:3000`.
+Your development console will be available at `http://localhost:3000`.
 
 ---
 
@@ -97,7 +97,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/main) repository.
 
-You can follow this guide to learn how to build real-time streaming with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the iii console.
+You can follow this guide to learn how to build real-time streaming with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the development console.
 
 ![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-streaming.png)
 
@@ -364,7 +364,7 @@ View on GitHub:
             'data': {'petId': pet['id'], 'enqueuedAt': int(time.time() * 1000), 'traceId': trace_id}
         })
 
-        # Return the stream result so it can be tracked in the iii console
+        # Return the stream result so it can be tracked in the development console
         return {
             "status": 201,
             "body": result
@@ -1272,11 +1272,11 @@ This transforms a potentially slow AI operation into an engaging real-time exper
 
 ## Testing Streaming in Action
 
-The best way to test streams is through **iii console**.
+The best way to test streams is through **development console**.
 
 ### Test 1: Create a Pet with Streaming
 
-Open iii console and navigate to the Endpoints section, then test the Pet Creation endpoint:
+Open development console and navigate to the Endpoints section, then test the Pet Creation endpoint:
 
 <Callout type="tip">
 **Prefer using curl?**
@@ -1295,9 +1295,9 @@ curl -X POST http://localhost:3000/ts/pets \
 
 You'll get an immediate response with the stream result. The API returns right away while background jobs process asynchronously.
 
-### Test 2: Monitor Stream Updates in iii console
+### Test 2: Monitor Stream Updates in development console
 
-After creating a pet, check the Tracing view in iii console:
+After creating a pet, check the Tracing view in development console:
 
 1. Automatically switched to the **Tracing** tab so you can see the stream updates in real-time
 2. Click on the most recent trace
@@ -1347,7 +1347,7 @@ The stream will show health check passed messages instead of treatment needed me
 
 ### Observing Stream Updates
 
-Watch the iii console console logs to see the real-time stream updates as they're pushed:
+Watch the development console console logs to see the real-time stream updates as they're pushed:
 
 ```
 🐾 Pet created { petId: '1', name: 'Max', species: 'dog', status: 'new' }
