@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     template: '%s | Motia Docs',
   },
   description: 'Documentation for Motia - the iii engine',
+  icons: {
+    icon: '/favicon.png',
+  },
 }
 
 export default function RootLayout({
