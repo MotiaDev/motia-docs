@@ -15,7 +15,7 @@ Let's build a monitoring system that actually works for you.
 
 ---
 
-## Explore the iii console
+## Workflow Overview
 
 <div className="my-8">![Uptime Monitor](./../img/uptime-monitor-architecture.png)</div>
 
@@ -65,11 +65,12 @@ Our application consists of five specialized steps, each handling a specific par
 
     ```js
     import { config as envConfig } from '../lib/env.js';
+    import { cron } from 'motia'
 
     export const config = {
       name: 'UptimeCronTrigger',
       triggers: [
-        { type: 'cron', cron: envConfig.cron },
+        cron(envConfig.cron),
       ],
       enqueues: ['check.requested'],
       flows: ['uptime-monitoring']
@@ -590,13 +591,13 @@ Our application consists of five specialized steps, each handling a specific par
 
 ---
 
-## Explore the iii console
+## Explore the Workflow
 
-The iii console provides a visual representation of your monitoring pipeline, making it easy to understand the event flow and debug issues in real-time.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your monitoring pipeline, making it easy to understand the event flow and debug issues in real-time.
 
-<div className="my-8">![Uptime Monitor in iii console](./../img/uptime-monitor.gif)</div>
+<div className="my-8">![Uptime Monitor workflow](./../img/uptime-monitor.gif)</div>
 
-You can monitor real-time status checks, view Discord alert logs, and trace the execution of each step directly in the iii console. This makes development and debugging significantly easier compared to traditional monitoring solutions.
+You can monitor real-time status checks, view Discord alert logs, and trace the execution of each step directly in the iii development console. This makes development and debugging significantly easier compared to traditional monitoring solutions.
 
 ---
 

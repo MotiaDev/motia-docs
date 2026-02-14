@@ -13,7 +13,6 @@ A pet management API with these endpoints:
 - **PUT `/pets/:id`** - Update a pet
 - **DELETE `/pets/:id`** - Delete a pet
 
-![workbench](../../img/build-your-first-app/api-workbench.png)
 ---
 
 ## Getting Started
@@ -32,13 +31,11 @@ Install dependencies:
 npm install
 ```
 
-Start the iii console:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
-
-Your iii console will be available at `http://localhost:3000`.
 
 ---
 
@@ -87,9 +84,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/api-endpoints) repository.
 
-You can follow this guide to learn how to build a REST API with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the iii console.
-
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial.png)
+You can follow this guide to learn how to build a REST API with Motia step by step, or clone the repository and get started immediately.
 
 ---
 
@@ -172,7 +167,7 @@ View on GitHub:
         "flows": ["PetManagement"]
     }
 
-    async def handler(req, ctx=None):
+    async def handler(req, ctx):
         b = req.get("body") or {}
         name = b.get("name")
         species = b.get("species")
@@ -225,9 +220,7 @@ View on GitHub:
 
 ## Testing Your API
 
-You can test your endpoints using curl or the iii console interface.
-
-### Using curl
+You can test your endpoints by sending requests directly to the API:
 
 ```bash
 # Create a pet
@@ -235,12 +228,6 @@ curl -X POST http://localhost:3000/pets \
   -H "Content-Type: application/json" \
   -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
 ```
-
-### Using the iii console
-
-You can also test your endpoint directly in the iii console, which provides an interactive interface to test your API endpoints with real requests and see the responses in real-time:
-
-![create-pet](../../img/build-your-first-app/create-api.png)
 
 ---
 ## Adding GET Endpoints
@@ -295,7 +282,7 @@ View on GitHub:
         "flows": ["PetManagement"]
     }
 
-    async def handler(req, ctx=None):
+    async def handler(req, ctx):
         return {"status": 200, "body": pet_store.list_all()}
     ```
   </Tab>
@@ -328,10 +315,6 @@ Test with curl:
 # List all pets
 curl http://localhost:3000/pets
 ```
-
-Or use the iii console interface:
-
-![create-pet](../../img/build-your-first-app/list-pets.png)
 
 ---
 
@@ -389,7 +372,7 @@ View on GitHub:
         "flows": ["PetManagement"]
     }
 
-    async def handler(req, ctx=None):
+    async def handler(req, ctx):
         pid = req.get("pathParams", {}).get("id")
         pet = pet_store.get(pid)
         return {"status": 200, "body": pet} if pet else {"status": 404, "body": {"message": "Not found"}}
@@ -419,10 +402,6 @@ View on GitHub:
   </Tab>
 </Tabs>
 
-<Callout type="info">
-**Testing tip:** When testing GET endpoints with path parameters like `/pets/:id`, switch to the **Params** tab (not Body) to enter the ID value.
-</Callout>
-
 The `:id` in the path creates a path parameter accessible via `req.pathParams.id`.
 
 ### Testing Get Single Pet
@@ -433,10 +412,6 @@ Test with curl:
 # Get specific pet (replace 1 with an actual pet ID)
 curl http://localhost:3000/pets/1
 ```
-
-Or use the iii console interface:
-
-![create-pet](../../img/build-your-first-app/get-pet-by-id.png)
 
 ---
 
@@ -503,7 +478,7 @@ View on GitHub:
         "flows": ["PetManagement"]
     }
 
-    async def handler(req, ctx=None):
+    async def handler(req, ctx):
         pid = req.get("pathParams", {}).get("id")
         b = req.get("body") or {}
         patch = {}
@@ -564,10 +539,6 @@ curl -X PUT http://localhost:3000/pets/1 \
   -d '{"status": "adopted"}'
 ```
 
-Or use the iii console interface:
-
-![create-pet](../../img/build-your-first-app/update-pet.png)
-
 ---
 
 ## Adding DELETE Endpoint
@@ -624,7 +595,7 @@ View on GitHub:
         "flows": ["PetManagement"]
     }
 
-    async def handler(req, ctx=None):
+    async def handler(req, ctx):
         pid = req.get("pathParams", {}).get("id")
         ok = pet_store.remove(pid)
         return {"status": 204, "body": {}} if ok else {"status": 404, "body": {"message": "Not found"}}
@@ -664,10 +635,6 @@ Test with curl:
 # Delete a pet (replace 1 with an actual pet ID)
 curl -X DELETE http://localhost:3000/pets/1
 ```
-
-Or use the iii console interface:
-
-![create-pet](../../img/build-your-first-app/delete-pet.png)
 
 ---
 

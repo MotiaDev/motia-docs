@@ -410,7 +410,7 @@ function calculateRiskScore(order) {
 
 ### Step 3: Human Approval Gate (Visual Noop)
 
-This creates a visual node in iii console showing where the workflow pauses:
+This creates a visual node in the iii development console showing where the workflow pauses:
 
 ```typescript title="src/03-human-approval-gate.step.ts"
 import type { NoopConfig } from 'motia'
@@ -428,7 +428,7 @@ export const config: NoopConfig = {
   virtualEnqueues: ['human.decision'],
 }
 ```
-👉 **In iii console:** This Noop appears between AnalyzeRisk and ApprovalWebhook.
+👉 **In the iii development console:** This Noop appears between AnalyzeRisk and ApprovalWebhook.
 
 
 ### Step 4: Approval Webhook (Re-Entry Point)
@@ -752,20 +752,20 @@ A scheduled job periodically scans for orders stuck in approval:
 <Tab value='TypeScript'>
 
 ```typescript title="src/06-detect-timeouts.step.ts"
-import { type Handlers, type StepConfig } from 'motia'
+import { type Handlers, type StepConfig, cron } from 'motia'
 
 export const config = {
   name: 'DetectTimeouts',
   description: 'Find orders stuck awaiting approval and escalate',
   triggers: [
-    { type: 'cron', cron: '*/5 * * * *' },
+    cron('*/5 * * * *'),
   ],
   enqueues: [],
   flows: ['order-approval'],
 } as const satisfies StepConfig
 
 export const handler: Handlers<typeof config> = async ({ state, logger }) => {
-  const orders = await state.getGroup('orders')
+  const orders = await state.list('orders')
   const now = Date.now()
   const timeoutMs = 10 * 60 * 1000  // 10 minutes (demo - use 24 hours in production)
   
@@ -828,14 +828,14 @@ config = {
     "name": "DetectTimeouts",
     "description": "Find orders stuck awaiting approval and escalate",
     "triggers": [
-        {"type": "cron", "cron": "*/5 * * * *"}
+        {"type": "cron", "expression": "*/5 * * * *"}
     ],
     "enqueues": [],
     "flows": ["order-approval"]
 }
 
 async def handler(context):
-    orders = await context.state.get_group("orders")
+    orders = await context.state.list("orders")
     now = time.time() * 1000  # Convert to milliseconds
     timeout_ms = 10 * 60 * 1000  # 10 minutes (demo - use 24 hours in production)
     
@@ -883,18 +883,20 @@ async def handler(context):
 <Tab value='JavaScript'>
 
 ```javascript title="src/detect-timeouts.step.js"
+import { cron } from 'motia'
+
 export const config = {
   name: 'DetectTimeouts',
   description: 'Find orders stuck awaiting approval and escalate',
   triggers: [
-    { type: 'cron', cron: '*/5 * * * *' },
+    cron('*/5 * * * *'),
   ],
   enqueues: [],
   flows: ['order-approval'],
 }
 
 export const handler = async ({ state, logger }) => {
-  const orders = await state.getGroup('orders')
+  const orders = await state.list('orders')
   const now = Date.now()
   const timeoutMs = 10 * 60 * 1000  // 10 minutes (demo - use 24 hours in production)
   
@@ -954,9 +956,9 @@ export const handler = async ({ state, logger }) => {
 
 ---
 
-## 🎨 Visual Flow in iii console
+## 🎨 Visual Flow in the iii Development Console
 
-When you open the example in iii console, you'll see **5 nodes**:
+When you open the example in the iii development console, you'll see **5 nodes**:
 
 ![HTL Example](../img/htl-example.png)
 
@@ -1000,7 +1002,7 @@ Start the Motia development server.
 npm run dev
 ```
 
-Open [`http://localhost:3000`](http://localhost:3000) in your browser to access the iii console. You'll see the **HumanApprovalGate** (Noop node) showing where the workflow pauses for human decisions.
+Open [`http://localhost:3000`](http://localhost:3000) in your browser to access the iii development console. You'll see the **HumanApprovalGate** (Noop node) showing where the workflow pauses for human decisions.
 
 ### Test High-Risk Order (Will Pause)
 
@@ -1024,7 +1026,7 @@ curl -X POST http://localhost:3000/orders \
 }
 ```
 
-**Check iii console:** The flow stops at HumanApprovalGate. No more steps run. The workflow is **paused** and waiting for human decision.
+**Check the iii development console:** The flow stops at HumanApprovalGate. No more steps run. The workflow is **paused** and waiting for human decision.
 
 ### Resume via Webhook (Hours/Days Later)
 
@@ -1041,7 +1043,7 @@ curl -X POST http://localhost:3000/webhooks/orders/abc-123/approve \
   }'
 ```
 
-**Check iii console:** Flow resumes! It loads state, emits `order.approved`, and CompleteOrder runs to fulfill the order.
+**Check the iii development console:** Flow resumes! It loads state, emits `order.approved`, and CompleteOrder runs to fulfill the order.
 
 ### Test Low-Risk Order (Bypasses Gate)
 
@@ -1057,7 +1059,7 @@ curl -X POST http://localhost:3000/orders \
   }'
 ```
 
-**Check iii console:** Flows straight through SubmitOrder → AnalyzeRisk → CompleteOrder. The HumanApprovalGate is completely bypassed!
+**Check the iii development console:** Flows straight through SubmitOrder → AnalyzeRisk → CompleteOrder. The HumanApprovalGate is completely bypassed!
 
 </Steps>
 
@@ -1147,7 +1149,7 @@ Building Human-in-the-Loop workflows in Motia:
 1. **Save state when pausing** - Mark clearly with `status: 'awaiting_something'`
 2. **Don't enqueue** - Workflow stops naturally
 3. **Create webhook API** - This is your re-entry point
-4. **Use virtual connections** - Show the pause visually in iii console with Noops
+4. **Use virtual connections** - Show the pause visually in the iii development console with Noops
 5. **External systems call webhook** - UI, Slack, etc. restart the flow
 6. **Idempotent steps** - Always check `completedSteps` before doing work
 

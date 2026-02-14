@@ -1,121 +1,76 @@
 ---
-title: iii Configuration (config.yaml)
-description: Configure your iii application with config.yaml - the central configuration file using a modular architecture.
+title: Configuration (config.yaml)
+description: Configure your Motia project within the iii config.yaml file.
 ---
 
-The `config.yaml` file is the central configuration for your iii application. It uses a modular architecture where each concern (API, queues, state, streams, etc.) is configured as a separate module.
+Motia projects run on [iii](https://iii.dev), which uses a `config.yaml` file for its modular runtime configuration. When you scaffold a project with `npx motia@latest create`, this file is generated for you with sensible defaults.
 
 <Callout type="info">
-**Migration Note**: The `motia.config.ts` file has been replaced by `config.yaml`. If you are upgrading from an older version, migrate your configuration to the new YAML-based modular format.
+The `config.yaml` is an iii configuration file. Most modules (API, queue, state, streams, cron, observability) are iii infrastructure concerns. Visit [iii.dev/docs](https://iii.dev/docs) for the full module reference.
 </Callout>
 
-## Quick Start
+## Project Setup
 
-Create a `config.yaml` file in your project root:
-
-```yaml title="config.yaml"
-modules:
-  - class: modules::api::RestApiModule
-    config:
-      port: 3111
-      host: 127.0.0.1
-
-  - class: modules::queue::QueueModule
-    config:
-      adapter:
-        class: modules::queue::BuiltinQueueAdapter
-
-  - class: modules::state::StateModule
-    config:
-      adapter:
-        class: modules::state::adapters::KvStore
-        config:
-          store_method: file_based
-          file_path: ./data/state_store.db
-```
-
-Each module is independently configured. You only need to include the modules your application uses.
-
----
-
-## Critical Requirement: ES Modules
-
-<Callout type="error">
-**Your `package.json` must have `"type": "module"`**
-
-The framework uses ES modules internally. Without this setting, you'll get import/export errors at runtime.
-</Callout>
+Your `package.json` must have `"type": "module"` and use `iii` as the dev command:
 
 ```json title="package.json"
 {
   "name": "my-app",
   "type": "module",
   "scripts": {
-    "dev": "motia dev",
-    "start": "motia start",
+    "dev": "iii",
     "build": "motia build"
+  },
+  "dependencies": {
+    "motia": "next"
   }
 }
 ```
 
+Running `npm run dev` starts the iii runtime, which reads `config.yaml` and boots all configured modules -- including the Motia application via the Shell Exec module.
+
 ---
 
-## Module Architecture
+## Motia-Specific Configuration
 
-The `config.yaml` file contains a single top-level `modules` array. Each entry defines a module with its `class` and optional `config`:
+The portion of `config.yaml` specific to Motia is the **Shell Exec module**, which tells iii how to build and run your Motia application:
 
-```yaml
-modules:
-  - class: modules::module_name::ClassName
+```yaml title="config.yaml (Motia portion)"
+  - class: modules::shell::ExecModule
     config:
-      key: value
+      watch:
+        - steps/**/*.ts
+      exec:
+        - npx motia dev
+        - node dist/index-dev.js
 ```
 
-### Available Modules
-
-| Module | Class | Purpose |
-|--------|-------|---------|
-| **REST API** | `modules::api::RestApiModule` | HTTP endpoints, CORS, timeouts |
-| **Queue** | `modules::queue::QueueModule` | Background job processing |
-| **State** | `modules::state::StateModule` | Persistent key-value state |
-| **Streams** | `modules::streams::StreamModule` | Real-time WebSocket streams |
-| **PubSub** | `modules::pubsub::PubSubModule` | Publish/subscribe messaging |
-| **Cron** | `modules::cron::CronModule` | Scheduled tasks |
-| **Observability** | `modules::observability::OtelModule` | OpenTelemetry tracing and metrics |
-| **Shell Exec** | `modules::shell::ExecModule` | File watching and command execution |
+- `watch` -- glob patterns for files to watch. When these change, the exec commands are re-run.
+- `exec` -- commands to execute in order. `npx motia dev` builds your Steps, and `node dist/index-dev.js` runs the bundled output.
 
 ---
 
-## Environment Variable Interpolation
+## Full Development Config
 
-All config values support environment variable interpolation with optional defaults:
-
-```yaml
-config:
-  port: ${STREAMS_PORT:3112}
-  host: ${HOST:127.0.0.1}
-  redis_url: ${REDIS_URL:redis://localhost:6379}
-```
-
-The syntax is `${VARIABLE_NAME:default_value}`. If the environment variable is not set, the default value after `:` is used.
-
----
-
-## Full Development Configuration
-
-Here's a complete development configuration with all modules:
+A complete `config.yaml` for local development. The iii infrastructure modules use file-based storage by default:
 
 ```yaml title="config.yaml"
 modules:
-  - class: modules::streams::StreamModule
+  - class: modules::stream::StreamModule
     config:
-      port: ${STREAMS_PORT:3112}
+      port: ${STREAM_PORT:3112}
       host: 127.0.0.1
       adapter:
-        class: modules::streams::adapters::KvStore
+        class: modules::stream::adapters::KvStore
         config:
           store_method: file_based
-          file_path: ./data/streams_store
+          file_path: ./data/stream_store
+
+  - class: modules::kv_server::KvServer
+    config:
+      store_method: file_based
+      file_path: ./data/kv_store
+      save_interval_ms: 5000
 
   - class: modules::state::StateModule
     config:
@@ -135,6 +90,7 @@ modules:
         allowed_origins:
           - http://localhost:3000
           - http://localhost:5173
+          - http://localhost:3113
         allowed_methods:
           - GET
           - POST
@@ -142,16 +98,13 @@ modules:
           - DELETE
           - OPTIONS
 
-  - class: modules::observability::OtelModule
-    config:
-      enabled: ${OTEL_ENABLED:true}
-      service_name: ${OTEL_SERVICE_NAME:iii-engine}
-      exporter: ${OTEL_EXPORTER_TYPE:memory}
-
   - class: modules::queue::QueueModule
     config:
       adapter:
         class: modules::queue::BuiltinQueueAdapter
+        config:
+          store_method: file_based
+          file_path: ./data/queue_store
 
   - class: modules::pubsub::PubSubModule
     config:
@@ -163,271 +116,26 @@ modules:
       adapter:
         class: modules::cron::KvCronAdapter
 
+  - class: modules::observability::OtelModule
+    config:
+      enabled: ${OTEL_ENABLED:true}
+      service_name: ${OTEL_SERVICE_NAME:iii-engine}
+      exporter: ${OTEL_EXPORTER_TYPE:memory}
+
   - class: modules::shell::ExecModule
     config:
       watch:
         - steps/**/*.ts
-        - motia.config.ts
       exec:
         - npx motia dev
+        - node dist/index-dev.js
 ```
 
----
+<Callout type="info">
+All config values support environment variable interpolation: `${VARIABLE_NAME:default_value}`. If the variable is not set, the default after `:` is used.
+</Callout>
 
-## Module Reference
-
-### REST API Module
-
-Configures HTTP endpoints, CORS, timeouts, and concurrency.
-
-```yaml
-- class: modules::api::RestApiModule
-  config:
-    port: 3111
-    host: 127.0.0.1
-    default_timeout: 30000
-    concurrency_request_limit: 1024
-    cors:
-      allowed_origins:
-        - http://localhost:3000
-      allowed_methods:
-        - GET
-        - POST
-        - PUT
-        - DELETE
-        - OPTIONS
-```
-
-| Option | Type | Description |
-|--------|------|-------------|
-| `port` | `number` | Server port (default: `3111`) |
-| `host` | `string` | Server host (default: `127.0.0.1`) |
-| `default_timeout` | `number` | Request timeout in ms (default: `30000`) |
-| `concurrency_request_limit` | `number` | Max concurrent requests (default: `1024`) |
-| `cors.allowed_origins` | `string[]` | Origins allowed for CORS |
-| `cors.allowed_methods` | `string[]` | HTTP methods allowed for CORS |
-
-### Queue Module
-
-Handles background job processing. Uses a built-in adapter for development and Redis for production.
-
-<Tabs items={['Development', 'Production']}>
-<Tab value='Development'>
-
-```yaml
-- class: modules::queue::QueueModule
-  config:
-    adapter:
-      class: modules::queue::BuiltinQueueAdapter
-```
-
-</Tab>
-<Tab value='Production'>
-
-```yaml
-- class: modules::queue::QueueModule
-  config:
-    adapter:
-      class: modules::queue::RedisAdapter
-      config:
-        redis_url: ${REDIS_URL:redis://localhost:6379}
-```
-
-</Tab>
-</Tabs>
-
-### State Module
-
-Persistent key-value state storage. Uses file-based storage for development and Redis for production.
-
-<Tabs items={['Development', 'Production']}>
-<Tab value='Development'>
-
-```yaml
-- class: modules::state::StateModule
-  config:
-    adapter:
-      class: modules::state::adapters::KvStore
-      config:
-        store_method: file_based
-        file_path: ./data/state_store.db
-```
-
-</Tab>
-<Tab value='Production'>
-
-```yaml
-- class: modules::state::StateModule
-  config:
-    adapter:
-      class: modules::state::adapters::RedisAdapter
-      config:
-        redis_url: ${REDIS_URL:redis://localhost:6379}
-```
-
-</Tab>
-</Tabs>
-
-### Streams Module
-
-Real-time WebSocket streams for live data. Supports authentication in production.
-
-<Tabs items={['Development', 'Production']}>
-<Tab value='Development'>
-
-```yaml
-- class: modules::streams::StreamModule
-  config:
-    port: ${STREAMS_PORT:3112}
-    host: 127.0.0.1
-    adapter:
-      class: modules::streams::adapters::KvStore
-      config:
-        store_method: file_based
-        file_path: ./data/streams_store
-```
-
-</Tab>
-<Tab value='Production'>
-
-```yaml
-- class: modules::streams::StreamModule
-  config:
-    port: ${STREAMS_PORT:31112}
-    host: 0.0.0.0
-    auth_function: motia.streams.authenticate
-    adapter:
-      class: modules::streams::adapters::RedisAdapter
-      config:
-        redis_url: ${REDIS_URL:redis://localhost:6379}
-```
-
-</Tab>
-</Tabs>
-
-| Option | Type | Description |
-|--------|------|-------------|
-| `port` | `number` | WebSocket port (default: `3112`) |
-| `host` | `string` | Bind host |
-| `auth_function` | `string` | Function path for stream authentication |
-
-### Observability Module
-
-OpenTelemetry integration for tracing and metrics.
-
-```yaml
-- class: modules::observability::OtelModule
-  config:
-    enabled: ${OTEL_ENABLED:true}
-    service_name: ${OTEL_SERVICE_NAME:iii-engine}
-    exporter: ${OTEL_EXPORTER_TYPE:memory}
-```
-
-| Option | Type | Description |
-|--------|------|-------------|
-| `enabled` | `boolean` | Enable/disable tracing (default: `true`) |
-| `service_name` | `string` | Service name in traces (default: `iii-engine`) |
-| `exporter` | `string` | Exporter type (`memory`, `otlp`, etc.) |
-
-### PubSub Module
-
-Publish/subscribe messaging between Steps.
-
-```yaml
-- class: modules::pubsub::PubSubModule
-  config:
-    adapter:
-      class: modules::pubsub::LocalAdapter
-```
-
-### Cron Module
-
-Scheduled task execution.
-
-```yaml
-- class: modules::cron::CronModule
-  config:
-    adapter:
-      class: modules::cron::KvCronAdapter
-```
-
-### Shell Exec Module
-
-File watching and command execution for development.
-
-```yaml
-- class: modules::shell::ExecModule
-  config:
-    watch:
-      - steps/**/*.ts
-      - motia.config.ts
-    exec:
-      - npx motia dev
-```
-
----
-
-## Production Configuration
-
-For production, swap file-based adapters for Redis:
-
-```yaml title="config-production.yaml"
-modules:
-  - class: modules::streams::StreamModule
-    config:
-      port: ${STREAMS_PORT:31112}
-      host: 0.0.0.0
-      auth_function: motia.streams.authenticate
-      adapter:
-        class: modules::streams::adapters::RedisAdapter
-        config:
-          redis_url: ${REDIS_URL:redis://localhost:6379}
-
-  - class: modules::state::StateModule
-    config:
-      adapter:
-        class: modules::state::adapters::RedisAdapter
-        config:
-          redis_url: ${REDIS_URL:redis://localhost:6379}
-
-  - class: modules::api::RestApiModule
-    config:
-      port: ${PORT:3111}
-      host: 0.0.0.0
-      default_timeout: 30000
-      concurrency_request_limit: 1024
-
-  - class: modules::queue::QueueModule
-    config:
-      adapter:
-        class: modules::queue::RedisAdapter
-        config:
-          redis_url: ${REDIS_URL:redis://localhost:6379}
-
-  - class: modules::observability::OtelModule
-    config:
-      enabled: true
-      service_name: ${OTEL_SERVICE_NAME:my-app}
-      exporter: otlp
-
-  - class: modules::pubsub::PubSubModule
-    config:
-      adapter:
-        class: modules::pubsub::RedisAdapter
-        config:
-          redis_url: ${REDIS_URL:redis://localhost:6379}
-
-  - class: modules::cron::CronModule
-    config:
-      adapter:
-        class: modules::cron::KvCronAdapter
-```
-
-Key differences from development:
-- **Host**: `0.0.0.0` instead of `127.0.0.1` (accept external connections)
-- **Adapters**: Redis instead of file-based KvStore
-- **Stream auth**: `auth_function` enabled for secure WebSocket connections
-- **Observability**: OTLP exporter instead of memory
+For production configuration with Redis adapters and OTLP exporters, see the [Deployment Guide](/docs/deployment-guide) and [iii.dev/docs](https://iii.dev/docs).
 
 ---
 
@@ -447,6 +155,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/webhooks/stripe', method: 'POST' },
   ],
+  enqueues: [],
   flows: ['payments'],
 } as const satisfies StepConfig
 
@@ -468,16 +177,17 @@ export const handler: Handlers<typeof config> = async (req, { logger }) => {
 <Tab value='JavaScript'>
 
 ```javascript title="steps/webhook.step.js"
-const config = {
+export const config = {
   name: 'StripeWebhook',
   description: 'Handle Stripe webhook events',
   triggers: [
     { type: 'api', path: '/webhooks/stripe', method: 'POST' },
   ],
+  enqueues: [],
   flows: ['payments'],
 }
 
-const handler = async (req, { logger }) => {
+export const handler = async (req, { logger }) => {
   const signature = req.headers['stripe-signature']
   const rawBody = req.rawBody
 
@@ -489,8 +199,6 @@ const handler = async (req, { logger }) => {
 
   return { status: 200, body: { received: true } }
 }
-
-module.exports = { config, handler }
 ```
 
 </Tab>

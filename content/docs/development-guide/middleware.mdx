@@ -45,6 +45,7 @@ If you don't call `next()`, the request stops. The handler never runs.
       triggers: [
         { type: 'api', path: '/protected', method: 'GET' },
       ],
+      enqueues: [],
       middleware: [authMiddleware],
     } as const satisfies StepConfig
 
@@ -62,20 +63,19 @@ If you don't call `next()`, the request stops. The handler never runs.
       return next()
     }
 
-    const config = {
+    export const config = {
       name: 'ProtectedEndpoint',
       description: 'A protected API endpoint',
       triggers: [
         { type: 'api', path: '/protected', method: 'GET' },
       ],
+      enqueues: [],
       middleware: [authMiddleware]
     }
 
-    const handler = async (req, ctx) => {
+    export const handler = async (req, ctx) => {
       return { status: 200, body: { message: 'Success' } }
     }
-
-    module.exports = { config, handler }
     ```
   </Tab>
   <Tab value="Python">
@@ -91,6 +91,7 @@ If you don't call `next()`, the request stops. The handler never runs.
         "triggers": [
             {"type": "api", "path": "/protected", "method": "GET"}
         ],
+        "enqueues": [],
         "middleware": [auth_middleware]
     }
 
@@ -113,6 +114,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/endpoint', method: 'POST' },
   ],
+  enqueues: [],
   middleware: [
     loggingMiddleware,
     authMiddleware,
@@ -224,7 +226,7 @@ Middleware can attach data to the `req` object, making it available to your hand
     Access it in your handler:
 
     ```javascript
-    const handler = async (req, ctx) => {
+    export const handler = async (req, ctx) => {
       const { user } = req
       return { status: 200, body: { user } }
     }
@@ -275,7 +277,7 @@ Catch errors from handlers:
   </Tab>
   <Tab value="JavaScript">
     ```javascript
-    const { ZodError } = require('zod')
+    import { ZodError } from 'zod'
 
     const errorMiddleware = async (req, ctx, next) => {
       try {
@@ -336,6 +338,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/users/:id', method: 'GET' },
   ],
+  enqueues: [],
   middleware: [coreMiddleware],
 } as const satisfies StepConfig
 ```

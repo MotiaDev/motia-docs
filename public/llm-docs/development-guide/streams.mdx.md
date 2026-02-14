@@ -77,7 +77,7 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript title="src/chat-messages.stream.js"
-const config = {
+export const config = {
   name: 'chatMessage',
   schema: {
     type: 'object',
@@ -93,8 +93,6 @@ const config = {
     storageType: 'default'
   }
 }
-
-module.exports = { config }
 ```
 
 </Tab>
@@ -188,6 +186,7 @@ export const config = {
   triggers: [
     { type: 'api', path: '/todo', method: 'POST' },
   ],
+  enqueues: [],
   flows: ['todo-app'],
 } as const satisfies StepConfig
 
@@ -288,7 +287,7 @@ Provide an auth token when creating the stream client by embedding it in the Web
 
 ```tsx title="App.tsx"
 import { useMemo } from 'react'
-import { MotiaStreamProvider } from '@motiadev/stream-client-react'
+import { MotiaStreamProvider } from 'motia/stream-client-react'
 
 function AppShell({ session }: { session?: { streamToken?: string } }) {
   const streamAddress = useMemo(() => new URL('ws://localhost:3000').toString(), [])
@@ -307,7 +306,7 @@ function AppShell({ session }: { session?: { streamToken?: string } }) {
 Using the browser/node clients directly:
 
 ```ts
-import { Stream } from '@motiadev/stream-client-node'
+import { Stream } from 'motia/stream-client-node'
 
 const url = new URL('wss://api.example.com/streams')
 if (process.env.STREAM_TOKEN) {
@@ -319,11 +318,9 @@ const stream = new Stream(url.toString())
 
 ---
 
-## Testing Streams in the iii Console
+## Viewing Streams in the iii Development Console
 
-Testing real-time features can be tricky. The iii console makes it easy.
-
-**How to test:**
+The [iii development console](https://iii.dev/docs) can display stream updates in real-time:
 
 1. Make sure your API Step returns the stream object:
 
@@ -331,12 +328,10 @@ Testing real-time features can be tricky. The iii console makes it easy.
 return { status: 200, body: todo }
 ```
 
-2. Open [http://localhost:3000/endpoints](http://localhost:3000/endpoints)
+2. Open the iii development console
 3. Watch the stream update in real-time
 
-![Stream Test in iii Console](./../img/todo-workbench.png)
-
-The iii console automatically detects stream responses and subscribes to them for you.
+The console automatically detects stream responses and subscribes to them for you.
 
 ---
 
@@ -347,7 +342,7 @@ Once you have streams working on the backend, connect them to your React app.
 ### Install
 
 ```bash
-npm install @motiadev/stream-client-react
+npm install motia
 ```
 
 ### Setup Provider
@@ -355,7 +350,7 @@ npm install @motiadev/stream-client-react
 Wrap your app with the provider:
 
 ```tsx title="App.tsx"
-import { MotiaStreamProvider } from '@motiadev/stream-client-react'
+import { MotiaStreamProvider } from 'motia/stream-client-react'
 
 function App() {
   const authToken = useAuthToken()
@@ -371,7 +366,7 @@ function App() {
 ### Subscribe to Stream Updates
 
 ```tsx title="App.tsx"
-import { useStreamGroup } from '@motiadev/stream-client-react'
+import { useStreamGroup } from 'motia/stream-client-react'
 import { useTodoEndpoints, type Todo } from './hook/useTodoEndpoints'
 
 function App() {
@@ -475,7 +470,7 @@ await streams.chatMessage.send(
 - **Every `set()` call** pushes updates to connected clients instantly and returns `{ new_value, old_value }`
 - **Use `update()`** for atomic operations (increment, decrement, set fields)
 - **Use `send()`** for temporary events like typing indicators
-- **Test in the iii console** before building your frontend
+- **View in the iii development console** before building your frontend
 - **No polling needed** - WebSocket connection handles everything
 
 ---

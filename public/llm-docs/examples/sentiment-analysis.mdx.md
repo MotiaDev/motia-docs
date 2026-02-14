@@ -7,9 +7,7 @@ In modern application development, workflows are rarely linear. Whether you're b
 
 ---
 
-## Explore the iii console
-
-<div className="my-8">![motia workbench for sentiment analysis](./../img/sentimental-analyzer-workbench.gif)</div>
+## Workflow Overview
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/api-patterns/sentimental-analysis)
@@ -29,8 +27,6 @@ Let's dive in.
 ---
 
 ## A Step at a Time
-
-<div className="my-8">![motia workbench for sentiment analysis](./../img/sentimental-analyzer-workbench.png)</div>
 
 At the heart of the Motia framework is a simple but powerful idea: the **`step`**. A step is a self-contained, independent unit of logic that listens for an event, performs a task, and, optionally, emits a new event. This concept is the core primitive that allows you to break down even the most complex architectures into a series of simple, manageable components.
 
@@ -236,15 +232,13 @@ Our application will be composed of four steps. Let's explore each one.
 
 ---
 
-## Explore the iii console
+## Explore the Workflow
 
-You can explore the workflow in the iii console.
+You can explore the workflow visually in the [iii development console](https://iii.dev/docs).
 
 <div className="my-8">![Flow](./../img/sentimental-analyzer.png)</div>
 
-You can also read your files and watch logs, traces, debug your architecture directly in the iii console.
-
-<div className="my-8">![iii console](./../img/sentimental-analyzer-workbench.gif)</div>
+You can also read your files and watch logs, traces, and debug your architecture directly in the console.
 
 ---
 

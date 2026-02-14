@@ -22,7 +22,6 @@ Here's what a typical Motia project looks like:
   <File name="requirements.txt" />
   <File name="tsconfig.json" />
   <File name="types.d.ts" />
-  <File name="motia-workbench.json" />
   <File name="config.yaml" />
 </Folder>
 
@@ -38,7 +37,6 @@ Here's what a typical Motia project looks like:
 | `requirements.txt` | Python dependencies (if using Python) | Config | - |
 | `tsconfig.json` | TypeScript config (if using TypeScript) | Config | - |
 | `types.d.ts` | **Type definitions for your project** | **Generated** | **By TypeScript** |
-| `motia-workbench.json` | **Visual workflow positioning** | **Generated** | **By Motia** |
 | `config.yaml` | iii configuration | Config | - |
 
 <Callout type="info">
@@ -71,12 +69,11 @@ Motia scans your project and automatically registers files as steps based on the
 3. **File must export a `handler` function** containing the step logic
 4. **File extension determines the runtime** (`.ts` = TypeScript, `.py` = Python, `.js` = JavaScript)
 
-When you run `motia dev`, Motia will:
+When you start the dev server, Motia will:
 - **Recursively scan** the `src/` directory
 - **Find all files** matching `*.step.*` or `*_step.*` patterns in the `src/` directory
 - Parse their `config` exports to understand step types and connections
 - Register them in the workflow engine
-- Make them available in the iii console
 
 <Callout type="success">
 **No directory requirement** - Steps are discoverable from anywhere within `src/`, regardless of folder depth or organization pattern.
@@ -241,7 +238,7 @@ For Node.js-based steps, you'll need:
   "name": "my-motia-app",
   "version": "1.0.0",
   "scripts": {
-    "dev": "motia dev",
+    "dev": "iii",
     "build": "motia build",
     "start": "motia start"
   },
@@ -387,7 +384,6 @@ async function sendPush(data) { /* implementation */ }
 Some files in your Motia project are automatically generated:
 
 - `types.d.ts` - TypeScript generates this for type definitions
-- `motia-workbench.json` - Motia manages visual node positions in the iii console
 
 ## Discovery Troubleshooting
 
@@ -489,7 +485,7 @@ Will be discovered:
 Check if your steps are discovered:
 
 ```bash
-motia dev
+npm run dev
 
 # Look for step creation in your console:
 # [CREATED] Step (Cron) src/petstore/state-audit-cron.step.ts created

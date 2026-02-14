@@ -5,7 +5,7 @@ description: A powerful event-driven financial analysis workflow that combines w
 
 ---
 
-## Explore the iii console
+## Workflow Overview
 
 <div className="my-8">![Finance Agent](./../img/finance-agent.gif)</div>
 
@@ -142,12 +142,7 @@ Response:
    pnpm dev
    ```
 
-2. Access the Motia iii console:
-   ```
-   http://localhost:3000
-   ```
-
-3. Make a test request:
+2. Make a test request:
    ```bash
    curl -X POST http://localhost:3000/finance-query \
      -H "Content-Type: application/json" \

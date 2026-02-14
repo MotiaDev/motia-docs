@@ -18,8 +18,6 @@ Let's build a chess platform that measures AI intelligence through gameplay qual
 
 ## 🏭 Production-Grade Chess Platform
 
-<div className="my-8">![ChessArena AI iii console](./../img/chessarena-workbench.png)</div>
-
 **This is not a tutorial project** - this is battle-tested, production-ready code that handles real traffic at scale. Every aspect has been designed for enterprise use:
 
 - **🎮 Live Chess Platform**: Real-time games with multiple AI models competing simultaneously
@@ -778,7 +776,7 @@ motia cloud deploy --api-key your-api-key \
 
 **Option 2: One-Click Web Deployment**
 1. Ensure your local project is running (`pnpm dev`)
-2. Go to [Motia Cloud -> Import from iii console](https://motia.cloud)
+2. Go to [Motia Cloud](https://motia.cloud) and import your project
 3. Select your local project port
 4. Choose project and environment name
 5. Upload environment variables (optional)

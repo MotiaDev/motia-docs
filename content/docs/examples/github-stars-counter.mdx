@@ -16,8 +16,6 @@ Let's build a stars counter that updates in real-time across all connected clien
 
 ---
 
-<div className="my-8">![GitHub Stars Counter Demo](./../img/gitstars-workbench.png)</div>
-
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/github-stars-counter)
 
@@ -470,7 +468,7 @@ Test your webhook by starring/unstarring your repository:
 1. **Star your repository** on GitHub
 2. **Check the logs** - you should see webhook processing
 3. **Access the stream** - query `/api/streams/stars` to see current data
-4. **Watch real-time updates** in the Motia iii console
+4. **Watch real-time updates** in the [iii development console](https://iii.dev/docs)
 
 ### Access Real-Time Data
 
@@ -504,7 +502,7 @@ motia cloud deploy --api-key your-api-key \
 
 **Option 2: One-Click Web Deployment**
 1. Ensure your local project is running (`npm run dev`)
-2. Go to [Motia Cloud -> Import from iii console](https://motia.cloud)
+2. Go to [Motia Cloud](https://motia.cloud) and import your project
 3. Select your local project port
 4. Choose project and environment name
 5. Upload environment variables (optional)

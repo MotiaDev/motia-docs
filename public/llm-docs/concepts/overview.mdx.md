@@ -81,7 +81,7 @@ async def handler(req, context):
 <Tab value='JavaScript'>
 
 ```javascript title="src/my-step.step.js"
-const config = {
+export const config = {
   name: 'MyStep',
   description: 'Handles incoming requests',
   triggers: [
@@ -91,7 +91,7 @@ const config = {
   flows: ['my-flow'],
 }
 
-const handler = async (req, { enqueue, logger }) => {
+export const handler = async (req, { enqueue, logger }) => {
   logger.info('Processing request')
 
   await enqueue({
@@ -101,8 +101,6 @@ const handler = async (req, { enqueue, logger }) => {
 
   return { status: 200, body: { success: true } }
 }
-
-module.exports = { config, handler }
 ```
 
 </Tab>
@@ -271,18 +269,16 @@ Every handler gets a context object with everything you need:
 
 ---
 
-## Development Tool - iii Console
+## Development Tool - iii Development Console
 
-![create-pet](../img/build-your-first-app/create-api.png)
-
-Visual interface for testing APIs, building and debugging flows:
+Visual interface for building and debugging flows:
 
 - See your entire flow as a beautiful diagram
-- Test API endpoints in the browser
 - Watch logs in real-time
 - Inspect state as it changes
+- View stream updates in real-time
 
-[Learn about iii Console](/docs/concepts/workbench)
+[Learn about the iii development console](https://iii.dev/docs)
 
 ---
 

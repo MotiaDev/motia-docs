@@ -5,7 +5,7 @@ description: A powerful research assistant that leverages the Motia Framework to
 
 ---
 
-## Explore the iii console
+## Workflow Overview
 
 <div className="my-8">![AI Deep Research Agent](./../img/ai-deep-research-agent.png)</div>
 
@@ -188,12 +188,7 @@ Response:
    pnpm dev
    ```
 
-2. Access the Motia iii console:
-   ```
-   http://localhost:3000
-   ```
-
-3. Make a test request:
+2. Make a test request:
    ```bash
    curl --request POST \
    --url http://localhost:3000/research \

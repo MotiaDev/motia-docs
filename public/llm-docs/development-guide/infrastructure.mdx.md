@@ -51,7 +51,7 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'SendEmail',
   description: 'Send email with retry support',
   triggers: [
@@ -137,7 +137,7 @@ config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'ProcessOrder',
   description: 'Process orders in FIFO order',
   triggers: [
@@ -193,7 +193,7 @@ async def handler(req, ctx):
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (req, { enqueue }) => {
+export const handler = async (req, { enqueue }) => {
   const { orderId, customerId } = req.body
 
   await enqueue({

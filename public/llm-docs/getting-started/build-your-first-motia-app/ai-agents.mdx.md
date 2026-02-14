@@ -12,7 +12,6 @@ An intelligent pet management system with agentic workflows that automate decisi
 - **Adoption Review Agentic Step** - Assesses adoption readiness and data completeness
 - **Orchestrator Integration** - AI decisions that drive real workflow changes
 
-![workbench](../../img/build-your-first-app/ai-agents-workbench.png)
 ---
 
 ## Getting Started
@@ -41,13 +40,11 @@ OPENAI_API_KEY=your_api_key_here
 **Important!** This tutorial requires an OpenAI API key. Get yours at [platform.openai.com/api-keys](https://platform.openai.com/api-keys). Without it, the agentic workflows won't work.
 </Callout>
 
-Start the iii console:
+Start the dev server:
 
 ```bash
 npm run dev
 ```
-
-Your iii console will be available at `http://localhost:3000`.
 
 ---
 
@@ -99,9 +96,7 @@ Files like `features.json` and `tutorial/tutorial.tsx` are only for the interact
 
 All code examples in this guide are available in the [build-your-first-app](https://github.com/MotiaDev/build-your-first-app/tree/ai-agents) repository.
 
-You can follow this guide to learn how to build agentic workflows with Motia step by step, or you can clone the repository and dive into our Interactive Tutorial to learn by doing directly in the iii console.
-
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-ai.png)
+You can follow this guide to learn how to build agentic workflows with Motia step by step, or clone the repository and get started immediately.
 
 ---
 
@@ -170,21 +165,17 @@ View on GitHub:
           ageMonths: validatedData.ageMonths 
         })
         
-        if (logger) {
-          logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
-        }
+        logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
         
-        if (enqueue) {
-          await enqueue({
-            topic: 'ts.pet.created',
-            data: { petId: pet.id, event: 'pet.created', name: pet.name, species: validatedData.species }
-          })
+        await enqueue({
+          topic: 'ts.pet.created',
+          data: { petId: pet.id, event: 'pet.created', name: pet.name, species: validatedData.species }
+        })
 
-          await enqueue({
-            topic: 'ts.feeding.reminder.enqueued',
-            data: { petId: pet.id, enqueuedAt: Date.now() }
-          })
-        }
+        await enqueue({
+          topic: 'ts.feeding.reminder.enqueued',
+          data: { petId: pet.id, enqueuedAt: Date.now() }
+        })
 
       return { status: 201, body: pet }
         
@@ -219,10 +210,7 @@ View on GitHub:
         "flows": ["PyPetManagement"]
     }
 
-    async def handler(req, ctx=None):
-        logger = getattr(ctx, 'logger', None) if ctx else None
-        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
-
+    async def handler(req, ctx):
         try:
             import sys
             import os
@@ -248,24 +236,22 @@ View on GitHub:
 
         pet = pet_store.create(name, species, age_val)
         
-        if logger:
-            logger.info('🐾 Pet created', {
-                'petId': pet['id'], 
-                'name': pet['name'], 
-                'species': pet['species'], 
-                'status': pet['status']
-            })
+        ctx.logger.info('🐾 Pet created', {
+            'petId': pet['id'], 
+            'name': pet['name'], 
+            'species': pet['species'], 
+            'status': pet['status']
+        })
         
-        if enqueue:
-            await enqueue({
-                'topic': 'py.pet.created',
-                'data': {'petId': pet['id'], 'event': 'pet.created', 'name': pet['name'], 'species': pet['species']}
-            })
+        await ctx.enqueue({
+            'topic': 'py.pet.created',
+            'data': {'petId': pet['id'], 'event': 'pet.created', 'name': pet['name'], 'species': pet['species']}
+        })
 
-            await enqueue({
-                'topic': 'py.feeding.reminder.enqueued',
-                'data': {'petId': pet['id'], 'enqueuedAt': int(time.time() * 1000)}
-            })
+        await ctx.enqueue({
+            'topic': 'py.feeding.reminder.enqueued',
+            'data': {'petId': pet['id'], 'enqueuedAt': int(time.time() * 1000)}
+        })
 
         return {"status": 201, "body": pet}
     ```
@@ -284,8 +270,7 @@ View on GitHub:
       flows: ['JsPetManagement'],
     }
 
-    export const handler = async (req, context) => {
-      const { enqueue, logger } = context || {}
+    export const handler = async (req, { enqueue, logger }) => {
       const b = req.body || {}
       const name = typeof b.name === 'string' && b.name.trim()
       const speciesOk = ['dog','cat','bird','other'].includes(b.species)
@@ -297,21 +282,17 @@ View on GitHub:
 
       const pet = create({ name, species: b.species, ageMonths: Number(b.ageMonths) })
 
-      if (logger) {
-        logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
-      }
+      logger.info('🐾 Pet created', { petId: pet.id, name: pet.name, species: pet.species, status: pet.status })
       
-      if (enqueue) {
-        await enqueue({
-          topic: 'js.pet.created',
-          data: { petId: pet.id, event: 'pet.created', name: pet.name, species: pet.species }
-        })
+      await enqueue({
+        topic: 'js.pet.created',
+        data: { petId: pet.id, event: 'pet.created', name: pet.name, species: pet.species }
+      })
 
-        await enqueue({
-          topic: 'js.feeding.reminder.enqueued',
-          data: { petId: pet.id, enqueuedAt: Date.now() }
-        })
-      }
+      await enqueue({
+        topic: 'js.feeding.reminder.enqueued',
+        data: { petId: pet.id, enqueuedAt: Date.now() }
+      })
 
       return { status: 201, body: pet }
     }
@@ -354,9 +335,7 @@ View on GitHub:
     export const handler: Handlers<typeof config> = async (input, { logger }) => {
       const { petId, name, species } = input;
 
-      if (logger) {
-        logger.info('🤖 AI Profile Enrichment started', { petId, name, species });
-      }
+      logger.info('🤖 AI Profile Enrichment started', { petId, name, species });
 
       try {
         const apiKey = process.env.OPENAI_API_KEY;
@@ -421,9 +400,7 @@ Keep it positive, realistic, and adoption-focused.`;
             adopterHints: `${name} would do well in a caring home with patience and love.`
           };
           
-          if (logger) {
-            logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError instanceof Error ? parseError.message : String(parseError) });
-          }
+          logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError instanceof Error ? parseError.message : String(parseError) });
         }
 
         const updatedPet = TSStore.updateProfile(petId, profile);
@@ -432,25 +409,21 @@ Keep it positive, realistic, and adoption-focused.`;
           throw new Error(`Pet not found: ${petId}`);
         }
 
-        if (logger) {
-          logger.info('✅ AI Profile Enrichment completed', { 
-            petId, 
-            profile: {
-              bio: profile.bio.substring(0, 50) + '...',
-              breedGuess: profile.breedGuess,
-              temperamentTags: profile.temperamentTags,
-              adopterHints: profile.adopterHints.substring(0, 50) + '...'
-            }
-          });
-        }
+        logger.info('✅ AI Profile Enrichment completed', { 
+          petId, 
+          profile: {
+            bio: profile.bio.substring(0, 50) + '...',
+            breedGuess: profile.breedGuess,
+            temperamentTags: profile.temperamentTags,
+            adopterHints: profile.adopterHints.substring(0, 50) + '...'
+          }
+        });
 
       } catch (error: any) {
-        if (logger) {
-          logger.error('❌ AI Profile Enrichment failed', { 
-            petId, 
-            error: error.message 
-          });
-        }
+        logger.error('❌ AI Profile Enrichment failed', { 
+          petId, 
+          error: error.message 
+        });
 
         const fallbackProfile: PetProfile = {
           bio: `${name} is a lovely ${species} with a unique personality, ready to find their forever home.`,
@@ -484,16 +457,12 @@ Keep it positive, realistic, and adoption-focused.`;
         "flows": ["PyPetManagement"]
     }
 
-    async def handler(input_data, ctx=None):
-        logger = getattr(ctx, 'logger', None) if ctx else None
-        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
-
+    async def handler(input_data, ctx):
         pet_id = input_data.get('petId')
         name = input_data.get('name')
         species = input_data.get('species')
 
-        if logger:
-            logger.info('🤖 AI Profile Enrichment started', {'petId': pet_id, 'name': name, 'species': species})
+        ctx.logger.info('🤖 AI Profile Enrichment started', {'petId': pet_id, 'name': name, 'species': species})
 
         try:
             import sys
@@ -570,31 +539,28 @@ Keep it positive, realistic, and adoption-focused."""
                     'adopterHints': f'{name} would do well in a caring home with patience and love.'
                 }
                 
-                if logger:
-                    logger.warn('⚠️ AI response parsing failed, using fallback profile', {'petId': pet_id, 'parseError': str(parse_error)})
+                ctx.logger.warn('⚠️ AI response parsing failed, using fallback profile', {'petId': pet_id, 'parseError': str(parse_error)})
 
             updated_pet = pet_store.update_profile(pet_id, profile)
             
             if not updated_pet:
                 raise Exception(f'Pet not found: {pet_id}')
 
-            if logger:
-                logger.info('✅ AI Profile Enrichment completed', {
-                    'petId': pet_id,
-                    'profile': {
-                        'bio': profile['bio'][:50] + '...',
-                        'breedGuess': profile['breedGuess'],
-                        'temperamentTags': profile['temperamentTags'],
-                        'adopterHints': profile['adopterHints'][:50] + '...'
-                    }
-                })
+            ctx.logger.info('✅ AI Profile Enrichment completed', {
+                'petId': pet_id,
+                'profile': {
+                    'bio': profile['bio'][:50] + '...',
+                    'breedGuess': profile['breedGuess'],
+                    'temperamentTags': profile['temperamentTags'],
+                    'adopterHints': profile['adopterHints'][:50] + '...'
+                }
+            })
 
         except Exception as error:
-            if logger:
-                logger.error('❌ AI Profile Enrichment failed', {
-                    'petId': pet_id,
-                    'error': str(error)
-                })
+            ctx.logger.error('❌ AI Profile Enrichment failed', {
+                'petId': pet_id,
+                'error': str(error)
+            })
 
             fallback_profile = {
                 'bio': f'{name} is a lovely {species} with a unique personality, ready to find their forever home.',
@@ -627,13 +593,10 @@ Keep it positive, realistic, and adoption-focused."""
       flows: ['JsPetManagement'],
     }
 
-    exports.handler = async (input, context) => {
-      const { enqueue, logger } = context || {}
+    export const handler = async (input, { logger }) => {
       const { petId, name, species } = input
 
-      if (logger) {
-        logger.info('🤖 AI Profile Enrichment started', { petId, name, species })
-      }
+      logger.info('🤖 AI Profile Enrichment started', { petId, name, species })
 
       try {
       const apiKey = process.env.OPENAI_API_KEY
@@ -698,9 +661,7 @@ Keep it positive, realistic, and adoption-focused.`
             adopterHints: `${name} would do well in a caring home with patience and love.`
           }
           
-          if (logger) {
-            logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError.message })
-          }
+          logger.warn('⚠️ AI response parsing failed, using fallback profile', { petId, parseError: parseError.message })
         }
 
         const updatedPet = updateProfile(petId, profile)
@@ -709,25 +670,21 @@ Keep it positive, realistic, and adoption-focused.`
           throw new Error(`Pet not found: ${petId}`)
         }
 
-        if (logger) {
-          logger.info('✅ AI Profile Enrichment completed', {
-            petId,
-            profile: {
-              bio: profile.bio.substring(0, 50) + '...',
-              breedGuess: profile.breedGuess,
-              temperamentTags: profile.temperamentTags,
-              adopterHints: profile.adopterHints.substring(0, 50) + '...'
-            }
-          })
-        }
+        logger.info('✅ AI Profile Enrichment completed', {
+          petId,
+          profile: {
+            bio: profile.bio.substring(0, 50) + '...',
+            breedGuess: profile.breedGuess,
+            temperamentTags: profile.temperamentTags,
+            adopterHints: profile.adopterHints.substring(0, 50) + '...'
+          }
+        })
 
       } catch (error) {
-        if (logger) {
-          logger.error('❌ AI Profile Enrichment failed', {
-            petId,
-            error: error.message
-          })
-        }
+        logger.error('❌ AI Profile Enrichment failed', {
+          petId,
+          error: error.message
+        })
 
         const fallbackProfile = {
           bio: `${name} is a lovely ${species} with a unique personality, ready to find their forever home.`,
@@ -759,25 +716,17 @@ The key is the prompt engineering - we tell the AI exactly what fields we need a
 
 ## Testing Your Agentic Step
 
-The best way to test your agentic step is through the **iii console**. It lets you create pets, watch the AI enrichment happen in real-time, and see all the logs in one place.
+Test your agentic step by sending requests to the API endpoints and watching the logs.
 
 ### Create a Pet
 
-Open the iii console and test the CreatePet endpoint. The AI will automatically start enriching the profile in the background.
-
-<Callout type="tip">
-**Prefer using curl?**
+Create a pet -- the AI will automatically start enriching the profile in the background:
 
 ```bash
 curl -X POST http://localhost:3000/ts/pets \
   -H "Content-Type: application/json" \
   -d '{"name": "Max", "species": "dog", "ageMonths": 24}'
 ```
-</Callout>
-
-Check the logs in the iii console to see the agentic step in action:
-
-![ai-enrichment-logs](../../img/build-your-first-app/ai-enrichment-logs.png)
 
 You'll see:
 1. "Pet created" log from the API endpoint
@@ -786,15 +735,11 @@ You'll see:
 
 ### View the Enriched Profile
 
-Fetch the pet in the iii console to see the AI-generated profile, or use curl:
-
-<Callout type="tip">
-**Using curl?**
+Fetch the pet to see the AI-generated profile:
 
 ```bash
 curl http://localhost:3000/ts/pets/1
 ```
-</Callout>
 
 You'll get back something like:
 
@@ -851,13 +796,11 @@ View on GitHub:
         return { status: 404, body: { message: 'Pet not found' } };
       }
 
-      if (logger) {
-        logger.info('🏥 Health Review Agent triggered', { 
-          petId, 
-          currentStatus: pet.status,
-          symptoms: pet.symptoms || []
-        });
-      }
+      logger.info('🏥 Health Review Agent triggered', { 
+        petId, 
+        currentStatus: pet.status,
+        symptoms: pet.symptoms || []
+      });
 
       if (!['healthy', 'in_quarantine', 'available'].includes(pet.status)) {
         return {
@@ -881,13 +824,11 @@ View on GitHub:
 
       if (recentArtifacts.length > 0) {
         const recent = recentArtifacts[recentArtifacts.length - 1];
-        if (logger) {
-          logger.info('🔄 Idempotent health review - returning cached decision', {
-            petId,
-            chosenEmit: recent.parsedDecision.chosenEmit,
-            timestamp: recent.timestamp
-          });
-        }
+        logger.info('🔄 Idempotent health review - returning cached decision', {
+          petId,
+          chosenEmit: recent.parsedDecision.chosenEmit,
+          timestamp: recent.timestamp
+        });
 
         return {
           status: 200,
@@ -904,9 +845,7 @@ View on GitHub:
       }
 
       try {
-        if (logger) {
-          logger.info('🔍 Starting agent decision call', { petId, agentContext });
-        }
+        logger.info('🔍 Starting agent decision call', { petId, agentContext });
         
         const artifact = await callAgentDecision(
           'health-review',
@@ -915,17 +854,13 @@ View on GitHub:
           logger
         );
         
-        if (logger) {
-          logger.info('✅ Agent decision call completed', { petId, success: artifact.success });
-        }
+        logger.info('✅ Agent decision call completed', { petId, success: artifact.success });
 
         if (!artifact.success) {
-          if (logger) {
-            logger.warn('⚠️ Agent decision failed, but returning error response', {
-              petId,
-              error: artifact.error
-            });
-          }
+          logger.warn('⚠️ Agent decision failed, but returning error response', {
+            petId,
+            error: artifact.error
+          });
           
           return {
             status: 500,
@@ -949,27 +884,23 @@ View on GitHub:
           };
         }
 
-        if (enqueue) {
-          await enqueue({
-            topic: chosenEmitDef.topic as 'ts.health.treatment_required' | 'ts.health.no_treatment_needed',
-            data: {
-              petId,
-              event: chosenEmitDef.id.replace('emit.', ''),
-              agentDecision: artifact.parsedDecision,
-              timestamp: artifact.timestamp,
-              context: agentContext
-            }
-          });
-
-          if (logger) {
-            logger.info('✅ Health review emit fired', {
-              petId,
-              chosenEmit: artifact.parsedDecision.chosenEmit,
-              topic: chosenEmitDef.topic,
-              rationale: artifact.parsedDecision.rationale
-            });
+        await enqueue({
+          topic: chosenEmitDef.topic as 'ts.health.treatment_required' | 'ts.health.no_treatment_needed',
+          data: {
+            petId,
+            event: chosenEmitDef.id.replace('emit.', ''),
+            agentDecision: artifact.parsedDecision,
+            timestamp: artifact.timestamp,
+            context: agentContext
           }
-        }
+        });
+
+        logger.info('✅ Health review emit fired', {
+          petId,
+          chosenEmit: artifact.parsedDecision.chosenEmit,
+          topic: chosenEmitDef.topic,
+          rationale: artifact.parsedDecision.rationale
+        });
 
         return {
           status: 200,
@@ -987,12 +918,10 @@ View on GitHub:
         };
 
       } catch (error: any) {
-        if (logger) {
-          logger.error('❌ Health review agent error', {
-            petId,
-            error: error.message
-          });
-        }
+        logger.error('❌ Health review agent error', {
+          petId,
+          error: error.message
+        });
 
         return {
           status: 500,
@@ -1060,9 +989,7 @@ View on GitHub:
         # (See full implementation in the actual file)
         pass
 
-    async def handler(req, ctx=None):
-        logger = getattr(ctx, 'logger', None) if ctx else None
-        enqueue = getattr(ctx, 'enqueue', None) if ctx else None
+    async def handler(req, ctx):
         pet_id = req.get("pathParams", {}).get("id")
 
         if not pet_id:
@@ -1072,12 +999,11 @@ View on GitHub:
             if not pet:
                 return {"status": 404, "body": {"message": "Pet not found"}}
 
-        if logger:
-            logger.info('🏥 Health Review Agent triggered', {
-                "petId": pet_id,
-                "currentStatus": pet["status"],
-                "symptoms": pet.get("symptoms", [])
-            })
+        ctx.logger.info('🏥 Health Review Agent triggered', {
+            "petId": pet_id,
+            "currentStatus": pet["status"],
+            "symptoms": pet.get("symptoms", [])
+        })
 
         if pet["status"] not in ["healthy", "in_quarantine"]:
                 return {
@@ -1124,25 +1050,23 @@ View on GitHub:
                     }
                 }
 
-            if enqueue:
-                await enqueue({
-                    "topic": chosen_emit_def["topic"],
-                    "data": {
-                        "petId": pet_id,
-                        "event": chosen_emit_def["id"].replace('emit.', ''),
-                        "agentDecision": artifact["parsedDecision"],
-                        "timestamp": artifact["timestamp"],
-                        "context": agent_context
-                    }
-                })
-
-            if logger:
-                    logger.info('✅ Health review emit fired', {
+            await ctx.enqueue({
+                "topic": chosen_emit_def["topic"],
+                "data": {
                     "petId": pet_id,
-                        "chosenEmit": artifact["parsedDecision"]["chosenEmit"],
-                        "topic": chosen_emit_def["topic"],
-                        "rationale": artifact["parsedDecision"]["rationale"]
-                })
+                    "event": chosen_emit_def["id"].replace('emit.', ''),
+                    "agentDecision": artifact["parsedDecision"],
+                    "timestamp": artifact["timestamp"],
+                    "context": agent_context
+                }
+            })
+
+            ctx.logger.info('✅ Health review emit fired', {
+                "petId": pet_id,
+                "chosenEmit": artifact["parsedDecision"]["chosenEmit"],
+                "topic": chosen_emit_def["topic"],
+                "rationale": artifact["parsedDecision"]["rationale"]
+            })
 
             return {
                 "status": 200,
@@ -1160,11 +1084,10 @@ View on GitHub:
             }
 
         except Exception as error:
-            if logger:
-                logger.error('❌ Health review agent error', {
-                    "petId": pet_id,
-                    "error": str(error)
-                })
+            ctx.logger.error('❌ Health review agent error', {
+                "petId": pet_id,
+                "error": str(error)
+            })
 
             return {
                 "status": 500,
@@ -1196,8 +1119,7 @@ View on GitHub:
       flows: ['JsPetManagement'],
     }
 
-    export const handler = async (req, context) => {
-      const { enqueue, logger } = context || {}
+    export const handler = async (req, { enqueue, logger }) => {
       const petId = req.pathParams?.id
 
       if (!petId) {
@@ -1209,13 +1131,11 @@ View on GitHub:
         return { status: 404, body: { message: 'Pet not found' } }
       }
 
-      if (logger) {
-        logger.info('🏥 Health Review Agent triggered', { 
-          petId, 
-          currentStatus: pet.status,
-          symptoms: pet.symptoms || []
-        })
-      }
+      logger.info('🏥 Health Review Agent triggered', { 
+        petId, 
+        currentStatus: pet.status,
+        symptoms: pet.symptoms || []
+      })
 
       if (pet.status !== 'healthy' && pet.status !== 'in_quarantine') {
           return {
@@ -1239,13 +1159,11 @@ View on GitHub:
 
       if (recentArtifacts.length > 0) {
         const recent = recentArtifacts[recentArtifacts.length - 1]
-          if (logger) {
-          logger.info('🔄 Idempotent health review - returning cached decision', {
-            petId,
-            chosenEmit: recent.parsedDecision.chosenEmit,
-            timestamp: recent.timestamp
-          })
-        }
+        logger.info('🔄 Idempotent health review - returning cached decision', {
+          petId,
+          chosenEmit: recent.parsedDecision.chosenEmit,
+          timestamp: recent.timestamp
+        })
 
           return {
             status: 200,
@@ -1291,26 +1209,22 @@ View on GitHub:
           }
         }
 
-        if (enqueue) {
-          await enqueue({
-            topic: chosenEmitDef.topic,
-            data: {
-              petId,
-              agentDecision: artifact.parsedDecision,
-              timestamp: artifact.timestamp,
-              context: agentContext
-            }
-          })
-
-        if (logger) {
-            logger.info('✅ Health review enqueue fired', {
+        await enqueue({
+          topic: chosenEmitDef.topic,
+          data: {
             petId,
-              chosenEmit: artifact.parsedDecision.chosenEmit,
-              topic: chosenEmitDef.topic,
-              rationale: artifact.parsedDecision.rationale
-          })
+            agentDecision: artifact.parsedDecision,
+            timestamp: artifact.timestamp,
+            context: agentContext
           }
-        }
+        })
+
+        logger.info('✅ Health review enqueue fired', {
+          petId,
+          chosenEmit: artifact.parsedDecision.chosenEmit,
+          topic: chosenEmitDef.topic,
+          rationale: artifact.parsedDecision.rationale
+        })
 
         return {
           status: 200,
@@ -1328,12 +1242,10 @@ View on GitHub:
         }
 
       } catch (error) {
-        if (logger) {
-          logger.error('❌ Health review agent error', {
-            petId,
-            error: error.message
-          })
-        }
+        logger.error('❌ Health review agent error', {
+          petId,
+          error: error.message
+        })
 
         return {
           status: 500,
@@ -1365,14 +1277,11 @@ The framework functions (`buildAgentContext`, `callAgentDecision`, `getAgentArti
 
 ## Testing the Health Review Agentic Step
 
-The best way to test decision-making agentic steps is through the **iii console**. You can create pets, trigger the health review, and watch the AI make decisions in real-time.
+Test the health review by sending requests to the API and watching the AI make decisions.
 
 ### Create a Pet
 
-Use the iii console to create a pet. The AI enrichment will automatically trigger.
-
-<Callout type="tip">
-**Prefer using curl?**
+Create a pet -- the AI enrichment will automatically trigger:
 
 ```bash
 curl -X POST http://localhost:3000/ts/pets \
@@ -1383,20 +1292,15 @@ curl -X POST http://localhost:3000/ts/pets \
     "ageMonths": 36
   }'
 ```
-</Callout>
 
 ### Trigger the Health Review
 
-In the iii console, test the health review endpoint to see the AI make a decision.
-
-<Callout type="tip">
-**Using curl?**
+Send a request to the health review endpoint to see the AI make a decision:
 
 ```bash
 curl -X POST http://localhost:3000/ts/pets/1/health-review \
   -H "Content-Type: application/json"
 ```
-</Callout>
 
 ![ai-health-review-create-pet](../../img/build-your-first-app/health-treatment-reqd-create-pet.png)
 
@@ -1424,15 +1328,11 @@ The AI evaluates the pet's data and makes a decision. The enqueue it fires will 
 
 ### Verify the Status Change
 
-Check the pet status in the iii console to see the AI's decision reflected in the workflow state.
-
-<Callout type="tip">
-**Using curl?**
+Check the pet status to see the AI's decision reflected in the workflow state:
 
 ```bash
 curl http://localhost:3000/ts/pets/1
 ```
-</Callout>
 
 ![ai-health-review-status](../../img/build-your-first-app/ai-health-review-status.png)
 

@@ -94,7 +94,7 @@ Every Step has a `logger` in the context. Use it to see what's happening.
   </Tab>
   <Tab value='JavaScript'>
     ```javascript
-    const handler = async (input, { logger }) => {
+    export const handler = async (input, { logger }) => {
       logger.info('Processing order')
 
       logger.info('Order created', {
@@ -148,15 +148,13 @@ See logs right where you ran `npm run dev`:
 [INFO] Payment successful
 ```
 
-### 2. The iii Console
+### 2. The iii Development Console
 
-Open [http://localhost:3000](http://localhost:3000) and click on your flow. Logs show up in real-time with:
+Open the [iii development console](https://iii.dev/docs) and click on your flow. Logs show up in real-time with:
 - Timestamps
 - Which Step logged it
 - The trace ID (to follow a request through the entire flow)
 - Full context data
-
-![iii Console Logs](./../img/build-your-first-app/ai-enrichment-logs.png)
 
 ---
 
@@ -177,7 +175,7 @@ export const handler: Handlers<typeof config> = async (req, { logger, traceId, e
 }
 ```
 
-**In the iii console:**
+**In the iii development console:**
 - Click any log entry
 - See all logs with the same `traceId`
 - Follow the request from start to finish
@@ -257,7 +255,7 @@ try {
 **Steps to debug:**
 
 1. **Check terminal logs** - See which Steps ran
-2. **Open the iii console** at [http://localhost:3000](http://localhost:3000)
+2. **Open the iii development console** at [http://localhost:3000](http://localhost:3000)
 3. **Click your flow** - See the visual diagram
 4. **Expand logs panel** - See all logs in chronological order
 5. **Click a log** - Filter by that `traceId` to follow the request
@@ -283,7 +281,7 @@ try {
 
 - **Log everything important** - But not everything (no sensitive data!)
 - **Use `traceId`** - Follow requests through your entire flow
-- **Check the iii console** - Visual debugging is easier
+- **Check the iii development console** - Visual debugging is easier
 - **Use objects** - Don't log strings, log objects
 - **Debug mode** - Only for development, never in production
 

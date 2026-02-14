@@ -15,7 +15,6 @@ A complete pet store backend system that grows with you:
 
 By the end, you'll have a production-ready backend that handles everything from simple CRUD to intelligent, real-time systems.
 
-![workbench](../../img/build-your-first-app/streaming-workbench.png)
 ---
 
 ## Before You Start
@@ -51,7 +50,7 @@ See [CLI documentation](/docs/development-guide/cli#create) for more details.
 - How to define API Steps
 - Request validation with schemas
 - Returning proper HTTP responses
-- Testing endpoints in the iii console
+- Testing endpoints with curl
 
 **Time:** 10 minutes
 
@@ -69,7 +68,7 @@ See [CLI documentation](/docs/development-guide/cli#create) for more details.
 - Queue Steps that trigger from your APIs
 - Cron Steps that run on a schedule
 - How queues connect your system
-- Monitoring jobs in the iii console
+- Monitoring jobs in the iii development console
 
 **Time:** 15 minutes
 
@@ -149,13 +148,7 @@ It's a real system with the kind of complexity you'll face building production b
 
 ---
 
-## Interactive Tutorials
-
-![interactive-tutorial](../../img/build-your-first-app/interactive-tutorial-streaming.png)
-
-Each guide includes an **interactive tutorial** you can run directly in the iii console. It walks you through the code, explains what's happening, and lets you test everything live.
-
-Prefer reading? The written guides cover everything too. They're detailed, with code examples and explanations for every concept.
+Each guide is detailed, with code examples and explanations for every concept.
 
 ---
 

@@ -17,9 +17,9 @@ Let's transform your documents into an intelligent AI assistant.
 
 ---
 
-## Explore the iii console
+## Workflow Overview
 
-<div className="my-8">![RAG Workflow in Motia iii console](./../img/rag-docling-weaviate-agent.png)</div>
+<div className="my-8">![RAG Workflow](./../img/rag-docling-weaviate-agent.png)</div>
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/rag-and-search/rag-fundamentals/rag-docling-weaviate-agent)
@@ -536,13 +536,13 @@ Our application consists of seven specialized steps, each handling a specific pa
 
 ---
 
-## Explore the iii console
+## Explore the Workflow
 
-The Motia iii console provides a visual representation of your RAG pipeline, making it easy to understand the flow and debug any issues.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your RAG pipeline, making it easy to understand the flow and debug any issues.
 
-<div className="my-8">![RAG Workflow in Motia iii console](./../img/rag-example.gif)</div>
+<div className="my-8">![RAG Workflow](./../img/rag-example.gif)</div>
 
-You can monitor real-time processing, view logs, and trace the execution of each step directly in the iii console interface. This makes development and debugging significantly easier compared to traditional monolithic approaches.
+You can monitor real-time processing, view logs, and trace the execution of each step directly in the iii development console. This makes development and debugging significantly easier compared to traditional monolithic approaches.
 
 ---
 

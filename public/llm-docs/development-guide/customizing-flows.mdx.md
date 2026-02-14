@@ -1,14 +1,14 @@
 ---
 title: Customizing Flows
-description: Make your iii console flows look exactly how you want
+description: Make your iii development console flows look exactly how you want
 ---
 
-By default, the iii console shows your Steps with their code. Great for developers. But what if you're sharing with:
+By default, the iii development console shows your Steps with their code. Great for developers. But what if you're sharing with:
 - Frontend developers who just need to know the API
 - Product managers who want to see the big picture
 - Designers who care about the flow, not the code
 
-You can override how Steps look in the iii console with custom React components.
+You can override how Steps look in the iii development console with custom React components.
 
 ---
 

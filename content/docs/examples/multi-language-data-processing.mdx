@@ -16,9 +16,9 @@ Let's build a production-ready data processing system where steps unify TypeScri
 
 ---
 
-## Explore the iii console
+## Workflow Overview
 
-<div className="my-8">![Multi-Language Data Processing in Motia iii console](/docs-images/motia-build-your-app-2.gif)</div>
+<div className="my-8">![Multi-Language Data Processing](/docs-images/motia-build-your-app-2.gif)</div>
 
 **Try it yourself:**
 - [View Source Code](https://github.com/MotiaDev/motia-examples/tree/main/examples/multi-language-data-processing)
@@ -63,6 +63,7 @@ Our application consists of six specialized steps, each leveraging the optimal l
     The entry point for our multi-language workflow. This TypeScript API endpoint receives data, validates it with Zod schemas, and kicks off the processing pipeline.
 
 ```typescript
+import { type StepConfig } from 'motia'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -86,7 +87,7 @@ export const config = {
   },
   enqueues: ['app.started'],
   flows: ['data-processing'],
-} as const
+} as const satisfies StepConfig
 
 export const handler = async (req: any, { logger, enqueue, traceId }: any) => {
   logger.info('🚀 Starting multi-language app', { body: req.body, traceId })
@@ -125,6 +126,7 @@ export const handler = async (req: any, { logger, enqueue, traceId }: any) => {
     A TypeScript bridge that receives the app start event, processes the data, and forwards it to the Python processing step with proper type transformation.
 
 ```typescript
+import { type StepConfig } from 'motia'
 import { z } from 'zod'
 
 // Bridge step to connect app starter to Python processing
@@ -141,7 +143,7 @@ export const config = {
   ],
   enqueues: ['data.processed'],
   flows: ['data-processing'],
-} as const
+} as const satisfies StepConfig
 
 export const handler = async (input: any, { logger, enqueue }: any) => {
   logger.info('🌉 Processing app data and sending to Python', { appId: input.id })
@@ -237,6 +239,7 @@ async def handler(input_data, ctx):
     A TypeScript notification handler that processes the Python results and sends notifications, showing seamless data flow between Python and TypeScript.
 
 ```typescript
+import { type StepConfig } from 'motia'
 import { z } from 'zod'
 
 export const config = {
@@ -253,7 +256,7 @@ export const config = {
   ],
   enqueues: ['notification.sent'],
   flows: ['data-processing'],
-} as const
+} as const satisfies StepConfig
 
 export const handler = async (input: any, { logger, enqueue }: any) => {
   logger.info('📧 Sending notifications after Python processing', { id: input.id })
@@ -284,6 +287,7 @@ export const handler = async (input: any, { logger, enqueue }: any) => {
     A TypeScript finalizer that aggregates all the processing results and prepares the final summary data before handing off to JavaScript for metrics generation.
 
 ```typescript
+import { type StepConfig } from 'motia'
 import { z } from 'zod'
 
 // Final step to complete the app - TypeScript
@@ -301,7 +305,7 @@ export const config = {
   ],
   enqueues: ['app.completed'],
   flows: ['data-processing'],
-} as const
+} as const satisfies StepConfig
 
 export const handler = async (input: any, { logger, enqueue }: any) => {
   logger.info('🏁 Finalizing app', { 
@@ -437,11 +441,11 @@ export interface AppSummary {
 
 ---
 
-## Explore the iii console
+## Explore the Workflow
 
-The Motia iii console provides a visual representation of your multi-language pipeline, making it easy to trace data flow between TypeScript, Python, and JavaScript steps.
+The [iii development console](https://iii.dev/docs) provides a visual representation of your multi-language pipeline, making it easy to trace data flow between TypeScript, Python, and JavaScript steps.
 
-<div className="my-8">![Multi-Language Workflow in Motia iii console](/docs-images/motia-build-your-app-2.gif)</div>
+<div className="my-8">![Multi-Language Workflow](/docs-images/motia-build-your-app-2.gif)</div>
 
 You can monitor real-time execution, view logs from all languages in a unified interface, and trace the complete data flow from the TypeScript API through Python processing to JavaScript summary generation.
 
@@ -509,9 +513,9 @@ cd my-app  # Replace with your project name
 npm run dev
 ```
 
-### Open the iii console
+### Open the iii Development Console
 
-Navigate to [`http://localhost:3000`](http://localhost:3000) to access the iii console and run your workflow.
+Navigate to [`http://localhost:3000`](http://localhost:3000) to access the iii development console and view your workflow.
 
 ### Test the Multi-Language Pipeline
 
@@ -523,7 +527,7 @@ Send a request to your API endpoint to see the multi-language workflow in action
      -d '{"data": {"test": "value"}, "message": "Hello!"}'
 ```
 
-Watch in the iii console as your data flows through:
+Watch in the iii development console as your data flows through:
 1. **TypeScript** validation and event emission
 2. **TypeScript** bridge processing and forwarding  
 3. **Python** data processing with rich logging

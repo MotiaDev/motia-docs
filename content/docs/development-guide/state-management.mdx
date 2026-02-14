@@ -45,7 +45,7 @@ export const handler: Handlers<typeof config> = async (input, { state }) => {
   const order = await state.get('orders', 'order-123')
 
   // Get all items in a group
-  const allOrders = await state.getGroup('orders')
+  const allOrders = await state.list('orders')
 
   // Delete a specific item
   await state.delete('orders', 'order-123')
@@ -71,7 +71,7 @@ async def handler(input, context):
     order = await context.state.get("orders", "order-123")
 
     # Get all items in a group
-    all_orders = await context.state.get_group("orders")
+    all_orders = await context.state.list("orders")
 
     # Delete a specific item
     await context.state.delete("orders", "order-123")
@@ -95,7 +95,7 @@ export const config = {
   flows: ['my-flow'],
 }
 
-const handler = async (input, { state }) => {
+export const handler = async (input, { state }) => {
   // Store an item in a group (returns { new_value, old_value })
   const result = await state.set('orders', 'order-123', {
     id: 'order-123',
@@ -107,7 +107,7 @@ const handler = async (input, { state }) => {
   const order = await state.get('orders', 'order-123')
 
   // Get all items in a group
-  const allOrders = await state.getGroup('orders')
+  const allOrders = await state.list('orders')
 
   // Delete a specific item
   await state.delete('orders', 'order-123')
@@ -128,7 +128,7 @@ const handler = async (input, { state }) => {
 |--------|--------------|
 | `state.set(groupId, key, value)` | Store an item in a group. Returns `StreamSetResult` with `new_value` and `old_value` |
 | `state.get(groupId, key)` | Get a specific item (returns `null` if not found) |
-| `state.getGroup(groupId)` | Get all items in a group as an array |
+| `state.list(groupId)` | Get all items in a group as an array |
 | `state.delete(groupId, key)` | Remove a specific item |
 | `state.clear(groupId)` | Remove all items in a group |
 | `state.update(groupId, key, ops)` | Atomic update with `UpdateOp[]` |
@@ -256,7 +256,7 @@ async def handler(req, context):
 <Tab value='JavaScript'>
 
   ```javascript
-const handler = async (req, { state, enqueue, logger }) => {
+export const handler = async (req, { state, enqueue, logger }) => {
   const orderId = crypto.randomUUID()
 
   const order = {
@@ -355,7 +355,7 @@ async def handler(input, context):
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, { state, enqueue, logger }) => {
+export const handler = async (input, { state, enqueue, logger }) => {
   const { orderId } = input
 
   // Get order from state
@@ -387,20 +387,21 @@ const handler = async (input, { state, enqueue, logger }) => {
 <Tab value='TypeScript'>
 
   ```typescript
-import { type Handlers, type StepConfig } from 'motia'
+import { type Handlers, type StepConfig, cron } from 'motia'
 
 export const config = {
   name: 'DailyReport',
   description: 'Generate daily order report',
   triggers: [
-    { type: 'cron', pattern: '0 0 * * *' },
+    cron('0 0 * * *'),
   ],
+  enqueues: [],
   flows: ['order-processing'],
 } as const satisfies StepConfig
 
 export const handler: Handlers<typeof config> = async (input, { state, logger }) => {
   // Get all orders
-  const allOrders = await state.getGroup<Order>('orders')
+  const allOrders = await state.list<Order>('orders')
 
   const pending = allOrders.filter(o => o.status === 'pending')
   const paid = allOrders.filter(o => o.status === 'paid')
@@ -419,7 +420,7 @@ export const handler: Handlers<typeof config> = async (input, { state, logger })
 ```python
 async def handler(context):
     # Get all orders
-    all_orders = await context.state.get_group("orders")
+    all_orders = await context.state.list("orders")
 
     pending = [o for o in all_orders if o.get("status") == "pending"]
     paid = [o for o in all_orders if o.get("status") == "paid"]
@@ -435,9 +436,9 @@ async def handler(context):
 <Tab value='JavaScript'>
 
   ```javascript
-const handler = async (input, { state, logger }) => {
+export const handler = async (input, { state, logger }) => {
   // Get all orders
-  const allOrders = await state.getGroup('orders')
+  const allOrders = await state.list('orders')
 
   const pending = allOrders.filter(o => o.status === 'pending')
   const paid = allOrders.filter(o => o.status === 'paid')
@@ -475,7 +476,7 @@ const handler = async (input, { state, logger }) => {
 
 - Organize data using **groupId** (like `orders`, `users`, `cache`)
 - Each item needs a unique **key** within its groupId
-- Use `getGroup(groupId)` to retrieve all items in a group
+- Use `list(groupId)` to retrieve all items in a group
 - `state.set()` returns `{ new_value, old_value }` (StreamSetResult)
 - Use `state.update()` for atomic operations like increment/decrement
 - State works the same across TypeScript, Python, and JavaScript

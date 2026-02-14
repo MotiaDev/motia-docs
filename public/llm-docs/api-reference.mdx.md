@@ -1,11 +1,11 @@
 ---
 title: API Reference
-description: Complete API reference for the iii framework
+description: Complete API reference for the Motia framework
 ---
 
-Everything you need to know about iii's APIs. This reference covers all the types, methods, and configurations available when building with iii.
+Everything you need to know about Motia's APIs. This reference covers all the types, methods, and configurations available when building with Motia.
 
-If you're new to iii, start with the [Steps guide](/docs/concepts/steps) to understand the basics.
+If you're new to Motia, start with the [Steps guide](/docs/concepts/steps) to understand the basics.
 
 ## Step Configuration
 
@@ -33,9 +33,9 @@ type StepConfig = {
 **Optional fields:**
 - `description` - Human-readable description
 - `enqueues` - Topics this Step can enqueue
-- `virtualEnqueues` - Topics shown in the console but not actually enqueued (gray connections)
-- `virtualSubscribes` - Topics shown in the console for flow visualization
-- `flows` - Flow names for console grouping
+- `virtualEnqueues` - Topics shown in the iii development console but not actually enqueued (gray connections)
+- `virtualSubscribes` - Topics shown in the iii development console for flow visualization
+- `flows` - Flow names for iii development console grouping
 - `includeFiles` - Files to bundle with this Step (supports glob patterns, relative to Step file)
 
 ---
@@ -125,7 +125,7 @@ type StreamTrigger = {
 Use these helpers for concise trigger definitions:
 
 ```typescript
-import { api, queue, cron, state, stream } from 'iii'
+import { api, queue, cron, state, stream } from 'motia'
 
 api(method: ApiRouteMethod, path: string, options?: ApiOptions, condition?: TriggerCondition): ApiTrigger
 queue(topic: string, options?: QueueOptions, condition?: TriggerCondition): QueueTrigger
@@ -151,9 +151,9 @@ type EnqueueData<T> = { topic: string; data: T; messageGroupId?: string }
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api, queue, cron } from 'iii'
+import { StepConfig, Handlers, api, queue, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'CreateUser',
   description: 'Creates a new user',
   triggers: [
@@ -178,7 +178,7 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'CreateUser',
   description: 'Creates a new user',
   triggers: [
@@ -245,9 +245,9 @@ config = {
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, queue } from 'iii'
+import { StepConfig, queue } from 'motia'
 
-const config = {
+export const config = {
   name: 'ProcessOrder',
   description: 'Processes new orders',
   triggers: [
@@ -271,7 +271,7 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'ProcessOrder',
   description: 'Processes new orders',
   triggers: [
@@ -328,7 +328,7 @@ config = {
 </Tab>
 </Tabs>
 
-**Infrastructure config** (iii Cloud only):
+**Infrastructure config** (Motia Cloud only):
 - `handler.ram` - Memory in MB (128-10240, required)
 - `handler.cpu` - CPU vCPUs (optional, auto-calculated from RAM if not provided, must be proportional)
 - `handler.timeout` - Timeout in seconds (1-900, required)
@@ -345,9 +345,9 @@ config = {
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, cron } from 'iii'
+import { StepConfig, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'DailyReport',
   description: 'Generates daily reports at 9 AM',
   triggers: [
@@ -365,11 +365,13 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+import { cron } from 'motia'
+
+export const config = {
   name: 'DailyReport',
   description: 'Generates daily reports at 9 AM',
   triggers: [
-    { type: 'cron', expression: '0 9 * * *' },
+    cron('0 9 * * *'),
   ],
   enqueues: ['report.generated'],
   virtualEnqueues: ['email.sent'],
@@ -410,9 +412,9 @@ A single step can respond to multiple trigger types:
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, api, queue, cron } from 'iii'
+import { StepConfig, api, queue, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'UserSync',
   description: 'Syncs user data from multiple sources',
   triggers: [
@@ -429,13 +431,15 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+import { cron } from 'motia'
+
+export const config = {
   name: 'UserSync',
   description: 'Syncs user data from multiple sources',
   triggers: [
     { type: 'api', method: 'POST', path: '/users/sync' },
     { type: 'queue', topic: 'user.updated' },
-    { type: 'cron', expression: '0 */6 * * *' },
+    cron('0 */6 * * *'),
   ],
   enqueues: ['user.synced'],
   flows: ['user-management'],
@@ -449,15 +453,15 @@ const config = {
 
 ### NoopConfig
 
-Use this for visual-only nodes in the console (no code execution).
+Use this for visual-only nodes in the iii development console (no code execution).
 
 <Tabs items={['TypeScript', 'JavaScript', 'Python']}>
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig } from 'iii'
+import { StepConfig } from 'motia'
 
-const config = {
+export const config = {
   name: 'ManualApproval',
   description: 'Manager approval gate',
   triggers: [],
@@ -471,7 +475,7 @@ const config = {
 <Tab value='JavaScript'>
 
 ```javascript
-const config = {
+export const config = {
   name: 'ManualApproval',
   description: 'Manager approval gate',
   triggers: [],
@@ -498,7 +502,7 @@ config = {
 </Tab>
 </Tabs>
 
-**No handler needed** - Noop Steps don't execute code. They exist for console visualization only.
+**No handler needed** - Noop Steps don't execute code. They exist for iii development console visualization only.
 
 ---
 
@@ -527,9 +531,9 @@ Receives a request, returns a response.
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api } from 'iii'
+import { StepConfig, Handlers, api } from 'motia'
 
-const config = {
+export const config = {
   name: 'CreateUser',
   triggers: [api('POST', '/users')],
   enqueues: ['user.created'],
@@ -556,7 +560,7 @@ export const handler: Handlers<typeof config> = async (req, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (req, ctx) => {
+export const handler = async (req, ctx) => {
   const { name, email } = req.body
   const userId = crypto.randomUUID()
 
@@ -609,9 +613,9 @@ Receives queue data, processes it. No return value.
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, queue } from 'iii'
+import { StepConfig, Handlers, queue } from 'motia'
 
-const config = {
+export const config = {
   name: 'ProcessOrder',
   triggers: [queue('order.created', { input: z.object({ orderId: z.string(), amount: z.number() }) })],
   enqueues: ['order.processed'],
@@ -640,7 +644,7 @@ export const handler: Handlers<typeof config> = async (input, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, ctx) => {
+export const handler = async (input, ctx) => {
   const data = ctx.getData()
   const { orderId, amount } = data
 
@@ -694,9 +698,9 @@ Runs on a schedule. Only receives context.
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, cron } from 'iii'
+import { StepConfig, Handlers, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'DailyCleanup',
   triggers: [cron('0 0 * * *')],
   enqueues: [],
@@ -720,7 +724,7 @@ export const handler: Handlers<typeof config> = async (input, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, ctx) => {
+export const handler = async (input, ctx) => {
   ctx.logger.info('Running daily cleanup')
 
   const oldOrders = await ctx.state.list('orders')
@@ -764,9 +768,9 @@ For steps with multiple triggers, use `ctx.match()` to handle each trigger type:
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api, queue, cron } from 'iii'
+import { StepConfig, Handlers, api, queue, cron } from 'motia'
 
-const config = {
+export const config = {
   name: 'UserSync',
   triggers: [
     api('POST', '/users/sync'),
@@ -801,7 +805,7 @@ export const handler: Handlers<typeof config> = async (input, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (input, ctx) => {
+export const handler = async (input, ctx) => {
   return ctx.match({
     api: async (request) => {
       const { userId } = request.body
@@ -1202,7 +1206,7 @@ export const handler: Handlers<typeof config> = async (req, { traceId, logger })
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (req, { traceId, logger }) => {
+export const handler = async (req, { traceId, logger }) => {
   logger.info('Processing request', { traceId })
   return { status: 200, body: { traceId } }
 }
@@ -1271,7 +1275,7 @@ Intercepts API requests before and after the handler.
 <Tab value='TypeScript'>
 
 ```typescript
-import { ApiMiddleware } from 'iii'
+import { ApiMiddleware } from 'motia'
 
 export const authMiddleware: ApiMiddleware = async (req, ctx, next) => {
   const token = req.headers.authorization
@@ -1358,7 +1362,7 @@ export const handler: Handlers<typeof config> = async (req, ctx) => {
 <Tab value='JavaScript'>
 
 ```javascript
-const handler = async (req, ctx) => {
+export const handler = async (req, ctx) => {
   const userId = req.pathParams.id
   const page = req.queryParams.page
   const limit = req.queryParams.limit
@@ -1478,7 +1482,7 @@ interface StreamConfig {
 <Tab value='TypeScript'>
 
 ```typescript title="src/chat-messages.stream.ts"
-import { StreamConfig } from 'iii'
+import { StreamConfig } from 'motia'
 import { z } from 'zod'
 
 export const config: StreamConfig = {
@@ -1551,215 +1555,7 @@ File naming:
 
 ## CLI Commands
 
-iii's command-line tools for development and deployment.
-
-### `iii version`
-
-Show iii CLI version.
-
-```bash
-iii version
-iii -V
-iii --version
-```
-
----
-
-### `iii create`
-
-Create a new iii project.
-
-```bash
-npx iii create my-app
-npx iii create .
-npx iii create --template iii-tutorial-python my-python-app
-```
-
-**Options:**
-- `[name]` - Project name (or `.` for current directory)
-- `-t, --template <name>` - Template to use. Available options:
-
-| Template | Description | Use Case |
-|----------|-------------|----------|
-| `iii-tutorial-typescript` | Tutorial (TypeScript only) | Interactive tutorial project in TypeScript |
-| `iii-tutorial-python` | Tutorial (Python only) | Interactive tutorial project in Python |
-| `starter-multilang` | Starter (All languages; TS/JS + Python) | Polyglot project with TypeScript API, Python queue processing, and JavaScript logging |
-| `starter-typescript` | Starter (TypeScript only) | Minimal TypeScript project with basic examples |
-| `starter-javascript` | Starter (JavaScript only) | Minimal JavaScript project with basic examples |
-| `starter-python` | Starter (Python only) | Minimal Python project with basic examples |
-
-- `-c, --cursor` - Add Cursor IDE rules
-
----
-
-### `iii rules pull`
-
-Install AI development guides (AGENTS.md, CLAUDE.md) and Cursor IDE rules.
-
-```bash
-iii rules pull
-iii rules pull --force
-```
-
-**Options:**
-- `-f, --force` - Overwrite existing files
-
----
-
-### `iii dev`
-
-Start development server with console and hot reload.
-
-```bash
-npm run dev
-iii dev --port 4000 --host 0.0.0.0
-```
-
-**Options:**
-- `-p, --port <number>` - Port number (default: 3000)
-- `-H, --host <address>` - Host address (default: localhost)
-- `-d, --debug` - Enable debug logging
-- `--iii-dir <path>` - Custom path for `.iii` folder
-
----
-
-### `iii start`
-
-Start production server without hot reload. Console is included by default (can be disabled via `III_DOCKER_DISABLE_CONSOLE` environment variable).
-
-```bash
-iii start
-iii start --port 8080 --host 0.0.0.0
-```
-
-**Options:**
-- `-p, --port <number>` - Port number (default: 3000)
-- `-H, --host <address>` - Host address (default: localhost)
-- `-d, --debug` - Enable debug logging
-- `--iii-dir <path>` - Custom path for `.iii` folder
-
----
-
-### `iii build`
-
-Build your project for deployment.
-
-```bash
-iii build
-```
-
-Compiles all Steps and generates deployment artifacts.
-
----
-
-### `iii generate-types`
-
-Generate TypeScript types from your Step configs.
-
-```bash
-iii generate-types
-```
-
-Creates `types.d.ts` with type-safe `Handlers` interface. Run this after changing Step configs.
-
----
-
-### `iii generate step`
-
-Create a new Step interactively.
-
-```bash
-iii generate step
-iii generate step --dir users/create-user
-```
-
-**Options:**
-- `-d, --dir <path>` - Path relative to `src/` directory
-
----
-
-### `iii install`
-
-Set up Python virtual environment and install dependencies.
-
-```bash
-iii install
-npm run dev
-```
-
----
-
-### `iii enqueue`
-
-Manually enqueue a message (for testing).
-
-```bash
-iii enqueue --topic user.created --message '{"userId":"123"}'
-iii enqueue --topic order.created --message '{"orderId":"456"}' --port 3000
-```
-
-**Options:**
-- `--topic <topic>` - Topic name
-- `--message <json>` - Message data as JSON string
-- `-p, --port <number>` - Server port (default: 3000)
-
----
-
-### `iii docker setup`
-
-Generate Dockerfile and .dockerignore.
-
-```bash
-iii docker setup
-```
-
----
-
-### `iii docker build`
-
-Build Docker image.
-
-```bash
-iii docker build
-iii docker build --project-name my-app
-```
-
----
-
-### `iii docker run`
-
-Build and run Docker container.
-
-```bash
-iii docker run
-iii docker run --port 8080 --skip-build
-```
-
-**Options:**
-- `-p, --port <number>` - Host port to map (default: 3000)
-- `-n, --project-name <name>` - Docker image name
-- `-s, --skip-build` - Skip building the image
-
----
-
-### `iii cloud deploy`
-
-Deploy to iii Cloud.
-
-```bash
-iii cloud deploy -k YOUR_API_KEY -v v1.0.0
-iii cloud deploy --api-key YOUR_API_KEY --version-name v1.2.0 --environment-name production
-```
-
-**Options:**
-- `-k, --api-key <key>` - iii Cloud API key (or set `III_API_KEY` env var)
-- `-v, --version-name <version>` - Version name/tag for this deployment
-- `-n, --project-name <name>` - Project name (for new projects)
-- `-s, --environment-id <id>` - Environment ID
-- `--environment-name <name>` - Environment name
-- `-e, --env-file <path>` - Path to environment variables file
-- `-d, --version-description <desc>` - Version description
-- `-c, --ci` - CI mode (non-interactive)
+For CLI usage, see the [CLI Reference](/docs/development-guide/cli).
 
 ---
 
@@ -1808,13 +1604,13 @@ enqueues: [
 </Tab>
 </Tabs>
 
-The `label` and `conditional` fields are for console visualization only. They don't affect execution.
+The `label` and `conditional` fields are for iii development console visualization only. They don't affect execution.
 
 ---
 
 ### Query Parameters
 
-Document query params for the console.
+Document query params for the iii development console.
 
 ```typescript
 queryParams: [
@@ -1824,7 +1620,7 @@ queryParams: [
 ]
 ```
 
-This shows up in the console endpoint tester.
+This metadata is used by the iii development console.
 
 ---
 

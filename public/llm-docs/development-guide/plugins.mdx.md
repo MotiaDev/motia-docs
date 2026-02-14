@@ -17,7 +17,7 @@ The following are no longer available:
 - `MotiaPlugin` type and plugin architecture
 - `WorkbenchPlugin` configuration for custom tabs
 - `MotiaPluginContext` for accessing internal APIs
-- Plugin CLI generation (`pnpm dlx motia create --plugin`)
+- Plugin CLI generation (`pnpm dlx npx motia@latest create --plugin`)
 - Local plugins with `~/` package resolution
 - Plugin registration in `motia.config.ts`
 
