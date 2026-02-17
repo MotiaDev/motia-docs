@@ -15,8 +15,9 @@ Make sure to create a new project with `git clone git@github.com:MotiaDev/motia-
 Navigate into your new project directory and start iii. The `config.yaml` in the project folder tells iii how to run Motia so starting iii starts both!
 
 ```bash
-cd <your-project-name> 
-iii -c config.yaml
+cd motia-iii-example 
+npm install
+iii -c iii-config.yaml
 ```
 
 </Step>
@@ -24,23 +25,24 @@ iii -c config.yaml
 <Step>
 ### 2. Run Your First Flow
 
-This example is a ticketing system for user issues. Try out part of the flow:
-   ```bash
-   # Create a ticket
-   curl -X POST http://localhost:3111/tickets \
-     -H "Content-Type: application/json" \
-     -d '{"title":"Login issue","description":"Cannot access account","priority":"high","customerEmail":"user@example.com"}'
-
-   # List all tickets
-   curl http://localhost:3111/tickets
-   ```
+This example is a ticketing system for user issues. Try it out:
+```bash
+# Create a ticket
+curl -X POST http://localhost:3111/tickets \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Login issue","description":"User is having trouble creating an account","priority":"high","customerEmail":"user@example.com"}' | jq
+```
+```bash
+# List all tickets
+curl http://localhost:3111/tickets | jq
+```
 
 </Step>
 
 <Step>
 ### 3. Read the code
 
-The application code is in the `steps` folder and `config.yaml` describes the infrastructure that iii sets up to power Motia.
+The application code is in the `src/` folder and `iii-config.yaml` describes the infrastructure that iii sets up to power Motia.
 
 </Step>
 
