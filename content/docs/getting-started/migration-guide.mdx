@@ -1,5 +1,5 @@
 ---
-title: Migration Guide
+title: 0.17 to 1.0 Migration Guide
 description: Migrating from Motia v0.17.x to the new Motia framework powered by iii.
 ---
 
@@ -17,26 +17,74 @@ This guide covers migrating from **Motia v0.17.x** to the **new Motia** framewor
 
 ### Project Config
 
-The old `motia.config.json` is replaced by two files managed by iii:
+The old `motia.config.ts` (using `defineConfig`) is replaced by two files managed by iii:
 
 | Concern | Old | New |
 |---|---|---|
-| Project metadata | `motia.config.json` | Removed (handled by iii engine) |
+| Project config & plugins | `motia.config.ts` (`defineConfig({...})`) | Removed (handled by iii engine via `config.yaml`) |
 | Module/adapter config | N/A | `config.yaml` (iii engine config) |
-| Auth & hooks | N/A | `motia.config.ts` |
+| Auth & hooks | `streamAuth` in `motia.config.ts` | `motia.config.ts` (simplified, exports only auth hooks) |
 | Build externals | `.esbuildrc.json` | Removed |
 | Workbench UI layout | `motia-workbench.json` | Removed (see [Workbench, Plugins, and Console](#workbench-plugins-and-console)) |
 
-<Tabs items={['Old (motia.config.json)', 'New (config.yaml)', 'New (motia.config.ts)']}>
-<Tab value="Old (motia.config.json)">
+<Tabs items={['Old (motia.config.ts)', 'New (config.yaml)', 'New (motia.config.ts)']}>
+<Tab value="Old (motia.config.ts)">
 
-```json
-{
-  "name": "motia-hub-api",
-  "description": "Motia Hub API",
-  "id": "d8fadd3b-fcad-4987-95ed-38eb715cdd9c",
-  "selectedEnvironment": "076591e9-b336-4050-a08c-d65a0dc6ca53"
+```typescript
+import path from 'node:path'
+import { defineConfig, type MotiaPlugin, type MotiaPluginContext, type StreamAuthRequest } from '@motiadev/core'
+import bullmqPlugin from '@motiadev/plugin-bullmq/plugin'
+import endpointPlugin from '@motiadev/plugin-endpoint/plugin'
+import examplePlugin from '@motiadev/plugin-example/plugin'
+import logsPlugin from '@motiadev/plugin-logs/plugin'
+import observabilityPlugin from '@motiadev/plugin-observability/plugin'
+import statesPlugin from '@motiadev/plugin-states/plugin'
+import { z } from 'zod'
+
+const streamAuthContextSchema = z.object({
+  userId: z.string(),
+  permissions: z.enum(['nodejs', 'python']).optional(),
+})
+
+const demoTokens: Record<string, z.infer<typeof streamAuthContextSchema>> = {
+  'token-nodejs': { userId: 'anderson', permissions: 'nodejs' },
+  'token-python': { userId: 'sergio', permissions: 'python' },
 }
+
+const extractAuthToken = (request: StreamAuthRequest): string | undefined => {
+  const protocol = request.headers['sec-websocket-protocol'] as string | undefined
+  if (protocol?.includes('Authorization')) {
+    const [, token] = protocol.split(',')
+    if (token) return token.trim()
+  }
+  try {
+    const url = new URL(request.url)
+    return url.searchParams.get('authToken') ?? undefined
+  } catch {
+    return undefined
+  }
+}
+
+export default defineConfig({
+  plugins: [
+    observabilityPlugin,
+    statesPlugin,
+    endpointPlugin,
+    logsPlugin,
+    examplePlugin,
+    bullmqPlugin,
+  ],
+  streamAuth: {
+    contextSchema: z.toJSONSchema(streamAuthContextSchema),
+    authenticate: async (request: StreamAuthRequest) => {
+      const token = extractAuthToken(request)
+      if (!token) return null
+      const tokenData = demoTokens[token]
+      if (!tokenData) throw new Error(`Invalid token: ${token}`)
+      return tokenData
+    },
+  },
+})
 ```
 
 </Tab>
@@ -186,9 +234,12 @@ export const authenticateStream: AuthenticateStream = async (req, context) => {
 
 ### Files to Delete
 
-- `motia.config.json`
 - `motia-workbench.json`
-- `.motia/` directory (auto-generated state)
+- `.motia/` directory — **warning:** this will delete any local stream and state data persisted by the old engine; back up first if needed
+
+<Callout type="info">
+  `motia.config.ts` is **not deleted** -- it is simplified. Remove the `defineConfig` wrapper, all plugin imports, and the `plugins` array. Keep only the authentication hook exports (see the "New" tab above).
+</Callout>
 
 ---
 
@@ -813,75 +864,6 @@ export const handler: Handlers<typeof config> = async (request, { logger }) => {
 
 ---
 
-## Python Runtime
-
-<Callout title="Major change for Python developers" type="warn">
-  In the old Motia, Python steps were managed by the Node.js runtime. Python developers **still needed Node.js and npm installed**. This is no longer the case. Python is now a fully independent runtime.
-</Callout>
-
-In the new Motia, **runtimes are fully independent**. There is a dedicated **Motia Python** SDK (`motia-py`) that runs as its own standalone process, communicating directly with the iii engine. **Python developers no longer need Node.js, npm, or any JavaScript tooling whatsoever.**
-
-| Aspect | Old | New |
-|---|---|---|
-| Python execution | Spawned as child process by Node runtime | Independent process managed by iii engine |
-| Node.js required for Python? | Yes | **No** |
-| SDK | Single `motia` npm package handled both | Separate `motia-py` (Python) and `motia` (Node) packages |
-| Configuration | Shared with Node steps | Own `config.yaml` ExecModule entry |
-
-### For Mixed Projects (Node + Python)
-
-Configure **separate ExecModule entries** in `config.yaml`:
-
-```yaml
-modules:
-  - class: modules::shell::ExecModule
-    config:
-      watch:
-        - steps/**/*.ts
-      exec:
-        - npx motia dev
-
-  - class: modules::shell::ExecModule
-    config:
-      watch:
-        - steps/**/*.py
-      exec:
-        - uv run motia dev --dir steps
-```
-
-<Callout type="info">
-  A dedicated migration guide for Python projects and steps will be provided in a separate document. This guide focuses on the Node.js/TypeScript migration path.
-</Callout>
-
----
-
-## Workbench, Plugins, and Console
-
-### Workbench Replaced by iii Console
-
-The Motia Workbench (the local visual flow editor, configured via `motia-workbench.json`) has been replaced by the **iii Console**. The console provides a richer experience for visualizing and managing your flows, traces, and infrastructure.
-
-<Callout type="info">
-  Detailed documentation on the iii Console migration will be added in a future update.
-</Callout>
-
-### Workbench Plugins Sunset
-
-Workbench plugins (custom UI panels and extensions rendered inside the Workbench) have been **sunset** and are no longer supported. If your project relied on workbench plugins, you will need to find alternative approaches for any custom UI functionality they provided.
-
-- Delete any `.ui.step.ts` or noop step files that were used exclusively for workbench rendering.
-- Remove any React/JSX workbench plugin code that is no longer needed.
-
----
-
-## OpenAPI Generation
-
-<Callout type="info">
-  OpenAPI spec generation from HTTP step schemas is planned but **not yet available** in the new Motia version. This section will be updated once the feature is released.
-</Callout>
-
----
-
 ## New Features
 
 ### Multi-Trigger Steps
@@ -978,63 +960,133 @@ triggers: [
 
 ### Project Setup
 
-- [ ] Install the iii engine from [iii.dev](https://iii.dev)
-- [ ] Create `config.yaml` with module definitions (stream, state, api, queue, cron, exec)
-- [ ] Create `motia.config.ts` for authentication hooks (if needed)
-- [ ] Delete `motia.config.json`
-- [ ] Delete `motia-workbench.json`
-- [ ] Delete `.motia/` directory
-- [ ] Update dev script from `motia dev` to `iii`
-- [ ] Choose your runtime (Node.js or Bun) and module system (CommonJS or ESM)
+- Install the iii engine from [iii.dev](https://iii.dev)
+- Create `config.yaml` with module definitions (stream, state, api, queue, cron, exec)
+- Create `motia.config.ts` for authentication hooks (if needed)
+- Simplify `motia.config.ts`: remove `defineConfig`, all plugin imports, and the `plugins` array; keep only auth hook exports
+- Delete `motia-workbench.json`
+- Delete `.motia/` directory (**warning:** this will delete any local stream and state data persisted by the old engine; back up first if needed)
+- Update dev script from `motia dev` to `iii`
+- Choose your runtime (Node.js or Bun) and module system (CommonJS or ESM)
 
 ### Steps
 
-- [ ] Replace all `ApiRouteConfig` / `EventConfig` / `CronConfig` imports with `StepConfig`
-- [ ] Convert all step configs to use `triggers[]` and `enqueues[]`
-- [ ] Add `as const satisfies StepConfig` to all configs
-- [ ] Replace `Handlers['StepName']` with `Handlers<typeof config>`
-- [ ] Rename all `emit()` calls to `enqueue()`
-- [ ] Rename all `emits` config fields to `enqueues`
-- [ ] Move `subscribes` into queue triggers
-- [ ] Move `method`, `path`, `bodySchema`, `responseSchema` into HTTP triggers
-- [ ] Change `type: 'api'` to `type: 'http'` in all triggers
-- [ ] Move `cron` into cron triggers as `expression` (and convert to 7-field format)
-- [ ] Remove `type` field from config root
-- [ ] Remove `middleware` field from all step configs
-- [ ] Replace `virtualEmits` with `virtualEnqueues` (format changes from `[{ topic, label }]` to `['topic']`)
+- Replace all `ApiRouteConfig` / `EventConfig` / `CronConfig` imports with `StepConfig`
+- Convert all step configs to use `triggers[]` and `enqueues[]`
+- Add `as const satisfies StepConfig` to all configs
+- Replace `Handlers['StepName']` with `Handlers<typeof config>`
+- Rename all `emit()` calls to `enqueue()`
+- Rename all `emits` config fields to `enqueues`
+- Move `subscribes` into queue triggers
+- Move `method`, `path`, `bodySchema`, `responseSchema` into HTTP triggers
+- Change `type: 'api'` to `type: 'http'` in all triggers
+- Move `cron` into cron triggers as `expression` (and convert to 7-field format)
+- Remove `type` field from config root
+- Remove `middleware` field from all step configs
+- Replace `virtualEmits` with `virtualEnqueues` (format changes from `[{ topic, label }]` to `['topic']`)
 
 ### Streams
 
-- [ ] Update stream access calls: `get(id, key)` to `get(groupId, id)`
-- [ ] Update stream access calls: `set(id, key, value)` to `set(groupId, id, value)`
-- [ ] Replace read-modify-write patterns with `update(groupId, id, UpdateOp[])` where possible
-- [ ] Add `onJoin` / `onLeave` hooks to stream configs if real-time subscription auth is needed
+- Update stream access calls: `get(id, key)` to `get(groupId, id)`
+- Update stream access calls: `set(id, key, value)` to `set(groupId, id, value)`
+- Replace read-modify-write patterns with `update(groupId, id, UpdateOp[])` where possible
+- Add `onJoin` / `onLeave` hooks to stream configs if real-time subscription auth is needed
 
 ### State
 
-- [ ] Adopt `state.update()` with `UpdateOp[]` to replace manual get-then-set patterns
-- [ ] Consider using state triggers for reactive workflows
+- Adopt `state.update()` with `UpdateOp[]` to replace manual get-then-set patterns
+- Consider using state triggers for reactive workflows
 
 ### Middleware
 
-- [ ] Extract authentication logic into shared utility functions
-- [ ] Extract error handling logic into handler-level try/catch or wrapper functions
-- [ ] Remove all `middleware` imports and references from step configs
+- Extract authentication logic into shared utility functions
+- Extract error handling logic into handler-level try/catch or wrapper functions
+- Remove all `middleware` imports and references from step configs
 
 ### Cron Expressions
 
-- [ ] Convert all 5-field cron expressions to 7-field format (prepend seconds, append year)
-- [ ] Rename `cron` field to `expression` inside trigger objects
+- Convert all 5-field cron expressions to 7-field format (prepend seconds, append year)
+- Rename `cron` field to `expression` inside trigger objects
 
 ### Python (if applicable)
 
-- [ ] Install `motia` as a standalone Python package (npm/Node.js no longer required)
-- [ ] Add a separate ExecModule entry in `config.yaml` for the Python runtime
-- [ ] Refer to the dedicated Python migration guide for step-level changes
+- Install `motia` as a standalone Python package (npm/Node.js no longer required)
+- Add a separate ExecModule entry in `config.yaml` for the Python runtime
+- Refer to the dedicated Python migration guide for step-level changes
 
 ### Workbench and Plugins
 
-- [ ] Delete `motia-workbench.json`
-- [ ] Remove any `.ui.step.ts` or noop step files used exclusively for workbench rendering
-- [ ] Remove any workbench plugin code (React/JSX components for workbench panels)
-- [ ] Familiarize with the iii Console as the replacement for the Workbench
+- Delete `motia-workbench.json`
+- Remove any `.ui.step.ts` or noop step files used exclusively for workbench rendering
+- Remove any workbench plugin code (React/JSX components for workbench panels)
+- Familiarize with the iii Console as the replacement for the Workbench
+
+---
+
+## Python Runtime
+
+<Callout title="Major change for Python developers" type="warn">
+  In the old Motia, Python steps were managed by the Node.js runtime. Python developers **previously needed Node.js and npm installed**. This is no longer the case. Python is now a fully independent runtime.
+</Callout>
+
+In the new Motia, **runtimes are fully independent**. There is a dedicated **Motia Python** SDK (`motia-py`) that runs as its own standalone process, communicating directly with the iii engine. **Python developers no longer need Node.js, npm, or any JavaScript tooling whatsoever.**
+
+| Aspect | Old | New |
+|---|---|---|
+| Python execution | Spawned as child process by Node runtime | Independent process managed by iii engine |
+| Node.js required for Python? | Yes | **No** |
+| SDK | Single `motia` npm package handled both | Separate `motia-py` (Python) and `motia` (Node) packages |
+| Configuration | Shared with Node steps | Own `config.yaml` ExecModule entry |
+
+### For Mixed Projects (Node + Python)
+
+Configure **separate ExecModule entries** in `config.yaml`:
+
+```yaml
+modules:
+  - class: modules::shell::ExecModule
+    config:
+      watch:
+        - steps/**/*.ts
+      exec:
+        - npx motia dev
+
+  - class: modules::shell::ExecModule
+    config:
+      watch:
+        - steps/**/*.py
+      exec:
+        - uv run motia dev --dir steps
+```
+
+<Callout type="info">
+  A dedicated migration guide for Python projects and steps will be provided in a separate document. This guide focuses on the Node.js/TypeScript migration path.
+</Callout>
+
+---
+
+## Workbench, Plugins, and Console
+
+### Workbench Replaced by iii Console
+
+The Motia Workbench (the local visual flow editor, configured via `motia-workbench.json`) has been replaced by the **iii Console**. The console provides a richer experience for visualizing and managing your flows, traces, and infrastructure.
+
+<Callout type="info">
+  Refer to the [iii quickstart documentation](https://iii.dev/docs/tutorials/quickstart) for iii Console installation instructions.
+</Callout>
+
+### Workbench Plugins Sunset
+
+Workbench plugins (custom UI panels and extensions rendered inside the Workbench) have been **sunset** and are no longer supported. If your project relied on workbench plugins, you will need to find alternative approaches for any custom UI functionality they provided.
+
+- Delete any `.ui.step.ts` or noop step files that were used exclusively for workbench rendering.
+- Remove any React/JSX workbench plugin code that is no longer needed.
+
+---
+
+## OpenAPI Generation
+
+<Callout type="info">
+  OpenAPI spec generation from HTTP step schemas is planned but **not yet available** in the new Motia version. This section will be updated once the feature is released.
+</Callout>
+
