@@ -1095,7 +1095,7 @@ When the webhook is called, it:
 1. Loads this state
 2. Verifies `currentStep === 'awaiting_approval'`
 3. Updates with approval info
-4. Emits to continue
+4. Enqueues to continue
 
 ---
 

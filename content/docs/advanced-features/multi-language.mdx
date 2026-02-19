@@ -66,7 +66,7 @@ Each ExecModule watches its own file patterns and manages its own SDK process in
 
 A TypeScript HTTP endpoint triggers a Python ML processing step:
 
-```typescript title="src/submit-review.step.ts"
+```typescript title="steps/submit-review.step.ts"
 import type { Handlers, StepConfig } from 'motia'
 import { z } from 'zod'
 
@@ -86,7 +86,7 @@ export const handler: Handlers<typeof config> = async (req, { enqueue }) => {
 }
 ```
 
-```python title="src/analyze_review_step.py"
+```python title="steps/analyze_review_step.py"
 config = {
     "name": "AnalyzeReview",
     "description": "Runs sentiment analysis on the review",
@@ -126,13 +126,13 @@ Both Steps share the same flow (`review-pipeline`) and communicate through the q
 Motia supports both Node.js and Bun for TypeScript/JavaScript Steps. Configure your preferred runtime in the ExecModule:
 
 ```yaml
-# Using Node.js
+# Using Node.js (default)
 - class: modules::shell::ExecModule
   config:
     exec:
       - npx motia dev
 
-# Using Bun
+# Using Bun (requires building first with `bun run build`)
 - class: modules::shell::ExecModule
   config:
     exec:

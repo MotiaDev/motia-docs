@@ -120,6 +120,9 @@ export const config: StreamConfig = {
   }),
   onJoin: async (subscription, context, authContext) => {
     context.logger.info('Client joined stream', { subscription, authContext })
+    if (!authContext?.userId) {
+      return { unauthorized: true }
+    }
     return { unauthorized: false }
   },
   onLeave: async (subscription, context, authContext) => {

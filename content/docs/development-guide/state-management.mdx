@@ -503,7 +503,8 @@ export const config = {
     {
       type: 'state',
       condition: (input) => {
-        return input.group_id === 'tasks' && input.new_value?.completedSteps === input.new_value?.totalSteps
+        if (!input.new_value) return false
+        return input.group_id === 'tasks' && input.new_value.completedSteps === input.new_value.totalSteps
       },
     },
   ],

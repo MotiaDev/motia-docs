@@ -37,9 +37,8 @@ export const config = {
 } as const satisfies StepConfig
 
 export const handler: Handlers<typeof config> = async (input, { logger, enqueue }) => {
-  const data = input
-  logger.info('Processing high-value order', { orderId: data.orderId, amount: data.amount })
-  await enqueue({ topic: 'order.premium-processed', data })
+  logger.info('Processing high-value order', { orderId: input.orderId, amount: input.amount })
+  await enqueue({ topic: 'order.premium-processed', data: input })
 }
 ```
 
@@ -48,6 +47,12 @@ export const handler: Handlers<typeof config> = async (input, { logger, enqueue 
 Filter HTTP requests before the handler runs:
 
 ```typescript
+const verifiedOrderSchema = z.object({
+  orderId: z.string(),
+  amount: z.number(),
+  user: z.object({ verified: z.boolean() }),
+})
+
 export const config = {
   name: 'VerifiedUserEndpoint',
   description: 'Only accepts requests from verified users',
@@ -56,10 +61,9 @@ export const config = {
       type: 'http',
       method: 'POST',
       path: '/orders/manual',
-      bodySchema: orderSchema,
-      condition: (input, ctx) => {
-        if (ctx.trigger.type !== 'http') return false
-        return input.body.user.verified === true
+      bodySchema: verifiedOrderSchema,
+      condition: (input) => {
+        return input.body.user?.verified === true
       },
     },
   ],

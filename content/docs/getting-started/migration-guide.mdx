@@ -205,9 +205,9 @@ modules:
       watch:                          # Glob patterns to watch for hot-reload
         - steps/**/*.ts
         - motia.config.ts
-      exec:                           # Commands to run as the SDK process (in order)
-        - npx motia dev
-        - bun run --enable-source-maps dist/index-dev.js
+      exec:                           # Choose ONE based on your runtime
+        - npx motia dev               # Node.js (default)
+        # - bun run --enable-source-maps dist/index-dev.js  # Bun (alternative)
 ```
 
 </Tab>
@@ -399,7 +399,7 @@ export const config = {
         200: z.object({ id: z.string() }),
         400: z.object({ error: z.string() }),
       },
-      middleware: [validateBearerToken],
+      middleware: [coreMiddleware, validateBearerToken],
     },
   ],
   enqueues: ['user-created'],
@@ -827,6 +827,8 @@ export const validateBearerToken: ApiMiddleware = async (req, ctx, next) => {
   if (!authToken) {
     return { status: 401, body: { error: 'Unauthorized' } }
   }
+  const [, token] = authToken.split(' ')
+  const decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenData
   req.tokenInfo = decoded
   return next()
 }
@@ -870,7 +872,7 @@ export async function requireAuth(request: ApiRequest<any>): Promise<TokenData> 
     throw new HttpError(401, 'Unauthorized')
   }
   const [, token] = authToken.split(' ')
-  return jwt.verify(token, env.JWT_SECRET) as TokenData
+  return jwt.verify(token, process.env.JWT_SECRET!) as TokenData
 }
 
 export const handler: Handlers<typeof config> = async (request, { logger }) => {
@@ -894,7 +896,7 @@ export const config = {
   triggers: [
     { type: 'queue', topic: 'order.created', input: orderSchema },
     { type: 'http', method: 'POST', path: '/orders/manual', bodySchema: orderSchema },
-    { type: 'cron', expression: '* * * * *' },
+    { type: 'cron', expression: '0 * * * * * *' },
   ],
   enqueues: ['order.processed'],
 } as const satisfies StepConfig
@@ -1066,15 +1068,15 @@ modules:
       watch:                          # Glob patterns to watch for hot-reload
         - steps/**/*.ts
         - motia.config.ts
-      exec:                           # Commands to run as the SDK process (in order)
-        - npx motia dev
-        - bun run --enable-source-maps dist/index-dev.js
+      exec:                           # Choose ONE based on your runtime
+        - npx motia dev               # Node.js (default)
+        # - bun run --enable-source-maps dist/index-dev.js  # Bun (alternative)
 
   - class: modules::shell::ExecModule
     config:
       watch:                          # Glob patterns to watch for hot-reload
         - steps/**/*.py
-      exec:                           # Commands to run as the SDK process (in order)
+      exec:
         - uv run motia dev --dir steps
 ```
 

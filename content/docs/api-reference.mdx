@@ -56,11 +56,11 @@ Use this for HTTP endpoints.
 type HttpTrigger = {
   type: 'http'
   path: string
-  method: ApiRouteMethod
+  method: HttpRouteMethod
   bodySchema?: StepSchemaInput
   responseSchema?: Record<number, StepSchemaInput>
   queryParams?: readonly QueryParam[]
-  middleware?: readonly ApiMiddleware[]
+  middleware?: readonly HttpMiddleware[]
   condition?: TriggerCondition
 }
 ```
@@ -127,7 +127,7 @@ Use these helpers for concise trigger definitions:
 ```typescript
 import { http, queue, cron, state, stream } from 'motia'
 
-http(method: ApiRouteMethod, path: string, options?: ApiOptions, condition?: TriggerCondition): HttpTrigger
+http(method: HttpRouteMethod, path: string, options?: HttpOptions, condition?: TriggerCondition): HttpTrigger
 queue(topic: string, options?: QueueOptions, condition?: TriggerCondition): QueueTrigger
 cron(expression: string, condition?: TriggerCondition): CronTrigger
 state(condition?: TriggerCondition): StateTrigger
@@ -461,7 +461,7 @@ Handlers are the functions that execute your business logic. Use the `Handlers` 
 type Handlers<TConfig extends StepConfig> = (
   input: InferHandlerInput<TConfig>,
   ctx: FlowContext<InferEnqueues<TConfig>, InferHandlerInput<TConfig>>,
-) => Promise<ApiResponse | void>
+) => Promise<HttpResponse | void>
 ```
 
 The handler signature is unified -- the `input` type is inferred from the trigger that activated the step. Use `ctx.match()` or `ctx.is` to differentiate between trigger types in multi-trigger steps.
@@ -944,8 +944,10 @@ type StreamSetResult<T> = { new_value: T; old_value: T | null }
 
 type UpdateOp =
   | { type: 'set', path: string, value: any }
+  | { type: 'merge', path?: string, value: any }
   | { type: 'increment', path: string, by: number }
   | { type: 'decrement', path: string, by: number }
+  | { type: 'remove', path: string }
 ```
 
 <Tabs items={['TypeScript', 'JavaScript', 'Python']}>
@@ -1275,12 +1277,12 @@ async def auth_middleware(req, context, next_fn):
 
 ---
 
-## Request Object (ApiRequest)
+## Request Object (HttpRequest)
 
 HTTP handlers receive a request object with these fields.
 
 ```typescript
-interface ApiRequest<TBody = unknown> {
+interface HttpRequest<TBody = unknown> {
   pathParams: Record<string, string>
   queryParams: Record<string, string | string[]>
   body: TBody
@@ -1345,12 +1347,12 @@ async def handler(req, context):
 
 ---
 
-## Response Object (ApiResponse)
+## Response Object (HttpResponse)
 
 HTTP handlers must return an object with these fields.
 
 ```typescript
-type ApiResponse<TStatus extends number, TBody> = {
+type HttpResponse<TStatus extends number, TBody> = {
   status: TStatus
   headers?: Record<string, string>
   body: TBody

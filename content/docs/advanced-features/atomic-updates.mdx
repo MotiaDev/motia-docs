@@ -76,10 +76,12 @@ await context.state.update("orders", order_id, [
 The same `UpdateOp` types work on stream data:
 
 ```typescript
-await streams.deployment.update('data', deploymentId, [
-  { type: 'increment', path: 'completedSteps', by: 1 },
-  { type: 'set', path: 'status', value: 'progress' },
-])
+export const handler: Handlers<typeof config> = async (input, { streams }) => {
+  await streams.deployment.update('data', deploymentId, [
+    { type: 'increment', path: 'completedSteps', by: 1 },
+    { type: 'set', path: 'status', value: 'progress' },
+  ])
+}
 ```
 
 Stream updates are also atomic and trigger stream events that connected clients receive in real-time.

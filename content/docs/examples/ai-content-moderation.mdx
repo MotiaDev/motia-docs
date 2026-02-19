@@ -195,7 +195,7 @@ Our application consists of six specialized steps, each handling a specific part
       if (imageUrl) {
         try {
           const imageResponse = await openai.chat.completions.create({
-            model: "gpt-4-vision-preview",
+            model: "gpt-4o",
             messages: [
               {
                 role: "system",
@@ -597,13 +597,19 @@ Our application consists of six specialized steps, each handling a specific part
     };
 
     function verifySlackSignature(signature: string, timestamp: string, body: string): boolean {
+      const requestAge = Math.abs(Date.now() / 1000 - Number(timestamp))
+      if (requestAge > 300) return false
+
       const signingSecret = process.env.SLACK_SIGNING_SECRET!;
       const baseString = `v0:${timestamp}:${body}`;
       const expectedSignature = `v0=${createHmac("sha256", signingSecret)
         .update(baseString)
         .digest("hex")}`;
       
-      return signature === expectedSignature;
+      return crypto.timingSafeEqual(
+        Buffer.from(signature),
+        Buffer.from(expectedSignature)
+      );
     }
     ```
 

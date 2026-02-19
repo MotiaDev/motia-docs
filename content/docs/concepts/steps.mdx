@@ -442,7 +442,7 @@ Runs on a schedule. Use for periodic tasks.
       name: 'DailyCleanup',
       description: 'Runs daily cleanup',
       triggers: [
-        cron('0 0 * * *'),
+        cron('0 0 0 * * * *'),
       ],
       enqueues: [],
       flows: ['maintenance'],
@@ -461,7 +461,7 @@ Runs on a schedule. Use for periodic tasks.
       name: 'DailyCleanup',
       description: 'Runs daily cleanup',
       triggers: [
-        cron('0 0 * * *'),
+        cron('0 0 0 * * * *'),
       ],
       enqueues: [],
       flows: ['maintenance'],
@@ -478,7 +478,7 @@ Runs on a schedule. Use for periodic tasks.
         "name": "DailyCleanup",
         "description": "Runs daily cleanup",
         "triggers": [
-            {"type": "cron", "expression": "0 0 * * *"}
+            {"type": "cron", "expression": "0 0 0 * * * *"}
         ],
         "enqueues": [],
         "flows": ["maintenance"]
@@ -496,20 +496,11 @@ Runs on a schedule. Use for periodic tasks.
 |----------|-------------|
 | `name` | Unique identifier |
 | `triggers` | Array with `cron(expression)` helper |
-| `expression` | Cron expression (e.g., `'0 0 * * *'`) |
+| `expression` | Cron expression (e.g., `'0 0 0 * * * *'`) |
 
 **Handler:** `handler(input, ctx)`
 
 - `ctx` - Context with `logger`, `enqueue`, `state`, `streams`, `traceId`, `trigger`, `is`, `getData`, `match`
-
-**Common schedules:**
-
-| Expression | Runs |
-|------------|------|
-| `* * * * *` | Every minute |
-| `0 * * * *` | Every hour |
-| `0 0 * * *` | Daily at midnight |
-| `0 9 * * 1` | Monday at 9 AM |
 
 The iii engine uses a **7-field cron expression** that includes seconds and an optional year:
 
