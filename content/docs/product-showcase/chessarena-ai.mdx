@@ -125,7 +125,7 @@ Our application consists of specialized components handling different aspects of
     export const config = {
       name: 'AvailableModels',
       description: 'Expose all available AI models for supported providers',
-      triggers: [{ type: 'api', path: '/chess/models', method: 'GET' }],
+      triggers: [{ type: 'http', path: '/chess/models', method: 'GET' }],
       enqueues: [],
       flows: ['chess'],
       responseSchema: {
@@ -193,7 +193,7 @@ Our application consists of specialized components handling different aspects of
     export const config = {
       name: 'CreateGame',
       description: 'Create a new chess game',
-      triggers: [{ type: 'api', path: '/chess/create-game', method: 'POST' }],
+      triggers: [{ type: 'http', path: '/chess/create-game', method: 'POST' }],
       enqueues: ['chess-game-created'],
       flows: ['chess'],
       bodySchema: z.object({
@@ -503,7 +503,7 @@ Our application consists of specialized components handling different aspects of
     export const config = {
       name: 'AuthAPI',
       description: 'Handle user authentication for chess platform',
-      triggers: [{ type: 'api', path: '/auth/login', method: 'POST' }],
+      triggers: [{ type: 'http', path: '/auth/login', method: 'POST' }],
       enqueues: ['user-authenticated'],
       flows: ['auth'],
       bodySchema: z.object({

@@ -69,8 +69,8 @@ Instead of complex infrastructure, we get a resilient real-time system where dat
 Our application consists of just two specialized components, each handling a specific part of the real-time data flow. Let's explore the complete architecture.
 
 <Folder name="steps" defaultOpen>
-  <File name="00-repository-stars.stream.ts" />
-  <File name="01-github-webhook.step.ts" />
+  <File name="repository-stars.stream.ts" />
+  <File name="github-webhook.step.ts" />
 </Folder>
 
 <Folder name="utils" defaultOpen>
@@ -83,7 +83,7 @@ Our application consists of just two specialized components, each handling a spe
     The real-time data stream that holds our repository star counts. This stream automatically synchronizes data to all connected clients with zero configuration.
 
     ```typescript
-    import { StreamConfig } from 'motia'
+    import type { StreamConfig } from 'motia'
     import { z } from 'zod'
 
     const RepositoryStarsSchema = z.object({
@@ -117,34 +117,39 @@ Our application consists of just two specialized components, each handling a spe
       name: 'GitHubStarWebhook',
       description: 'Process GitHub star webhook events with signature verification',
       triggers: [
-        { type: 'api', method: 'POST', path: '/webhooks/github/star', bodySchema: z.object({
-          action: z.enum(['created', 'deleted']),
-          starred_at: z.string().optional(),
-          repository: z.object({
-            name: z.string(),
-            full_name: z.string(),
-            stargazers_count: z.number(),
-            owner: z.object({ login: z.string() }),
+        {
+          type: 'http',
+          method: 'POST',
+          path: '/webhooks/github/star',
+          bodySchema: z.object({
+            action: z.enum(['created', 'deleted']),
+            starred_at: z.string().optional(),
+            repository: z.object({
+              name: z.string(),
+              full_name: z.string(),
+              stargazers_count: z.number(),
+              owner: z.object({ login: z.string() }),
+            }),
+            sender: z.object({
+              login: z.string(),
+              name: z.string(),
+              avatar_url: z.string().optional(),
+              html_url: z.string(),
+              url: z.string({ description: 'API URL' }),
+            }),
           }),
-          sender: z.object({
-            login: z.string(),
-            name: z.string(),
-            avatar_url: z.string().optional(),
-            html_url: z.string(),
-            url: z.string({ description: 'API URL' }),
-          }),
-        }) },
+          responseSchema: {
+            200: z.object({
+              message: z.string(),
+              event: z.string(),
+              processed: z.boolean(),
+            }),
+            400: z.object({ error: z.string() }),
+            401: z.object({ error: z.string() }),
+            500: z.object({ error: z.string() }),
+          },
+        },
       ],
-      responseSchema: {
-        200: z.object({
-          message: z.string(),
-          event: z.string(),
-          processed: z.boolean(),
-        }),
-        400: z.object({ error: z.string() }),
-        401: z.object({ error: z.string() }),
-        500: z.object({ error: z.string() }),
-      },
       enqueues: [],
       flows: ['github-star-processing'],
     } as const satisfies StepConfig
@@ -446,7 +451,7 @@ Launch the Motia development server to begin receiving webhook events.
 npm run dev
 ```
 
-Your webhook endpoint will be available at: `http://localhost:3000/webhooks/github/star`
+Your webhook endpoint will be available at: `http://localhost:3111/webhooks/github/star`
 
 ### Set Up GitHub Webhook
 
@@ -476,10 +481,10 @@ Your star data is now available via the Motia streams API:
 
 ```shell
 # Get all repository star counts
-curl http://localhost:3000/api/streams/stars
+curl http://localhost:3111/api/streams/stars
 
 # Get specific repository star count  
-curl http://localhost:3000/api/streams/stars/{org}/{repo}
+curl http://localhost:3111/api/streams/stars/{org}/{repo}
 ```
 
 The response includes live star counts that update automatically whenever GitHub sends webhook events.

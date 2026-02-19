@@ -37,7 +37,7 @@ At its core, our data processing pipeline demonstrates how **steps** solve the f
 - **[JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)** steps: Dynamic processing and rapid development
 - **[Motia's Step Primitive](https://motia.dev)**: The unifying abstraction that makes all languages work as a single system
 
-Instead of managing multiple services, **steps** provide a single programming model. Whether written in TypeScript, Python, or JavaScript, every step follows the same pattern: receive data, process it, emit events. This unification is what makes multi-language development straightforward.
+Instead of managing multiple services, **steps** provide a single programming model. Whether written in TypeScript, Python, or JavaScript, every step follows the same pattern: receive data, process it, enqueue events. This unification is what makes multi-language development straightforward.
 
 ---
 
@@ -76,7 +76,7 @@ export const config = {
   name: 'AppStarter',
   description: 'Start the multi-language app pipeline',
   triggers: [
-    { type: 'api', method: 'POST', path: '/start-app', bodySchema },
+    { type: 'http', method: 'POST', path: '/start-app', bodySchema },
   ],
   responseSchema: {
     200: z.object({
@@ -383,7 +383,7 @@ export const handler = async (input, { logger }) => {
     generatedBy: 'javascript-summary-step'
   }
   
-  // Log final summary (final step - no emit needed)
+  // Log final summary (final step - no enqueue needed)
   logger.info('✨ Final summary generated successfully', summary)
   
   return summary
@@ -522,7 +522,7 @@ Navigate to [`http://localhost:3000`](http://localhost:3000) to access the iii d
 Send a request to your API endpoint to see the multi-language workflow in action:
 
 ```shell
-   curl -X POST http://localhost:3000/start-app \
+   curl -X POST http://localhost:3111/start-app \
      -H "Content-Type: application/json" \
      -d '{"data": {"test": "value"}, "message": "Hello!"}'
 ```
@@ -585,7 +585,7 @@ Want to explore multi-language workflows further? Check out additional examples 
 This multi-language data processing pipeline demonstrates how **steps** fundamentally change multi-language development. By providing a single primitive that works across TypeScript, Python, and JavaScript, we've eliminated the traditional complexity of polyglot architectures.
 
 **The step primitive enables true unification:**
-- **Universal Pattern** - Every step, regardless of language, follows the same receive-process-emit pattern
+- **Universal Pattern** - Every step, regardless of language, follows the same receive-process-enqueue pattern
 - **Seamless Integration** - Add Ruby, Go, Rust, or any language using the same step abstraction
 - **Unified Deployment** - All languages deploy together as a single, coherent system
 - **Shared Development Model** - Write, debug, and monitor everything through the same interface

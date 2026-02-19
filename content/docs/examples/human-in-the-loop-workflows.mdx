@@ -18,7 +18,7 @@ Human-in-the-Loop workflows in Motia work like this:
 3. **Stop enqueuing** - The workflow naturally pauses
 4. **Webhook resumes the flow** - External systems call an API to continue
 
-No special "pause" or "wait" commands. Just save state and use API steps as re-entry points.
+No special "pause" or "wait" commands. Just save state and use HTTP trigger steps as re-entry points.
 
 ---
 
@@ -27,7 +27,7 @@ No special "pause" or "wait" commands. Just save state and use API steps as re-e
 | Concept | What It Means |
 |---------|---------------|
 | **Workflows don't sleep** | They don't "wait." They save state and stop processing. |
-| **API steps are re-entry points** | External systems call webhooks to restart the flow |
+| **HTTP steps are re-entry points** | External systems call webhooks to restart the flow |
 | **State checkpointing** | Every `state.set()` is a save point you can resume from |
 | **Virtual connections** | Use `virtualSubscribes` and `virtualEnqueues` to show how webhooks fit in the flow visually |
 
@@ -64,7 +64,7 @@ export const config = {
   name: 'SubmitOrder',
   description: 'Submit an order for processing',
   triggers: [
-    { type: 'api', path: '/orders', method: 'POST' },
+    { type: 'http', path: '/orders', method: 'POST' },
   ],
   enqueues: ['order.submitted'],
   flows: ['order-approval'],
@@ -109,7 +109,7 @@ config = {
     "name": "SubmitOrder",
     "description": "Submit an order for processing",
     "triggers": [
-        {"type": "api", "path": "/orders", "method": "POST"}
+        {"type": "http", "path": "/orders", "method": "POST"}
     ],
     "enqueues": ["order.submitted"],
     "flows": ["order-approval"]
@@ -155,7 +155,7 @@ export const config = {
   name: 'SubmitOrder',
   description: 'Submit an order for processing',
   triggers: [
-    { type: 'api', path: '/orders', method: 'POST' },
+    { type: 'http', path: '/orders', method: 'POST' },
   ],
   enqueues: ['order.submitted'],
   flows: ['order-approval'],
@@ -405,7 +405,7 @@ function calculateRiskScore(order) {
 </Tabs>
 
 👉 **The key decision:**
-- **High risk:** Save "awaiting" state and **don't emit** → workflow stops
+- **High risk:** Save "awaiting" state and **don't enqueue** → workflow stops
 - **Low risk:** Emit immediately → workflow continues
 
 ### Step 3: Human Approval Gate (Visual Noop)
@@ -445,7 +445,7 @@ export const config = {
   name: 'ApprovalWebhook',
   description: 'Webhook for human approval decisions',
   triggers: [
-    { type: 'api', path: '/webhooks/orders/:orderId/approve', method: 'POST' },
+    { type: 'http', path: '/webhooks/orders/:orderId/approve', method: 'POST' },
   ],
   enqueues: ['order.approved'],
   virtualSubscribes: ['human.decision'],
@@ -505,7 +505,7 @@ config = {
     "name": "ApprovalWebhook",
     "description": "Webhook for human approval decisions",
     "triggers": [
-        {"type": "api", "path": "/webhooks/orders/:orderId/approve", "method": "POST"}
+        {"type": "http", "path": "/webhooks/orders/:orderId/approve", "method": "POST"}
     ],
     "enqueues": ["order.approved"],
     "virtualSubscribes": ["human.decision"],
@@ -566,7 +566,7 @@ export const config = {
   name: 'ApprovalWebhook',
   description: 'Webhook for human approval decisions',
   triggers: [
-    { type: 'api', path: '/webhooks/orders/:orderId/approve', method: 'POST' },
+    { type: 'http', path: '/webhooks/orders/:orderId/approve', method: 'POST' },
   ],
   enqueues: ['order.approved'],
   virtualSubscribes: ['human.decision'],
@@ -758,7 +758,7 @@ export const config = {
   name: 'DetectTimeouts',
   description: 'Find orders stuck awaiting approval and escalate',
   triggers: [
-    cron('*/5 * * * *'),
+    cron('0 */5 * * * * *'),
   ],
   enqueues: [],
   flows: ['order-approval'],
@@ -828,7 +828,7 @@ config = {
     "name": "DetectTimeouts",
     "description": "Find orders stuck awaiting approval and escalate",
     "triggers": [
-        {"type": "cron", "expression": "*/5 * * * *"}
+        {"type": "cron", "expression": "0 */5 * * * * *"}
     ],
     "enqueues": [],
     "flows": ["order-approval"]
@@ -889,7 +889,7 @@ export const config = {
   name: 'DetectTimeouts',
   description: 'Find orders stuck awaiting approval and escalate',
   triggers: [
-    cron('*/5 * * * *'),
+    cron('0 */5 * * * * *'),
   ],
   enqueues: [],
   flows: ['order-approval'],
@@ -1009,7 +1009,7 @@ Open [`http://localhost:3000`](http://localhost:3000) in your browser to access 
 Submit an order with high value to trigger the approval gate:
 
 ```bash
-curl -X POST http://localhost:3000/orders \
+curl -X POST http://localhost:3111/orders \
   -H "Content-Type: application/json" \
   -d '{
     "items": [{"name": "Expensive Item", "price": 500, "quantity": 3}],
@@ -1034,7 +1034,7 @@ When you're ready (could be minutes, hours, or even days later), approve the ord
 
 ```bash
 # User clicks "Approve" button in UI → Makes this call
-curl -X POST http://localhost:3000/webhooks/orders/abc-123/approve \
+curl -X POST http://localhost:3111/webhooks/orders/abc-123/approve \
   -H "Content-Type: application/json" \
   -d '{
     "approved": true,
@@ -1043,14 +1043,14 @@ curl -X POST http://localhost:3000/webhooks/orders/abc-123/approve \
   }'
 ```
 
-**Check the iii development console:** Flow resumes! It loads state, emits `order.approved`, and CompleteOrder runs to fulfill the order.
+**Check the iii development console:** Flow resumes! It loads state, enqueues `order.approved`, and CompleteOrder runs to fulfill the order.
 
 ### Test Low-Risk Order (Bypasses Gate)
 
 Submit a low-value order that auto-approves:
 
 ```bash
-curl -X POST http://localhost:3000/orders \
+curl -X POST http://localhost:3111/orders \
   -H "Content-Type: application/json" \
   -d '{
     "items": [{"name": "Widget", "price": 10, "quantity": 1}],

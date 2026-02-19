@@ -1,5 +1,5 @@
 {
   "title": "Deployment Guide",
   "defaultOpen": false,
-  "pages": ["getting-started", "self-hosted", "railway", "fly", "motia-cloud"]
+  "pages": ["getting-started", "docker", "self-hosted", "railway", "fly", "motia-cloud"]
 }

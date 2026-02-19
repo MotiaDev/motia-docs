@@ -57,7 +57,7 @@ export const config = {
   name: 'chat-with-ai',
   description: 'Chat endpoint using OpenAI',
   triggers: [
-    { type: 'api', path: '/chat', method: 'POST' },
+    { type: 'http', path: '/chat', method: 'POST' },
   ],
   flows: ['ai-chat'],
 } as const satisfies StepConfig

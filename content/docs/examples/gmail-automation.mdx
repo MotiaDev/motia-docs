@@ -58,25 +58,25 @@ The Gmail Account Manager workflow consists of the following steps:
   - `steps/gmail-auth.step.ts`: Handles authorization code exchange
   - `steps/gmail-token-status.step.ts`: Checks token validity and refreshes if needed
 
-### 2. Gmail Webhook (API Step)
+### 2. Gmail Webhook (HTTP Step)
 - **File**: `steps/gmail-webhook.step.ts`
 - **Purpose**: Receives notifications from Gmail when new emails arrive
 - **Enqueues**: `gmail.new_email` event with message details
 - **Endpoint**: `POST /api/gmail-webhook`
 
-### 3. Gmail Watch (API Step)
+### 3. Gmail Watch (HTTP Step)
 - **File**: `steps/gmail-watch.step.ts`
 - **Purpose**: Sets up push notifications for the Gmail account
 - **Endpoint**: `GET /api/watch`
 
-### 4. Fetch Email (Event Step)
+### 4. Fetch Email (Queue Step)
 - **File**: `steps/fetch-email.step.ts`
 - **Purpose**: Retrieves the full email content from Gmail API
 - **Queue trigger**: `gmail.email.received`
 - **Enqueues**: `gmail.email.fetched` with complete email data
 - **Key Functions**: Authenticates with Gmail API, fetches message content, parses attachments
 
-### 5. Analyze Email (Event Step)
+### 5. Analyze Email (Queue Step)
 - **File**: `steps/analyze-email.step.py`
 - **Purpose**: Uses Hugging Face models to analyze email content
 - **Queue trigger**: `gmail.email.fetched`
@@ -87,14 +87,14 @@ The Gmail Account Manager workflow consists of the following steps:
   - Sentiment analysis
   - Key information extraction
 
-### 6. Organize Email (Event Step)
+### 6. Organize Email (Queue Step)
 - **File**: `steps/organize-email.step.ts`
 - **Purpose**: Applies labels and organization based on analysis
 - **Queue trigger**: `gmail.email.analyzed`
 - **Enqueues**: `[gmail.email.organized, gmail.email.archived]`
 - **Actions**: Creates/applies labels, archives certain emails, marks importance
 
-### 7. Auto-Respond to Email (Event Step)
+### 7. Auto-Respond to Email (Queue Step)
 - **File**: `steps/auto-responder.step.ts`
 - **Purpose**: Generates and sends appropriate responses for certain emails
 - **Queue trigger**: `gmail.email.analyzed`

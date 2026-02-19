@@ -28,7 +28,7 @@ type StepConfig = {
 
 **Required fields:**
 - `name` - Unique identifier for this Step
-- `triggers` - Array of triggers that activate this step (API, queue, cron, state, stream)
+- `triggers` - Array of triggers that activate this step (HTTP, queue, cron, state, stream)
 
 **Optional fields:**
 - `description` - Human-readable description
@@ -45,16 +45,16 @@ type StepConfig = {
 Triggers define how a step gets activated. A step can have multiple triggers.
 
 ```typescript
-type TriggerConfig = QueueTrigger | ApiTrigger | CronTrigger | StateTrigger | StreamTrigger
+type TriggerConfig = QueueTrigger | HttpTrigger | CronTrigger | StateTrigger | StreamTrigger
 ```
 
-#### ApiTrigger
+#### HttpTrigger
 
 Use this for HTTP endpoints.
 
 ```typescript
-type ApiTrigger = {
-  type: 'api'
+type HttpTrigger = {
+  type: 'http'
   path: string
   method: ApiRouteMethod
   bodySchema?: StepSchemaInput
@@ -125,9 +125,9 @@ type StreamTrigger = {
 Use these helpers for concise trigger definitions:
 
 ```typescript
-import { api, queue, cron, state, stream } from 'motia'
+import { http, queue, cron, state, stream } from 'motia'
 
-api(method: ApiRouteMethod, path: string, options?: ApiOptions, condition?: TriggerCondition): ApiTrigger
+http(method: ApiRouteMethod, path: string, options?: ApiOptions, condition?: TriggerCondition): HttpTrigger
 queue(topic: string, options?: QueueOptions, condition?: TriggerCondition): QueueTrigger
 cron(expression: string, condition?: TriggerCondition): CronTrigger
 state(condition?: TriggerCondition): StateTrigger
@@ -151,13 +151,13 @@ type EnqueueData<T> = { topic: string; data: T; messageGroupId?: string }
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api, queue, cron } from 'motia'
+import { StepConfig, Handlers, http, queue, cron } from 'motia'
 
 export const config = {
   name: 'CreateUser',
   description: 'Creates a new user',
   triggers: [
-    api('POST', '/users', {
+    http('POST', '/users', {
       bodySchema: z.object({ name: z.string() }),
       responseSchema: {
         201: z.object({ id: z.string(), name: z.string() })
@@ -183,7 +183,7 @@ export const config = {
   description: 'Creates a new user',
   triggers: [
     {
-      type: 'api',
+      type: 'http',
       method: 'POST',
       path: '/users',
       bodySchema: z.object({ name: z.string() }),
@@ -217,7 +217,7 @@ config = {
     "description": "Creates a new user",
     "triggers": [
         {
-            "type": "api",
+            "type": "http",
             "method": "POST",
             "path": "/users",
             "bodySchema": {"type": "object", "properties": {"name": {"type": "string"}}},
@@ -412,13 +412,13 @@ A single step can respond to multiple trigger types:
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, api, queue, cron } from 'motia'
+import { StepConfig, http, queue, cron } from 'motia'
 
 export const config = {
   name: 'UserSync',
   description: 'Syncs user data from multiple sources',
   triggers: [
-    api('POST', '/users/sync'),
+    http('POST', '/users/sync'),
     queue('user.updated'),
     cron('0 */6 * * *'),
   ],
@@ -437,7 +437,7 @@ export const config = {
   name: 'UserSync',
   description: 'Syncs user data from multiple sources',
   triggers: [
-    { type: 'api', method: 'POST', path: '/users/sync' },
+    { type: 'http', method: 'POST', path: '/users/sync' },
     { type: 'queue', topic: 'user.updated' },
     cron('0 */6 * * *'),
   ],
@@ -448,61 +448,6 @@ export const config = {
 
 </Tab>
 </Tabs>
-
----
-
-### NoopConfig
-
-Use this for visual-only nodes in the iii development console (no code execution).
-
-<Tabs items={['TypeScript', 'JavaScript', 'Python']}>
-<Tab value='TypeScript'>
-
-```typescript
-import { StepConfig } from 'motia'
-
-export const config = {
-  name: 'ManualApproval',
-  description: 'Manager approval gate',
-  triggers: [],
-  virtualEnqueues: ['approved', 'rejected'],
-  virtualSubscribes: ['approval.requested'],
-  flows: ['approvals'],
-} as const satisfies StepConfig
-```
-
-</Tab>
-<Tab value='JavaScript'>
-
-```javascript
-export const config = {
-  name: 'ManualApproval',
-  description: 'Manager approval gate',
-  triggers: [],
-  virtualEnqueues: ['approved', 'rejected'],
-  virtualSubscribes: ['approval.requested'],
-  flows: ['approvals'],
-}
-```
-
-</Tab>
-<Tab value='Python'>
-
-```python
-config = {
-    "name": "ManualApproval",
-    "description": "Manager approval gate",
-    "triggers": [],
-    "virtualEnqueues": ["approved", "rejected"],
-    "virtualSubscribes": ["approval.requested"],
-    "flows": ["approvals"],
-}
-```
-
-</Tab>
-</Tabs>
-
-**No handler needed** - Noop Steps don't execute code. They exist for iii development console visualization only.
 
 ---
 
@@ -523,7 +468,7 @@ The handler signature is unified -- the `input` type is inferred from the trigge
 
 ---
 
-### API Step Handler
+### HTTP Step Handler
 
 Receives a request, returns a response.
 
@@ -531,11 +476,11 @@ Receives a request, returns a response.
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api } from 'motia'
+import { StepConfig, Handlers, http } from 'motia'
 
 export const config = {
   name: 'CreateUser',
-  triggers: [api('POST', '/users')],
+  triggers: [http('POST', '/users')],
   enqueues: ['user.created'],
 } as const satisfies StepConfig
 
@@ -768,12 +713,12 @@ For steps with multiple triggers, use `ctx.match()` to handle each trigger type:
 <Tab value='TypeScript'>
 
 ```typescript
-import { StepConfig, Handlers, api, queue, cron } from 'motia'
+import { StepConfig, Handlers, http, queue, cron } from 'motia'
 
 export const config = {
   name: 'UserSync',
   triggers: [
-    api('POST', '/users/sync'),
+    http('POST', '/users/sync'),
     queue('user.updated'),
     cron('0 */6 * * *'),
   ],
@@ -782,7 +727,7 @@ export const config = {
 
 export const handler: Handlers<typeof config> = async (input, ctx) => {
   return ctx.match({
-    api: async (request) => {
+    http: async (request) => {
       const { userId } = request.body
       await syncUser(userId, ctx)
       return { status: 200, body: { synced: true } }
@@ -807,7 +752,7 @@ export const handler: Handlers<typeof config> = async (input, ctx) => {
 ```javascript
 export const handler = async (input, ctx) => {
   return ctx.match({
-    api: async (request) => {
+    http: async (request) => {
       const { userId } = request.body
       await syncUser(userId, ctx)
       return { status: 200, body: { synced: true } }
@@ -832,7 +777,7 @@ export const handler = async (input, ctx) => {
 You can also use `ctx.is` for simpler checks:
 
 ```typescript
-if (ctx.is.api(input)) {
+if (ctx.is.http(input)) {
   return { status: 200, body: { ok: true } }
 }
 if (ctx.is.queue(input)) {
@@ -859,7 +804,7 @@ interface FlowContext<TEnqueueData, TInput> {
   trigger: TriggerInfo
   is: {
     queue: (input) => boolean
-    api: (input) => boolean
+    http: (input) => boolean
     cron: (input) => boolean
     state: (input) => boolean
     stream: (input) => boolean
@@ -1234,7 +1179,7 @@ Information about what triggered the current handler execution.
 
 ```typescript
 interface TriggerInfo {
-  type: 'api' | 'queue' | 'cron' | 'state' | 'stream'
+  type: 'http' | 'queue' | 'cron' | 'state' | 'stream'
 }
 ```
 
@@ -1257,7 +1202,7 @@ Route execution based on trigger type. See [Multi-Trigger Handler with match()](
 ```typescript
 type MatchHandlers<TInput, TEnqueueData, TResult> = {
   queue?: (input) => Promise<void>
-  api?: (request) => Promise<TResult>
+  http?: (request) => Promise<TResult>
   cron?: () => Promise<void>
   state?: (input) => Promise<TResult>
   stream?: (input) => Promise<TResult>
@@ -1332,7 +1277,7 @@ async def auth_middleware(req, context, next_fn):
 
 ## Request Object (ApiRequest)
 
-API handlers receive a request object with these fields.
+HTTP handlers receive a request object with these fields.
 
 ```typescript
 interface ApiRequest<TBody = unknown> {
@@ -1402,7 +1347,7 @@ async def handler(req, context):
 
 ## Response Object (ApiResponse)
 
-API handlers must return an object with these fields.
+HTTP handlers must return an object with these fields.
 
 ```typescript
 type ApiResponse<TStatus extends number, TBody> = {
@@ -1655,8 +1600,8 @@ Files are copied into the deployment bundle and accessible at runtime.
     Real-time streaming guide
   </Card>
 
-  <Card href="/docs/development-guide/middleware" title="Middleware">
-    Request/response middleware patterns
+  <Card href="/docs/development-guide/authentication" title="Authentication">
+    Authentication patterns for HTTP and stream endpoints
   </Card>
 
   <Card href="/docs/examples" title="Examples">

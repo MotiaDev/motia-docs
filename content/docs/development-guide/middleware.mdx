@@ -43,7 +43,7 @@ If you don't call `next()`, the request stops. The handler never runs.
       name: 'ProtectedEndpoint',
       description: 'A protected API endpoint',
       triggers: [
-        { type: 'api', path: '/protected', method: 'GET' },
+        { type: 'http', path: '/protected', method: 'GET' },
       ],
       enqueues: [],
       middleware: [authMiddleware],
@@ -67,7 +67,7 @@ If you don't call `next()`, the request stops. The handler never runs.
       name: 'ProtectedEndpoint',
       description: 'A protected API endpoint',
       triggers: [
-        { type: 'api', path: '/protected', method: 'GET' },
+        { type: 'http', path: '/protected', method: 'GET' },
       ],
       enqueues: [],
       middleware: [authMiddleware]
@@ -89,7 +89,7 @@ If you don't call `next()`, the request stops. The handler never runs.
         "name": "ProtectedEndpoint",
         "description": "A protected API endpoint",
         "triggers": [
-            {"type": "api", "path": "/protected", "method": "GET"}
+            {"type": "http", "path": "/protected", "method": "GET"}
         ],
         "enqueues": [],
         "middleware": [auth_middleware]
@@ -112,7 +112,7 @@ export const config = {
   name: 'MyEndpoint',
   description: 'Endpoint with multiple middleware',
   triggers: [
-    { type: 'api', path: '/endpoint', method: 'POST' },
+    { type: 'http', path: '/endpoint', method: 'POST' },
   ],
   enqueues: [],
   middleware: [
@@ -336,7 +336,7 @@ export const config = {
   name: 'GetUser',
   description: 'Get user by ID',
   triggers: [
-    { type: 'api', path: '/users/:id', method: 'GET' },
+    { type: 'http', path: '/users/:id', method: 'GET' },
   ],
   enqueues: [],
   middleware: [coreMiddleware],

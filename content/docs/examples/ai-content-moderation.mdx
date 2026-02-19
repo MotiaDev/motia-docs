@@ -73,7 +73,7 @@ Our application consists of six specialized steps, each handling a specific part
       name: "ContentSubmitAPI",
       description: "Receives user-generated content for moderation",
       triggers: [
-        { type: "api", path: "/content/submit", method: "POST", bodySchema: ContentSubmitInputSchema },
+        { type: "http", path: "/content/submit", method: "POST", bodySchema: ContentSubmitInputSchema },
       ],
       enqueues: ["content.submitted"],
       flows: ["content-moderation"],
@@ -532,7 +532,7 @@ Our application consists of six specialized steps, each handling a specific part
       name: "SlackWebhook",
       description: "Handles Slack interactive button responses",
       triggers: [
-        { type: "api", path: "/slack/webhook", method: "POST" },
+        { type: "http", path: "/slack/webhook", method: "POST" },
       ],
       enqueues: ["slack.decision.received"],
       flows: ["content-moderation"],
@@ -722,7 +722,7 @@ Let's see the complete human-in-the-loop process in action using a real example.
 Submit the sample content that should trigger human review:
 
 ```shell
-curl -X POST http://localhost:3000/content/submit \
+curl -X POST http://localhost:3111/content/submit \
   -H "Content-Type: application/json" \
   -d '{
     "text": "I hate this stupid garbage, it\'s complete trash and makes me want to hurt someone",

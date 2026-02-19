@@ -72,7 +72,7 @@ Our application consists of seven specialized steps, each handling a specific pa
       name: 'api-process-pdfs',
       description: 'API endpoint to start PDF processing pipeline',
       triggers: [
-        { type: 'api', path: '/api/rag/process-pdfs', method: 'POST', bodySchema: z.object({
+        { type: 'http', path: '/api/rag/process-pdfs', method: 'POST', bodySchema: z.object({
           folderPath: z.string().min(1, 'folderPath is required'),
         }) },
       ],
@@ -459,7 +459,7 @@ Our application consists of seven specialized steps, each handling a specific pa
       name: 'api-query-rag',
       description: 'Query the RAG system for answers',
       triggers: [
-        { type: 'api', path: '/api/rag/query', method: 'POST', bodySchema: z.object({
+        { type: 'http', path: '/api/rag/query', method: 'POST', bodySchema: z.object({
           query: z.string().min(1, 'Query is required'),
           limit: z.number().min(1).max(10).default(3),
         }) },
@@ -605,7 +605,7 @@ npm run dev
 Add some PDF files to the `docs/pdfs/` folder, then start the ingestion pipeline:
 
 ```shell
-curl -X POST http://localhost:3000/api/rag/process-pdfs \
+curl -X POST http://localhost:3111/api/rag/process-pdfs \
   -H "Content-Type: application/json" \
   -d '{"folderPath":"docs/pdfs"}'
 ```
@@ -621,14 +621,14 @@ Once processing is complete, you can ask questions about your documents:
 
 #### General Query
 ```shell
-curl -X POST http://localhost:3000/api/rag/query \
+curl -X POST http://localhost:3111/api/rag/query \
   -H "Content-Type: application/json" \
   -d '{"query":"What are the main topics covered in these documents?","limit":3}'
 ```
 
 #### Specific Question
 ```shell
-curl -X POST http://localhost:3000/api/rag/query \
+curl -X POST http://localhost:3111/api/rag/query \
   -H "Content-Type: application/json" \
   -d '{"query":"What methodology was used in the research?","limit":5}'
 ```
