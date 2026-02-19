@@ -19,7 +19,7 @@ export const config = {
   name: 'CreateResource',
   description: 'Create a new resource',
   triggers: [
-    { type: 'api', path: '/resources', method: 'POST' },
+    { type: 'http', path: '/resources', method: 'POST' },
   ],
   enqueues: [],
   flows: ['resource-management'],
@@ -34,7 +34,7 @@ config = {
     "name": "CreateResource",
     "description": "Create a new resource",
     "triggers": [
-        {"type": "api", "path": "/resources", "method": "POST"}
+        {"type": "http", "path": "/resources", "method": "POST"}
     ],
     "enqueues": [],
     "flows": ["resource-management"]
@@ -49,7 +49,7 @@ export const config = {
   name: 'CreateResource',
   description: 'Create a new resource',
   triggers: [
-    { type: 'api', path: '/resources', method: 'POST' },
+    { type: 'http', path: '/resources', method: 'POST' },
   ],
   enqueues: [],
   flows: ['resource-management']
@@ -65,9 +65,9 @@ export const config = {
 
 Two Steps working together in one flow.
 
-![API and Queue Steps connected in a flow](../img/flows-api-event.png)
+![HTTP and Queue Steps connected in a flow](../img/flows-api-event.png)
 
-**API Step - Create resource:**
+**HTTP Step - Create resource:**
 
 <Tabs items={['TypeScript', 'Python', 'JavaScript']}>
 <Tab value='TypeScript'>
@@ -79,7 +79,7 @@ export const config = {
   name: 'CreateResource',
   description: 'Create a new resource and trigger email',
   triggers: [
-    { type: 'api', path: '/resources', method: 'POST' },
+    { type: 'http', path: '/resources', method: 'POST' },
   ],
   enqueues: ['send-email'],
   flows: ['resource-management'],
@@ -105,7 +105,7 @@ config = {
     "name": "CreateResource",
     "description": "Create a new resource and trigger email",
     "triggers": [
-        {"type": "api", "path": "/resources", "method": "POST"}
+        {"type": "http", "path": "/resources", "method": "POST"}
     ],
     "enqueues": ["send-email"],
     "flows": ["resource-management"]
@@ -130,7 +130,7 @@ export const config = {
   name: 'CreateResource',
   description: 'Create a new resource and trigger email',
   triggers: [
-    { type: 'api', path: '/resources', method: 'POST' },
+    { type: 'http', path: '/resources', method: 'POST' },
   ],
   enqueues: ['send-email'],
   flows: ['resource-management']
@@ -288,7 +288,7 @@ export const config = {
   name: 'HealthCheck',
   description: 'Health check endpoint',
   triggers: [
-    { type: 'api', path: '/health', method: 'GET' },
+    { type: 'http', path: '/health', method: 'GET' },
   ],
   enqueues: [],
 } as const satisfies StepConfig
@@ -302,7 +302,7 @@ config = {
     "name": "HealthCheck",
     "description": "Health check endpoint",
     "triggers": [
-        {"type": "api", "path": "/health", "method": "GET"}
+        {"type": "http", "path": "/health", "method": "GET"}
     ],
     "enqueues": []
 }
@@ -316,7 +316,7 @@ export const config = {
   name: 'HealthCheck',
   description: 'Health check endpoint',
   triggers: [
-    { type: 'api', path: '/health', method: 'GET' },
+    { type: 'http', path: '/health', method: 'GET' },
   ],
   enqueues: [],
 }
@@ -347,7 +347,7 @@ export const config = {
   name: 'CreateResource',
   description: 'Create a resource requiring approval',
   triggers: [
-    { type: 'api', path: '/resources', method: 'POST' },
+    { type: 'http', path: '/resources', method: 'POST' },
   ],
   enqueues: [],
   virtualEnqueues: ['approval.required'],
@@ -363,7 +363,7 @@ config = {
     "name": "CreateResource",
     "description": "Create a resource requiring approval",
     "triggers": [
-        {"type": "api", "path": "/resources", "method": "POST"}
+        {"type": "http", "path": "/resources", "method": "POST"}
     ],
     "enqueues": [],
     "virtualEnqueues": ["approval.required"],
@@ -379,7 +379,7 @@ export const config = {
   name: 'CreateResource',
   description: 'Create a resource requiring approval',
   triggers: [
-    { type: 'api', path: '/resources', method: 'POST' },
+    { type: 'http', path: '/resources', method: 'POST' },
   ],
   enqueues: [],
   virtualEnqueues: ['approval.required'],
@@ -408,7 +408,7 @@ export const config = {
   name: 'SendEmail',
   description: 'Send email notifications',
   triggers: [
-    { type: 'api', path: '/send', method: 'POST' },
+    { type: 'http', path: '/send', method: 'POST' },
   ],
   enqueues: [],
   virtualEnqueues: [
@@ -427,7 +427,7 @@ config = {
     "name": "SendEmail",
     "description": "Send email notifications",
     "triggers": [
-        {"type": "api", "path": "/send", "method": "POST"}
+        {"type": "http", "path": "/send", "method": "POST"}
     ],
     "enqueues": [],
     "virtualEnqueues": [
@@ -446,7 +446,7 @@ export const config = {
   name: 'SendEmail',
   description: 'Send email notifications',
   triggers: [
-    { type: 'api', path: '/send', method: 'POST' },
+    { type: 'http', path: '/send', method: 'POST' },
   ],
   enqueues: [],
   virtualEnqueues: [

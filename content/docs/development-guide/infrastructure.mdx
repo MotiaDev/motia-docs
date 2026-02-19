@@ -19,12 +19,15 @@ export const config = {
   name: 'SendEmail',
   description: 'Send email with retry support',
   triggers: [
-    { type: 'queue', topic: 'email.requested' },
+    { 
+      type: 'queue', 
+      topic: 'email.requested',
+      infrastructure: {
+        handler: { timeout: 10 },
+        queue: { maxRetries: 5, visibilityTimeout: 60 }
+      }
+    },
   ],
-  infrastructure: {
-    handler: { timeout: 10 },
-    queue: { maxRetries: 5, visibilityTimeout: 60 }
-  },
   flows: ['notifications'],
 } as const satisfies StepConfig
 ```
@@ -37,12 +40,15 @@ config = {
     "name": "SendEmail",
     "description": "Send email with retry support",
     "triggers": [
-        {"type": "queue", "topic": "email.requested"}
+        {
+            "type": "queue",
+            "topic": "email.requested",
+            "infrastructure": {
+                "handler": {"timeout": 10},
+                "queue": {"maxRetries": 5, "visibilityTimeout": 60}
+            }
+        }
     ],
-    "infrastructure": {
-        "handler": {"timeout": 10},
-        "queue": {"maxRetries": 5, "visibilityTimeout": 60}
-    },
     "flows": ["notifications"]
 }
 ```
@@ -55,12 +61,15 @@ export const config = {
   name: 'SendEmail',
   description: 'Send email with retry support',
   triggers: [
-    { type: 'queue', topic: 'email.requested' },
+    {
+      type: 'queue',
+      topic: 'email.requested',
+      infrastructure: {
+        handler: { timeout: 10 },
+        queue: { maxRetries: 5, visibilityTimeout: 60 }
+      }
+    },
   ],
-  infrastructure: {
-    handler: { timeout: 10 },
-    queue: { maxRetries: 5, visibilityTimeout: 60 }
-  },
   flows: ['notifications']
 }
 ```
@@ -103,13 +112,14 @@ export const config = {
   name: 'ProcessOrder',
   description: 'Process orders in FIFO order',
   triggers: [
-    { type: 'queue', topic: 'order.created' },
+    {
+      type: 'queue',
+      topic: 'order.created',
+      infrastructure: {
+        queue: { type: 'fifo' }
+      }
+    },
   ],
-  infrastructure: {
-    queue: {
-      type: 'fifo'
-    }
-  },
   flows: ['orders'],
 } as const satisfies StepConfig
 ```
@@ -122,13 +132,14 @@ config = {
     "name": "ProcessOrder",
     "description": "Process orders in FIFO order",
     "triggers": [
-        {"type": "queue", "topic": "order.created"}
-    ],
-    "infrastructure": {
-        "queue": {
-            "type": "fifo"
+        {
+            "type": "queue",
+            "topic": "order.created",
+            "infrastructure": {
+                "queue": {"type": "fifo"}
+            }
         }
-    },
+    ],
     "flows": ["orders"]
 }
 ```
@@ -141,13 +152,14 @@ export const config = {
   name: 'ProcessOrder',
   description: 'Process orders in FIFO order',
   triggers: [
-    { type: 'queue', topic: 'order.created' },
+    {
+      type: 'queue',
+      topic: 'order.created',
+      infrastructure: {
+        queue: { type: 'fifo' }
+      }
+    },
   ],
-  infrastructure: {
-    queue: {
-      type: 'fifo'
-    }
-  },
   flows: ['orders']
 }
 ```
@@ -213,7 +225,7 @@ The `messageGroupId` ensures events are processed in order within that group.
 
 ## Default Values
 
-If you don't specify infrastructure settings, Motia uses these defaults:
+If you don't specify `infrastructure` on a queue trigger, Motia uses these defaults:
 
 ```typescript
 {

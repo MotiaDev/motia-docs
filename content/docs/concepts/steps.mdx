@@ -38,7 +38,7 @@ export const config = {
   name: 'HelloStep',
   description: 'Hello endpoint',
   triggers: [
-    { type: 'api', path: '/hello', method: 'GET', responseSchema: { 200: z.object({ message: z.string() }) } },
+    { type: 'http', path: '/hello', method: 'GET', responseSchema: { 200: z.object({ message: z.string() }) } },
   ],
   enqueues: [],
   flows: ['my-flow'],
@@ -58,7 +58,7 @@ config = {
     "name": "HelloStep",
     "description": "Hello endpoint",
     "triggers": [
-        {"type": "api", "path": "/hello", "method": "GET"}
+        {"type": "http", "path": "/hello", "method": "GET"}
     ],
     "enqueues": [],
     "flows": ["my-flow"]
@@ -79,7 +79,7 @@ export const config = {
   name: 'HelloStep',
   description: 'Hello endpoint',
   triggers: [
-    { type: 'api', path: '/hello', method: 'GET', responseSchema: { 200: z.object({ message: z.string() }) } },
+    { type: 'http', path: '/hello', method: 'GET', responseSchema: { 200: z.object({ message: z.string() }) } },
   ],
   enqueues: [],
   flows: ['my-flow'],
@@ -117,7 +117,7 @@ export const config = {
   name: 'SendMessage',
   description: 'Sends a message',
   triggers: [
-    { type: 'api', path: '/messages', method: 'POST' },
+    { type: 'http', path: '/messages', method: 'POST' },
   ],
   enqueues: ['message.sent'],
   flows: ['messaging'],
@@ -160,7 +160,7 @@ config = {
     "name": "SendMessage",
     "description": "Sends a message",
     "triggers": [
-        {"type": "api", "path": "/messages", "method": "POST"}
+        {"type": "http", "path": "/messages", "method": "POST"}
     ],
     "enqueues": ["message.sent"],
     "flows": ["messaging"]
@@ -198,7 +198,7 @@ export const config = {
   name: 'SendMessage',
   description: 'Sends a message',
   triggers: [
-    { type: 'api', path: '/messages', method: 'POST' },
+    { type: 'http', path: '/messages', method: 'POST' },
   ],
   enqueues: ['message.sent'],
   flows: ['messaging'],
@@ -238,7 +238,7 @@ With just two files, you have an **API endpoint** that triggers an **event-drive
 
 ## Triggers
 
-<div id="triggers-api"></div>
+<div id="triggers-http"></div>
 <div id="triggers-queue"></div>
 <div id="triggers-cron"></div>
 
@@ -246,16 +246,16 @@ Every Step has a `triggers` array that defines **how it triggers**:
 
 | Type | When it runs | Use case |
 |------|--------------|----------|
-| `api` | HTTP request | REST APIs, webhooks |
+| `http` | HTTP request | REST APIs, webhooks |
 | `queue` | Message enqueued | Background jobs, workflows |
 | `cron` | Schedule | Cleanup, reports, reminders |
 | `state` | State change | React to data changes |
 | `stream` | Stream event | Real-time data processing |
 
-<Tabs items={['API', 'Queue', 'Cron']} groupId="triggers" updateAnchor defaultIndex={0}>
-  <Tab id="triggers-api" value="API">
+<Tabs items={['HTTP', 'Queue', 'Cron', 'State', 'Stream']} groupId="triggers" updateAnchor defaultIndex={0}>
+  <Tab id="triggers-http" value="HTTP">
 
-### API Trigger
+### HTTP Trigger
 
 Runs when an HTTP request hits the path.
 
@@ -271,7 +271,7 @@ Runs when an HTTP request hits the path.
       name: 'GetUser',
       description: 'Get user by ID',
       triggers: [
-        { type: 'api', path: '/users/:id', method: 'GET' },
+        { type: 'http', path: '/users/:id', method: 'GET' },
       ],
       enqueues: [],
       flows: ['users'],
@@ -290,7 +290,7 @@ Runs when an HTTP request hits the path.
       name: 'GetUser',
       description: 'Get user by ID',
       triggers: [
-        { type: 'api', path: '/users/:id', method: 'GET' },
+        { type: 'http', path: '/users/:id', method: 'GET' },
       ],
       enqueues: [],
       flows: ['users'],
@@ -309,7 +309,7 @@ Runs when an HTTP request hits the path.
         "name": "GetUser",
         "description": "Get user by ID",
         "triggers": [
-            {"type": "api", "path": "/users/:id", "method": "GET"}
+            {"type": "http", "path": "/users/:id", "method": "GET"}
         ],
         "enqueues": [],
         "flows": ["users"]
@@ -328,7 +328,7 @@ Runs when an HTTP request hits the path.
 | Property | Description |
 |----------|-------------|
 | `name` | Unique identifier |
-| `triggers` | Array with `{ type: 'api', path, method }` |
+| `triggers` | Array with `{ type: 'http', path, method }` |
 | `path` | URL path (supports `:params`) |
 | `method` | GET, POST, PUT, DELETE |
 | `bodySchema` | Validate request body |
@@ -442,7 +442,7 @@ Runs on a schedule. Use for periodic tasks.
       name: 'DailyCleanup',
       description: 'Runs daily cleanup',
       triggers: [
-        cron('0 0 * * *'),
+        cron('0 0 0 * * * *'),
       ],
       enqueues: [],
       flows: ['maintenance'],
@@ -461,7 +461,7 @@ Runs on a schedule. Use for periodic tasks.
       name: 'DailyCleanup',
       description: 'Runs daily cleanup',
       triggers: [
-        cron('0 0 * * *'),
+        cron('0 0 0 * * * *'),
       ],
       enqueues: [],
       flows: ['maintenance'],
@@ -478,7 +478,7 @@ Runs on a schedule. Use for periodic tasks.
         "name": "DailyCleanup",
         "description": "Runs daily cleanup",
         "triggers": [
-            {"type": "cron", "expression": "0 0 * * *"}
+            {"type": "cron", "expression": "0 0 0 * * * *"}
         ],
         "enqueues": [],
         "flows": ["maintenance"]
@@ -496,22 +496,113 @@ Runs on a schedule. Use for periodic tasks.
 |----------|-------------|
 | `name` | Unique identifier |
 | `triggers` | Array with `cron(expression)` helper |
-| `expression` | Cron expression (e.g., `'0 0 * * *'`) |
+| `expression` | Cron expression (e.g., `'0 0 0 * * * *'`) |
 
 **Handler:** `handler(input, ctx)`
 
 - `ctx` - Context with `logger`, `enqueue`, `state`, `streams`, `traceId`, `trigger`, `is`, `getData`, `match`
 
-**Common schedules:**
+The iii engine uses a **7-field cron expression** that includes seconds and an optional year:
+
+```
+┌──────────── second (0-59)
+│ ┌────────── minute (0-59)
+│ │ ┌──────── hour (0-23)
+│ │ │ ┌────── day of month (1-31)
+│ │ │ │ ┌──── month (1-12)
+│ │ │ │ │ ┌── day of week (0-6, Sun=0)
+│ │ │ │ │ │ ┌ year (optional)
+│ │ │ │ │ │ │
+* * * * * * *
+```
 
 | Expression | Runs |
-|------------|------|
-| `* * * * *` | Every minute |
-| `0 * * * *` | Every hour |
-| `0 0 * * *` | Daily at midnight |
-| `0 9 * * 1` | Monday at 9 AM |
+|---|---|
+| `0 * * * * * *` | Every minute |
+| `0 0 * * * * *` | Every hour |
+| `0 0 0 * * * *` | Daily at midnight |
+| `0 0 9 * * 1 *` | Monday at 9 AM |
+| `0 */5 * * * * *` | Every 5 minutes |
 
-Use [crontab.guru](https://crontab.guru) to build expressions.
+</Tab>
+
+  <Tab value="State">
+
+### State Trigger
+
+Runs when state data changes. Use for reactive workflows that respond to data mutations without polling.
+
+**Example:**
+
+```typescript
+import type { Handlers, StepConfig, StateTriggerInput } from 'motia'
+
+export const config = {
+  name: 'OnAllStepsComplete',
+  description: 'Triggers when all parallel steps finish',
+  triggers: [
+    {
+      type: 'state',
+      condition: (input: StateTriggerInput<{ totalSteps: number; completedSteps: number }>) => {
+        return (
+          input.group_id === 'tasks' &&
+          !!input.new_value &&
+          input.new_value.totalSteps === input.new_value.completedSteps
+        )
+      },
+    },
+  ],
+  enqueues: ['all-steps-done'],
+  flows: ['parallel-merge'],
+} as const satisfies StepConfig
+
+export const handler: Handlers<typeof config> = async (input, { logger, enqueue }) => {
+  logger.info('All steps complete', { itemId: input.item_id })
+  await enqueue({ topic: 'all-steps-done', data: { taskId: input.item_id } })
+}
+```
+
+**Handler input:** The handler receives a `StateTriggerInput` with `new_value`, `old_value`, `item_id`, and `group_id`.
+
+[Learn more about State Triggers](/docs/advanced-features/reactive-triggers)
+
+</Tab>
+
+  <Tab value="Stream">
+
+### Stream Trigger
+
+Runs when a stream item is created, updated, or deleted. Use for reacting to real-time data changes.
+
+**Example:**
+
+```typescript
+import type { Handlers, StepConfig, StreamWrapperMessage } from 'motia'
+
+export const config = {
+  name: 'OnDeploymentUpdate',
+  description: 'Reacts to deployment stream changes',
+  triggers: [
+    {
+      type: 'stream',
+      streamName: 'deployment',
+      groupId: 'data',
+      condition: (input: StreamWrapperMessage) => input.event.type === 'update',
+    },
+  ],
+  enqueues: ['deployment-updated'],
+  flows: ['deployments'],
+} as const satisfies StepConfig
+
+export const handler: Handlers<typeof config> = async (input, { logger, enqueue }) => {
+  logger.info('Deployment updated', { streamName: input.streamName, groupId: input.groupId })
+  await enqueue({ topic: 'deployment-updated', data: input.event.data })
+}
+```
+
+**Handler input:** The handler receives a `StreamWrapperMessage` with `streamName`, `groupId`, `id`, `timestamp`, and an `event` object containing `type` (`create`, `update`, `delete`, or `event`) and `data`.
+
+[Learn more about Stream Triggers](/docs/advanced-features/reactive-triggers)
 
 </Tab>
 </Tabs>
@@ -530,7 +621,7 @@ Every handler receives a `ctx` object with these tools:
 | `streams` | Real-time data channels for clients |
 | `traceId` | Unique ID for tracing requests & workflows |
 | `trigger` | Info about which trigger activated this handler |
-| `is` | Type guards for trigger types (is.queue, is.api, is.cron) |
+| `is` | Type guards for trigger types (is.queue, is.http, is.cron) |
 | `getData` | Extract data payload regardless of trigger type |
 | `match` | Pattern match on trigger type for multi-trigger steps |
 
@@ -645,7 +736,7 @@ export const config = {
   name: 'CreateOrder',
   description: 'Creates a new order',
   triggers: [
-    { type: 'api', path: '/orders', method: 'POST' },
+    { type: 'http', path: '/orders', method: 'POST' },
   ],
   enqueues: [],
   flows: ['order-management'],
@@ -660,7 +751,7 @@ config = {
     "name": "CreateOrder",
     "description": "Creates a new order",
     "triggers": [
-        {"type": "api", "path": "/orders", "method": "POST"}
+        {"type": "http", "path": "/orders", "method": "POST"}
     ],
     "enqueues": [],
     "flows": ["order-management"]
@@ -675,7 +766,7 @@ export const config = {
   name: 'CreateOrder',
   description: 'Creates a new order',
   triggers: [
-    { type: 'api', path: '/orders', method: 'POST' },
+    { type: 'http', path: '/orders', method: 'POST' },
   ],
   enqueues: [],
   flows: ['order-management'],
@@ -761,6 +852,29 @@ export const config = {
 </Tabs>
 
 [Learn more about Infrastructure](/docs/development-guide/infrastructure)
+
+---
+
+## Multi-Trigger Steps
+
+A single Step can respond to multiple trigger types. For example, a Step can be activated by both an HTTP request and a queue message:
+
+```typescript
+export const config = {
+  name: 'ProcessOrder',
+  triggers: [
+    { type: 'http', method: 'POST', path: '/orders/manual' },
+    { type: 'queue', topic: 'order.created' },
+    { type: 'cron', expression: '0 0 0 * * * *' },
+  ],
+  enqueues: ['order.processed'],
+  flows: ['orders'],
+} as const satisfies StepConfig
+```
+
+Use `ctx.match()` to handle each trigger type differently, or `ctx.getData()` to extract the data payload regardless of trigger type.
+
+[Learn more about Multi-Trigger Steps](/docs/advanced-features/multi-trigger-steps)
 
 ---
 

@@ -137,38 +137,45 @@ export const handler = async (input, { state }) => {
 
 ## Atomic Updates
 
-Use `state.update()` for atomic operations on state items. This is useful when you need to increment counters, update specific fields, or perform multiple changes atomically.
+The `update()` method performs atomic operations on state data, eliminating race conditions from manual get-then-set patterns.
+
+<Callout type="info">
+  Use `update()` instead of getting a value, modifying it, and setting it back. Atomic updates prevent data loss when multiple Steps modify the same state concurrently.
+</Callout>
+
+### TypeScript/JavaScript
 
 ```typescript
-import { type Handlers, type StepConfig, type UpdateOp } from 'motia'
-
-export const config = {
-  name: 'UpdateInventory',
-  description: 'Atomically update inventory',
-  triggers: [
-    { type: 'queue', topic: 'inventory.update' },
-  ],
-  flows: ['inventory'],
-} as const satisfies StepConfig
-
-export const handler: Handlers<typeof config> = async (input, { state }) => {
-  const ops: UpdateOp[] = [
-    { type: 'set', path: 'name', value: 'New Name' },
-    { type: 'increment', path: 'count', by: 1 },
-    { type: 'decrement', path: 'stock', by: 1 },
-  ]
-  const result = await state.update('inventory', 'item-123', ops)
-  // result has new_value and old_value
-}
+await ctx.state.update('orders', orderId, [
+  { type: 'increment', path: 'completedSteps', by: 1 },
+  { type: 'set', path: 'status', value: 'shipped' },
+  { type: 'decrement', path: 'retries', by: 1 },
+])
 ```
 
-### Available Update Operations
+### Python
 
-| Operation | Description | Example |
-|-----------|-------------|---------|
-| `set` | Set a field to a value | `{ type: 'set', path: 'name', value: 'New Name' }` |
-| `increment` | Increment a numeric field | `{ type: 'increment', path: 'count', by: 1 }` |
-| `decrement` | Decrement a numeric field | `{ type: 'decrement', path: 'stock', by: 1 }` |
+```python
+await context.state.update("orders", order_id, [
+    {"type": "increment", "path": "completedSteps", "by": 1},
+    {"type": "set", "path": "status", "value": "shipped"},
+    {"type": "decrement", "path": "retries", "by": 1},
+])
+```
+
+### UpdateOp Types
+
+| Type | Fields | Description |
+|---|---|---|
+| `set` | `path`, `value` | Set a field to a value (overwrite) |
+| `merge` | `path` (optional), `value` | Merge an object into the existing value |
+| `increment` | `path`, `by` | Increment a numeric field |
+| `decrement` | `path`, `by` | Decrement a numeric field |
+| `remove` | `path` | Remove a field entirely |
+
+`update()` returns `{ new_value, old_value }` just like `set()`.
+
+[Learn more about Atomic Updates](/docs/advanced-features/atomic-updates)
 
 ---
 
@@ -188,7 +195,7 @@ export const config = {
   name: 'CreateOrder',
   description: 'Receive and store a new order',
   triggers: [
-    { type: 'api', path: '/orders', method: 'POST' },
+    { type: 'http', path: '/orders', method: 'POST' },
   ],
   enqueues: ['order.created'],
   flows: ['order-processing'],
@@ -484,3 +491,25 @@ export const handler = async (input, { state, logger }) => {
 - Use databases for permanent data, state for temporary workflow data
 
 ---
+
+## State Triggers
+
+Steps can react to state changes automatically using state triggers. This enables powerful reactive patterns — for example, triggering a step when a parallel merge completes, without polling or manual coordination.
+
+```typescript
+export const config = {
+  name: 'OnTaskComplete',
+  triggers: [
+    {
+      type: 'state',
+      condition: (input) => {
+        if (!input.new_value) return false
+        return input.group_id === 'tasks' && input.new_value.completedSteps === input.new_value.totalSteps
+      },
+    },
+  ],
+  flows: ['task-flow'],
+} as const satisfies StepConfig
+```
+
+[Learn more about State Triggers](/docs/advanced-features/reactive-triggers)

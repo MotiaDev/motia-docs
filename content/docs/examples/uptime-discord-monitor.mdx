@@ -388,7 +388,7 @@ Our application consists of five specialized steps, each handling a specific par
       name: 'HealthCheck',
       description: 'Provides system health status endpoint',
       triggers: [
-        { type: 'api', method: 'GET', path: '/healthz' },
+        { type: 'http', method: 'GET', path: '/healthz' },
       ],
       enqueues: [],
       responseSchema: {
@@ -500,7 +500,7 @@ Our application consists of five specialized steps, each handling a specific par
     export const config = {
       discordWebhook: process.env.DISCORD_WEBHOOK,
       sites: parseSites(process.env.SITES),
-      cron: process.env.CHECK_INTERVAL_CRON || '*/1 * * * *',
+      cron: process.env.CHECK_INTERVAL_CRON || '0 */1 * * * * *',
       alertBurst: parseInt(process.env.ALERT_BURST) || 3,
       alertWindowSec: parseInt(process.env.ALERT_WINDOW_SEC) || 300
     };
@@ -663,7 +663,7 @@ DISCORD_WEBHOOK="https://discord.com/api/webhooks/123456789/your-webhook-token"
 SITES='["https://example.com", "https://api.yourdomain.com", "https://blog.yoursite.org"]'
 
 # Optional: Check frequency (default: every minute)
-CHECK_INTERVAL_CRON="*/1 * * * *"
+CHECK_INTERVAL_CRON="0 */1 * * * * *"
 
 # Optional: Rate limiting (default: 3 alerts per 5 minutes)
 ALERT_BURST="3"
@@ -692,7 +692,7 @@ npm run dev
 Verify your monitoring system is working correctly:
 
 ```shell
-curl http://localhost:3000/healthz
+curl http://localhost:3111/healthz
 ```
 
 You should see a response with your configured sites and their current status:
@@ -736,16 +736,16 @@ Modify the cron expression to change monitoring frequency:
 
 ```shell
 # Every 5 minutes
-CHECK_INTERVAL_CRON="*/5 * * * *"
+CHECK_INTERVAL_CRON="0 */5 * * * * *"
 
 # Every hour
-CHECK_INTERVAL_CRON="0 * * * *"
+CHECK_INTERVAL_CRON="0 0 * * * * *"
 
 # Every 6 hours
-CHECK_INTERVAL_CRON="0 */6 * * *"
+CHECK_INTERVAL_CRON="0 0 */6 * * * *"
 
 # Business hours only (9 AM - 5 PM, Mon-Fri)
-CHECK_INTERVAL_CRON="* 9-17 * * 1-5"
+CHECK_INTERVAL_CRON="0 * 9-17 * * 1-5 *"
 ```
 
 ### Alert Rate Limiting
@@ -855,13 +855,13 @@ Set up monitoring for your monitoring system:
 
 ```shell
 # Monitor the health endpoint itself
-curl -f http://localhost:3000/healthz || echo "Monitor is down!"
+curl -f http://localhost:3111/healthz || echo "Monitor is down!"
 
 # Check for recent status updates
-curl http://localhost:3000/healthz | jq '.lastKnown | to_entries | map(select(.value.checkedAt > (now - 300)))'
+curl http://localhost:3111/healthz | jq '.lastKnown | to_entries | map(select(.value.checkedAt > (now - 300)))'
 
 # Verify all sites are being checked
-curl http://localhost:3000/healthz | jq '.sitesConfigured == (.lastKnown | length)'
+curl http://localhost:3111/healthz | jq '.sitesConfigured == (.lastKnown | length)'
 ```
 
 ---
@@ -880,7 +880,7 @@ Want to explore the complete monitoring implementation? Check out the full sourc
       </div>
       <div className="flex-1">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">Complete Uptime Monitor</h3>
-        <p className="text-gray-600 mb-4">Access the full implementation with event steps, utility libraries, Discord integration, and production-ready configuration.</p>
+        <p className="text-gray-600 mb-4">Access the full implementation with steps, utility libraries, Discord integration, and production-ready configuration.</p>
         <div className="flex flex-col sm:flex-row gap-3">
           <a 
             href="https://github.com/MotiaDev/motia-examples/tree/main/examples/foundational/infrastructure/motia-uptime-monitor" 

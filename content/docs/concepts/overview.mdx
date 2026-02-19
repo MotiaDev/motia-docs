@@ -15,7 +15,7 @@ Want an API? That's a Step.
 Need a background job? That's a Step.
 Scheduled task? Also a Step.
 
-Write each Step in whatever language makes sense - TypeScript, Python, or JavaScript. They all run together, share the same state, and talk through queued messages.
+Write each Step in whatever language makes sense — TypeScript, Python, or JavaScript. Each language runtime runs independently, managed by the iii engine, and they all share the same state and communicate through queued messages.
 
 ## How It Works
 
@@ -34,7 +34,7 @@ export const config = {
   name: 'MyStep',
   description: 'Handles incoming requests',
   triggers: [
-    { type: 'api', path: '/endpoint', method: 'POST' },
+    { type: 'http', path: '/endpoint', method: 'POST' },
   ],
   enqueues: ['task.done'],
   flows: ['my-flow'],
@@ -60,7 +60,7 @@ config = {
     "name": "MyStep",
     "description": "Handles incoming requests",
     "triggers": [
-        {"type": "api", "path": "/endpoint", "method": "POST"}
+        {"type": "http", "path": "/endpoint", "method": "POST"}
     ],
     "enqueues": ["task.done"],
     "flows": ["my-flow"]
@@ -85,7 +85,7 @@ export const config = {
   name: 'MyStep',
   description: 'Handles incoming requests',
   triggers: [
-    { type: 'api', path: '/endpoint', method: 'POST' },
+    { type: 'http', path: '/endpoint', method: 'POST' },
   ],
   enqueues: ['task.done'],
   flows: ['my-flow'],
@@ -164,7 +164,7 @@ Motia automatically discovers Steps - no manual registration required.
       <File name="notifications.stream.ts" />
     </Folder>
   </Folder>
-  <File name="config.yml" />
+  <File name="config.yaml" />
   <File name=".env" />
   <File name="package.json" />
   <File name="requirements.txt" />
@@ -195,18 +195,12 @@ Motia scans the `src/` directory and automatically registers files that:
 
 ## Multi-Language Support
 
-Every Step can be in a different language. They all run in the same process and share everything.
+Every Step can be in a different language. Each language runtime runs as an independent process managed by the iii engine — Python developers do not need Node.js, and vice versa. All runtimes share the same state and communicate through the same queue infrastructure.
 
 **Currently Supported:**
 - **TypeScript** `.step.ts`
-- **Python** `_step.py` (install with `pip install motia-python`)
+- **Python** `_step.py` (standalone `motia` Python package — no Node.js required)
 - **JavaScript** `.step.js`
-
-**Coming Soon:**
-- Ruby `.step.rb`
-- C# `.step.cs`
-- Go `.step.go`
-- And many more...
 
 **Example project:**
 
@@ -251,10 +245,10 @@ Clients receive updates instantly.
 
 [Learn about Streams](/docs/development-guide/streams)
 
-### Adapters
-Pluggable infrastructure components that enable horizontal scaling and custom implementations. Swap default file-based storage with Redis, RabbitMQ, or your own implementations without changing your code.
+### Infrastructure via config.yaml
+All infrastructure — queues, state storage, streams, cron scheduling, and observability — is configured through `config.yaml` modules managed by the iii engine. Swap default file-based storage with Redis or RabbitMQ without changing your application code.
 
-[Learn about Adapters](/docs/development-guide/adapters)
+[Learn about the iii Engine](/docs/concepts/iii-engine)
 
 ### Context Object
 Every handler gets a context object with everything you need:
@@ -266,6 +260,16 @@ Every handler gets a context object with everything you need:
 | `state` | Persistent storage |
 | `streams` | Real-time updates |
 | `traceId` | Request tracing |
+
+---
+
+## Motia + iii
+
+Motia is the application framework — you write Steps in TypeScript, Python, or JavaScript. The **iii engine** is the runtime that powers everything underneath: it manages queues, state storage, stream servers, cron scheduling, HTTP routing, and observability.
+
+You configure iii through a `config.yaml` file that declares which modules to load and how to configure their adapters (file-based for development, Redis/RabbitMQ for production). The iii engine then manages the lifecycle of your Motia SDK processes via the `ExecModule`.
+
+[Learn more about the iii Engine](/docs/concepts/iii-engine)
 
 ---
 
@@ -287,6 +291,10 @@ Visual interface for building and debugging flows:
 <Cards>
   <Card href="/docs/concepts/steps" title="Steps">
     Deep dive into Steps - the only primitive you need
+  </Card>
+
+  <Card href="/docs/concepts/iii-engine" title="The iii Engine">
+    Understand how iii manages infrastructure through config.yaml
   </Card>
 
   <Card href="/docs/getting-started/quick-start" title="Quick Start">

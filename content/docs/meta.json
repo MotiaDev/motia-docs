@@ -2,13 +2,16 @@
   "title": "Motia",
   "pages": [
     "index",
+    "why-motia",
     "getting-started",
     "concepts",
-    "product-showcase",
     "development-guide",
+    "advanced-features",
     "deployment-guide",
+    "examples",
+    "product-showcase",
+    "api-reference",
     "contribution",
-    "community-resources",
-    "api-reference"
+    "community-resources"
   ]
 }

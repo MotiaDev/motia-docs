@@ -7,12 +7,8 @@
     "streams",
     "flows",
     "infrastructure",
-    "adapters",
+    "authentication",
     "observability",
-    "customizing-flows",
-    "plugins",
-    "middleware",
-    "testing",
     "environment-variables",
     "cli",
     "motia-config"

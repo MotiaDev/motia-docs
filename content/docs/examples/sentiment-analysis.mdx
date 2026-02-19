@@ -28,7 +28,7 @@ Let's dive in.
 
 ## A Step at a Time
 
-At the heart of the Motia framework is a simple but powerful idea: the **`step`**. A step is a self-contained, independent unit of logic that listens for an event, performs a task, and, optionally, emits a new event. This concept is the core primitive that allows you to break down even the most complex architectures into a series of simple, manageable components.
+At the heart of the Motia framework is a simple but powerful idea: the **`step`**. A step is a self-contained, independent unit of logic that listens for an event, performs a task, and, optionally, enqueues a new event. This concept is the core primitive that allows you to break down even the most complex architectures into a series of simple, manageable components.
 
 Instead of a monolithic application where business logic is tightly coupled, Motia encourages a decoupled, event-driven approach. This has several key advantages:
 
@@ -54,10 +54,10 @@ Our application will be composed of four steps. Let's explore each one.
 
 <Tabs items={['analyzeSentimentApi', 'openAiAnalyzeSentiment', 'handlePositive', 'handleNegative']}>
   <Tab value="analyzeSentimentApi">
-    This is the entry point to our workflow. It's an API step that listens for `POST` requests, validates the incoming data, and emits an `openai.analyzeSentimentRequest` event.
+    This is the entry point to our workflow. It's a step with an HTTP trigger that listens for `POST` requests, validates the incoming data, and enqueues an `openai.analyzeSentimentRequest` event.
 
     ```ts
-    // Receives user text, emits "openai.analyzeSentimentRequest".
+    // Receives user text, enqueues "openai.analyzeSentimentRequest".
     import { type Handlers, type StepConfig } from 'motia'
     import { z } from 'zod'
 
@@ -65,7 +65,7 @@ Our application will be composed of four steps. Let's explore each one.
       name: 'analyzeSentimentApi',
       description: 'Receives user text and enqueues an event to trigger sentiment analysis.',
       triggers: [
-        { type: 'api', path: '/api/analyze-sentiment', method: 'POST', bodySchema: z.object({
+        { type: 'http', path: '/api/analyze-sentiment', method: 'POST', bodySchema: z.object({
           text: z.string().min(1, 'text is required'),
         }) },
       ],
@@ -94,7 +94,7 @@ Our application will be composed of four steps. Let's explore each one.
 
   </Tab>
   <Tab value="openAiAnalyzeSentiment">
-    This step is the brains of our operation. It subscribes to the `openai.analyzeSentimentRequest` event, calls the OpenAI API, and then based on the response, emits either a `openai.positiveSentiment` or `openai.negativeSentiment` event. This is where the dynamic routing happens.
+    This step is the brains of our operation. It listens for the `openai.analyzeSentimentRequest` topic via a queue trigger, calls the OpenAI API, and then based on the response, enqueues either a `openai.positiveSentiment` or `openai.negativeSentiment` event. This is where the dynamic routing happens.
 
     ```ts
     // Calls OpenAI, instructing it to ONLY return JSON like {"sentiment":"positive","analysis":"..."}
@@ -279,7 +279,7 @@ Now you can send requests to your API and see the workflow in action.
 #### Positive Sentiment
 
 ```shell
-curl -X POST http://localhost:3000/api/analyze-sentiment \
+curl -X POST http://localhost:3111/api/analyze-sentiment \
   -H "Content-Type: application/json" \
   -d '{"text":"I absolutely love this new device! It is amazing and works perfectly."}'
 ```
@@ -289,7 +289,7 @@ Check your logs, and you should see the `[Positive Responder]` has been triggere
 #### Negative Sentiment
 
 ```shell
-curl -X POST http://localhost:3000/api/analyze-sentiment \
+curl -X POST http://localhost:3111/api/analyze-sentiment \
   -H "Content-Type: application/json" \
   -d '{"text":"This is the worst product I have ever used. It broke after one day."}'
 ```
