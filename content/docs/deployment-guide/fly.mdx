@@ -167,7 +167,7 @@ Create a production `config.yaml` with Redis adapters for all modules. Fly sets 
 modules:
   - class: modules::stream::StreamModule
     config:
-      port: ${STREAMS_PORT:31112}
+      port: ${STREAMS_PORT:3112}
       host: 0.0.0.0
       auth_function: motia.streams.authenticate
       adapter:
