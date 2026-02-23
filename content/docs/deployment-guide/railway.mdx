@@ -140,7 +140,7 @@ FROM debian:bookworm-slim AS builder
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -fSL https://install.iii.dev/iii/main/install.sh | sh
+RUN curl -fsSL https://install.iii.dev/iii/main/install.sh | sh
 
 FROM oven/bun:1.1-slim
 
@@ -188,11 +188,11 @@ Create a `railway.json` in your project root:
 
 Create a production `config.yaml` with Redis adapters for all modules. Railway auto-injects `REDIS_URL` when you link the Redis service to your app:
 
-```yaml title="config.yaml"
+```yaml title="config-production.yaml"
 modules:
   - class: modules::stream::StreamModule
     config:
-      port: ${STREAMS_PORT:3112}
+      port: ${STREAM_PORT:3112}
       host: 0.0.0.0
       auth_function: motia.streams.authenticate
       adapter:
@@ -238,6 +238,11 @@ modules:
     config:
       adapter:
         class: modules::cron::KvCronAdapter
+
+  - class: modules::shell::ExecModule
+    config:
+      exec:
+        - bun run --enable-source-maps dist/index-production.js
 ```
 
 <Callout type="info">
