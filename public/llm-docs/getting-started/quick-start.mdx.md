@@ -16,7 +16,7 @@ Navigate into your new project directory and start iii. The `config.yaml` in the
 
 ```bash
 cd <your-project-name> 
-iii -c config.yaml
+iii -c iii-config.yaml
 ```
 
 </Step>
