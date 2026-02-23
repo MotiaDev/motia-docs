@@ -8,9 +8,12 @@
     "flows",
     "infrastructure",
     "authentication",
+    "middleware",
     "observability",
     "environment-variables",
     "cli",
-    "motia-config"
+    "motia-config",
+    "adapters",
+    "plugins"
   ]
 }

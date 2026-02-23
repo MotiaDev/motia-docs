@@ -3,30 +3,53 @@ title: Authentication
 description: How to handle authentication in Motia for HTTP endpoints and real-time streams
 ---
 
-Motia provides two authentication patterns: **stream authentication** configured at the engine level, and **HTTP endpoint authentication** handled within your Step handlers.
+Motia provides two authentication patterns: **stream authentication** configured via the iii engine's `config.yaml`, and **HTTP endpoint authentication** handled within your Step handlers.
 
 ## Stream Authentication
 
-Stream authentication is configured in `motia.config.ts` via the `authenticateStream` export. This function runs when clients connect to a WebSocket stream.
+Stream authentication is configured in `config.yaml` on the Stream module via the `auth_function` field. This references a registered function that runs when clients connect to a WebSocket stream.
 
-```typescript title="motia.config.ts"
-import type { AuthenticateStream } from 'motia'
+```yaml title="config.yaml"
+  - class: modules::stream::StreamModule
+    config:
+      port: 3112
+      host: 0.0.0.0
+      auth_function: stream.authenticate
+      adapter:
+        class: modules::stream::adapters::KvStore
+        config:
+          store_method: file_based
+          file_path: ./data/stream_store
+```
 
-export const authenticateStream: AuthenticateStream = async (req, context) => {
-  const token = req.headers['authorization']
+Then create a Step that registers the authentication function:
+
+```typescript title="src/stream-auth.step.ts"
+import type { Handlers, StepConfig } from 'motia'
+
+export const config = {
+  name: 'StreamAuthenticate',
+  description: 'Authenticates WebSocket stream connections',
+  triggers: [],
+  enqueues: [],
+  flows: ['auth'],
+} as const satisfies StepConfig
+
+export const handler: Handlers<typeof config> = async (input, { logger }) => {
+  const token = input.headers?.['authorization']
 
   if (!token) {
-    throw new Error('No authorization token provided')
+    return { unauthorized: true }
   }
 
   const user = await validateToken(token)
-  context.logger.info('Stream authenticated', { userId: user.id })
+  logger.info('Stream authenticated', { userId: user.id })
 
   return { context: { userId: user.id, role: user.role } }
 }
 ```
 
-The returned `context` object is passed to stream `onJoin` and `onLeave` hooks as the `authContext` parameter, allowing you to make per-subscription authorization decisions.
+If the auth function returns `{ unauthorized: true }`, the connection is rejected. Otherwise, the returned `context` is available to stream subscription handlers.
 
 ---
 
