@@ -161,38 +161,60 @@ docker compose up --build
 
 ## Python Steps
 
-If your project includes Python Steps, add Python to the Dockerfile:
+Make sure you have the pyproject.toml at your project and the steps folder
+
+```toml title="pyproject"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "python-test"
+version = "0.1.0"
+description = "Minimal Motia Python test project"
+requires-python = ">=3.10"
+dependencies = [
+  "motia[otel]",
+  "iii-sdk==0.2.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["steps"]
+```
+
+Include this dockerfile
 
 ```dockerfile title="Dockerfile (with Python)"
-FROM debian:bookworm-slim AS builder
+# syntax=docker/dockerfile:1
+
+FROM debian:bookworm-slim AS iii-builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://install.iii.dev/iii/main/install.sh | sh
 
-FROM oven/bun:1.1-slim
+FROM python:3.11-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-pip && \
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY --from=builder /root/.local/bin/iii /usr/local/bin/iii
+COPY --from=iii-builder /root/.local/bin/iii /usr/local/bin/iii
 
-COPY package.json .
-COPY requirements.txt .
-COPY dist/index-production.js dist/
-COPY dist/index-production.js.map dist/
-COPY steps/ steps/
-COPY config-production.yaml config.yaml
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir uv && \
+    uv pip install --system -r pyproject.toml
 
-RUN pip3 install --break-system-packages -r requirements.txt
+COPY steps ./steps
+COPY config.yaml ./config.yaml
 
-EXPOSE 3111
-EXPOSE 3112
+ENV III_URL=ws://127.0.0.1:49134
 
-CMD ["iii", "--config", "config.yaml"]
+EXPOSE 3111 3112
+
+CMD ["iii", "-c", "config.yaml"]
 ```
 
 Add a second ExecModule entry in your `config-production.yaml` for the Python runtime:
@@ -200,8 +222,10 @@ Add a second ExecModule entry in your `config-production.yaml` for the Python ru
 ```yaml
   - class: modules::shell::ExecModule
     config:
+      watch:
+        - steps/**/*_step.py
       exec:
-        - python3 -m motia run --dir steps
+        - uv run motia run --dir steps
 ```
 
 ---
