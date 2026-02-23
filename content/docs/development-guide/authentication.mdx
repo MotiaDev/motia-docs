@@ -3,30 +3,92 @@ title: Authentication
 description: How to handle authentication in Motia for HTTP endpoints and real-time streams
 ---
 
-Motia provides two authentication patterns: **stream authentication** configured at the engine level, and **HTTP endpoint authentication** handled within your Step handlers.
+Motia provides two authentication patterns: **stream authentication** configured via the iii engine's `config.yaml`, and **HTTP endpoint authentication** handled within your Step handlers.
 
 ## Stream Authentication
 
-Stream authentication is configured in `motia.config.ts` via the `authenticateStream` export. This function runs when clients connect to a WebSocket stream.
+Stream authentication operates at two levels: **connection-level** authentication when the WebSocket connects, and **subscription-level** authorization when a client joins a specific stream.
 
-```typescript title="motia.config.ts"
-import type { AuthenticateStream } from 'motia'
+### Connection-Level Authentication
 
-export const authenticateStream: AuthenticateStream = async (req, context) => {
-  const token = req.headers['authorization']
+Configure the `auth_function` on the Stream module in `config.yaml`. The value uses `<module>.<function>` format — `stream.authenticate` means the iii engine looks for a registered Step whose exported handler is named `authenticate` under the `stream` module namespace. This function runs on every new WebSocket connection before the upgrade completes.
+
+```yaml title="config.yaml"
+  - class: modules::stream::StreamModule
+    config:
+      port: 3112
+      host: 0.0.0.0
+      auth_function: stream.authenticate
+      adapter:
+        class: modules::stream::adapters::KvStore
+        config:
+          store_method: file_based
+          file_path: ./data/stream_store
+```
+
+Create a Step file that exports the handler referenced by `auth_function`. The handler receives a stream connection object (not an Express-like `req`) with the WebSocket handshake's `headers`, `path`, `query_params`, and `addr`. It should return a `context` object that gets attached to the connection and passed to all subsequent stream join/leave trigger handlers:
+
+```typescript title="src/stream-auth.step.ts"
+import type { StepConfig } from 'motia'
+
+export const config = {
+  name: 'StreamAuthenticate',
+  description: 'Authenticates WebSocket connections',
+  triggers: [],
+  enqueues: [],
+  flows: ['auth'],
+} as const satisfies StepConfig
+
+export async function authenticate(input: {
+  headers: Record<string, string>
+  path: string
+  query_params: Record<string, string>
+  addr: string
+}) {
+  const token = input.headers?.['authorization']
 
   if (!token) {
-    throw new Error('No authorization token provided')
+    throw new Error('No authorization token')
   }
 
   const user = await validateToken(token)
-  context.logger.info('Stream authenticated', { userId: user.id })
-
   return { context: { userId: user.id, role: user.role } }
 }
 ```
 
-The returned `context` object is passed to stream `onJoin` and `onLeave` hooks as the `authContext` parameter, allowing you to make per-subscription authorization decisions.
+If the function throws or returns no result, the connection proceeds without an auth context. The returned `context` is attached to the connection and passed to stream join/leave trigger handlers.
+
+### Subscription-Level Authorization
+
+When a client joins a specific stream, a `stream` trigger handler can reject the subscription by returning `{ unauthorized: true }`. This allows per-stream, per-group access control using the auth context from the connection:
+
+```typescript title="src/stream-guard.step.ts"
+import type { Handlers, StepConfig } from 'motia'
+
+export const config = {
+  name: 'StreamGuard',
+  description: 'Controls access to specific streams',
+  triggers: [
+    {
+      type: 'stream',
+      streamName: 'private-data',
+      condition: (input) => true,
+    },
+  ],
+  enqueues: [],
+  flows: ['auth'],
+} as const satisfies StepConfig
+
+export const handler: Handlers<typeof config> = async (input, { logger }) => {
+  // input includes context from connection-level auth
+  if (!input.context?.userId) {
+    return { unauthorized: true }
+  }
+
+  logger.info('Stream access granted', { userId: input.context.userId })
+  return { unauthorized: false }
+}
+```
 
 ---
 

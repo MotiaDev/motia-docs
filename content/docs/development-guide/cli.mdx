@@ -1,40 +1,156 @@
 ---
 title: Command Line Interface (CLI)
-description: Learn how to use the Motia CLI to build and run your Motia application
+description: Learn how to use the Motia CLI and the iii engine CLI to build, develop, and run your application
 ---
 
-# Command Line Interface (CLI)
+Motia projects use two CLIs: the **Motia CLI** for building and scaffolding your application, and the **iii CLI** for running the engine that powers everything.
 
-The Motia CLI handles building and running your Motia application. It is installed with the `motia` package.
+---
+
+## iii CLI
+
+The iii engine is the runtime that manages all infrastructure modules (queues, state, streams, cron, HTTP) and your Motia application process.
+
+### Install iii
+
+```bash
+curl -fsSL https://install.iii.dev/iii/main/install.sh | sh
+```
+
+### `iii`
+
+Start the iii engine. By default it looks for `config.yaml` in the current directory.
+
+```bash
+iii
+```
+
+### `iii -c <config-file>`
+
+Start the engine with a specific configuration file.
+
+```bash
+iii -c config.yaml
+iii -c config-production.yaml
+```
+
+### `iii -v`
+
+Print the iii engine version.
+
+```bash
+iii -v
+```
 
 <Callout type="info">
-During development, `npm run dev` starts the [iii](https://iii.dev) runtime which orchestrates building and running your Motia application. The commands below are either run directly by you or internally by iii's Shell Exec module.
+During development, your `package.json` should have `"dev": "iii"` so that `npm run dev` starts the engine, which reads `config.yaml` and boots all configured modules including your Motia application via the ExecModule.
 </Callout>
 
 ---
 
-## Build
+## iii Console
+
+The iii console provides a visual interface for building and debugging flows. Install and run it separately:
+
+```bash
+curl -fsSL https://install.iii.dev/console/main/install.sh | sh
+iii-console --enable-flow
+```
+
+Then open [http://localhost:3113/](http://localhost:3113/) to see flow diagrams, real-time logs, state inspection, and stream monitoring.
+
+---
+
+## Motia CLI
+
+The Motia CLI is installed with the `motia` npm package and handles building, scaffolding, and managing your application code.
+
+### `motia create`
+
+Scaffold a new Motia project with sensible defaults including `config.yaml`, `package.json`, and example Steps.
+
+```bash
+npx motia@latest create
+```
 
 ### `motia build`
 
-Build your project, generating an optimized bundle for production.
+Build your project, generating an optimized production bundle in `dist/`.
 
 ```bash
 npx motia build
 ```
 
-Your iii config.yaml should have the following ExecModule config for TypesScript:
+This produces:
+- `dist/index-production.js`
+- `dist/index-production.js.map`
 
-```yaml
+Your `config.yaml` should reference the production bundle in the ExecModule (place this under the top-level `modules:` list):
+
+```yaml title="config.yaml (production ExecModule)"
+modules:
+  # ... other modules (StreamModule, StateModule, etc.) ...
+
   - class: modules::shell::ExecModule
     config:
       exec:
-        - bun run --enable-source-maps index-production.js
+        - bun run --enable-source-maps dist/index-production.js
+```
+
+### `motia dev`
+
+Start the Motia SDK in development mode. This is typically run automatically by the iii engine's ExecModule, not manually.
+
+```bash
+npx motia dev
+```
+
+Your `config.yaml` ExecModule for development (place this under the top-level `modules:` list). The `watch` array defines file patterns that trigger a rebuild, and the `exec` commands run sequentially — `npx motia dev` compiles the Steps, then `node dist/index-dev.js` starts the built output:
+
+```yaml title="config.yaml (development ExecModule)"
+modules:
+  # ... other modules (StreamModule, StateModule, etc.) ...
+
+  - class: modules::shell::ExecModule
+    config:
+      watch:
+        - steps/**/*.ts
+      exec:
+        - npx motia dev
+        - node dist/index-dev.js
+```
+
+### `motia rules pull`
+
+Update AI development guides (Cursor rules, AGENTS.md) to the latest version.
+
+```bash
+npx motia rules pull
+npx motia rules pull --force  # Overwrite existing
 ```
 
 ---
 
-## Next Steps
+## Typical Development Workflow
 
-- Explore the [Core Concepts](/docs/concepts) to learn more about Steps, Flows, and Topics.
-- Check out the [Examples](/docs/examples) for common patterns and use cases.
+```bash
+npx motia@latest create      # Scaffold a new project
+cd my-project
+npm install
+npm run dev                    # Runs `iii` which starts everything
+```
+
+The `iii` engine reads `config.yaml`, starts all modules, and uses the ExecModule to build and run your Motia Steps automatically. File changes trigger hot-reload.
+
+---
+
+## What's Next?
+
+<Cards>
+  <Card href="/docs/concepts/overview" title="Core Concepts">
+    Learn about Steps, triggers, and the event-driven architecture
+  </Card>
+  <Card href="/docs/examples" title="Examples">
+    Explore real-world patterns and use cases
+  </Card>
+</Cards>
