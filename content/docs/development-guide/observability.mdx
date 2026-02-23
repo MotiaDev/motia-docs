@@ -156,6 +156,8 @@ Open the [iii development console](https://iii.dev/docs) and click on your flow.
 - The trace ID (to follow a request through the entire flow)
 - Full context data
 
+![Real-time logs in the iii Console](/console/logs-detail.png)
+
 ---
 
 ## Tracing
@@ -179,6 +181,8 @@ export const handler: Handlers<typeof config> = async (req, { logger, traceId, e
 - Click any log entry
 - See all logs with the same `traceId`
 - Follow the request from start to finish
+
+![Traces waterfall view in the iii Console](/console/traces-detail.png)
 
 ---
 
@@ -255,11 +259,13 @@ try {
 **Steps to debug:**
 
 1. **Check terminal logs** - See which Steps ran
-2. **Open the iii development console** at [http://localhost:3000](http://localhost:3000)
+2. **Open the iii development console** at [http://localhost:3113](http://localhost:3113)
 3. **Click your flow** - See the visual diagram
 4. **Expand logs panel** - See all logs in chronological order
 5. **Click a log** - Filter by that `traceId` to follow the request
 6. **Check each Step** - See where it failed
+
+![Traces waterfall in the iii Console](/console/traces-waterfall.png)
 
 ### Common Issues
 

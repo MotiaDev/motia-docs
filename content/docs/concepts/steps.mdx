@@ -252,6 +252,10 @@ Every Step has a `triggers` array that defines **how it triggers**:
 | `state` | State change | React to data changes |
 | `stream` | Stream event | Real-time data processing |
 
+The iii development console lets you browse all registered triggers, test HTTP endpoints directly, and inspect their configuration:
+
+![Triggers view in the iii Console](/console/triggers-detail.png)
+
 <Tabs items={['HTTP', 'Queue', 'Cron', 'State', 'Stream']} groupId="triggers" updateAnchor defaultIndex={0}>
   <Tab id="triggers-http" value="HTTP">
 
@@ -727,6 +731,8 @@ await streams.chat.set('room-123', 'msg-456', { text: 'Hello!' })
 ### Flows -- Visualize in the iii Development Console
 
 Group Steps together for diagram visualization in the iii development console.
+
+![Flow diagram in the iii Console](/console/flow-view.png)
 
 <Tabs items={['TypeScript', 'Python', 'JavaScript']}>
 <Tab value='TypeScript'>
