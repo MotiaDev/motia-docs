@@ -9,18 +9,18 @@ Motia is the application framework — you write Steps in TypeScript, Python, or
 
 ```
 ┌─────────────────────────────────────────────┐
-│                 iii Engine                   │
+│                 iii Engine                  │
 │                                             │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
-│  │  Queue   │  │  State   │  │  Stream  │  │
-│  │  Module  │  │  Module  │  │  Module  │  │
-│  └──────────┘  └──────────┘  └──────────┘  │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
-│  │  REST    │  │   Cron   │  │  OTel    │  │
-│  │  API     │  │  Module  │  │  Module  │  │
-│  └──────────┘  └──────────┘  └──────────┘  │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │  Queue   │  │  State   │  │  Stream  │   │
+│  │  Module  │  │  Module  │  │  Module  │   │
+│  └──────────┘  └──────────┘  └──────────┘   │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │  REST    │  │   Cron   │  │  OTel    │   │
+│  │  API     │  │  Module  │  │  Module  │   │
+│  └──────────┘  └──────────┘  └──────────┘   │
 │  ┌──────────┐  ┌──────────┐                 │
-│  │  PubSub  │  │   Exec   │  ← manages     │
+│  │  PubSub  │  │   Exec   │  ← manages      │
 │  │  Module  │  │  Module  │    SDK process  │
 │  └──────────┘  └──────────┘                 │
 │                     │                       │
