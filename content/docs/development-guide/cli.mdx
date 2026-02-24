@@ -3,7 +3,42 @@ title: Command Line Interface (CLI)
 description: Learn how to use the Motia CLI and the iii engine CLI to build, develop, and run your application
 ---
 
-Motia projects use two CLIs: the **Motia CLI** for building and scaffolding your application, and the **iii CLI** for running the engine that powers everything.
+Motia projects use the **motia-cli** for scaffolding new projects, the **Motia npm package** for building Node.js projects, and the **iii CLI** for running the engine that powers everything.
+
+---
+
+## Motia CLI (motia-cli)
+
+The motia-cli scaffolds new Motia projects with support for Node.js, Python, or mixed language templates. Python developers don't need npm; Node.js developers don't need Python.
+
+### Install motia-cli
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/MotiaDev/motia-cli/main/install.sh | sh
+```
+
+Or via Homebrew:
+
+```bash
+brew tap MotiaDev/tap
+brew install motia-cli
+```
+
+### `motia-cli create [name]`
+
+Scaffold a new Motia project with sensible defaults including `iii-config.yaml`, example Steps, and the appropriate dependency files for your chosen language.
+
+```bash
+motia-cli create my-project
+```
+
+Interactive prompts will ask for:
+
+- **Project folder name** — or pass it as an argument
+- **Language** — Node.js (TypeScript), Python, or Mixed (both)
+- **iii installation** — confirms you have the iii engine installed
+
+The CLI downloads templates from the [motia-iii-example](https://github.com/MotiaDev/motia-iii-example) repository and installs dependencies automatically (`npm install` for Node.js, `uv sync` for Python).
 
 ---
 
@@ -63,17 +98,9 @@ Then open [http://localhost:3113/](http://localhost:3113/) to see flow diagrams,
 
 ---
 
-## Motia CLI
+## Motia Node.js Tools (npx motia)
 
-The Motia CLI is installed with the `motia` npm package and handles building, scaffolding, and managing your application code.
-
-### `motia create`
-
-Scaffold a new Motia project with sensible defaults including `config.yaml`, `package.json`, and example Steps.
-
-```bash
-npx motia@latest create
-```
+For Node.js and mixed projects, the `motia` npm package provides build and development tools. Install it as a project dependency when you scaffold with motia-cli.
 
 ### `motia build`
 
@@ -136,13 +163,12 @@ npx motia rules pull --force  # Overwrite existing
 ## Typical Development Workflow
 
 ```bash
-npx motia@latest create      # Scaffold a new project
+motia-cli create my-project   # Scaffold a new project (choose Node.js, Python, or Mixed)
 cd my-project
-npm install
-npm run dev                    # Runs `iii` which starts everything
+iii -c iii-config.yaml        # Starts the iii engine and your Motia Steps
 ```
 
-The `iii` engine reads `config.yaml`, starts all modules, and uses the ExecModule to build and run your Motia Steps automatically. File changes trigger hot-reload.
+The `iii` engine reads `iii-config.yaml`, starts all modules, and uses the ExecModule to build and run your Motia Steps automatically. File changes trigger hot-reload.
 
 ---
 
