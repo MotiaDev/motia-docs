@@ -119,6 +119,44 @@ def analyze_sentiment(text):
 
 Both Steps share the same flow (`review-pipeline`) and communicate through the queue — no direct inter-process communication needed.
 
+## Mixed Template Example
+
+The [motia-iii-example](https://github.com/MotiaDev/motia-iii-example) repository includes a **mixed** template that demonstrates Node.js and Python working together in a single project. Create it with:
+
+```bash
+motia-cli create my-project
+# Select "Mixed (Node.js + Python, requires both)" when prompted
+```
+
+The mixed template structure:
+
+| Directory | Responsibility |
+|-----------|----------------|
+| `nodejs/src/` | HTTP API endpoints (`create-ticket`, `list-tickets`) |
+| `python/steps/` | Queue and cron triggers (`triage`, `notify`, `sla-monitor`, `escalate`) |
+
+The `iii-config.yaml` uses two ExecModules — one for each runtime:
+
+```yaml
+modules:
+  # ... shared infrastructure (StreamModule, StateModule, RestApiModule, etc.) ...
+
+  - class: modules::shell::ExecModule
+    config:
+      watch: ["nodejs/src/**/*.ts"]
+      exec:
+        - sh -c "cd nodejs && npx motia dev"
+        - sh -c "cd nodejs && node dist/index-dev.js"
+
+  - class: modules::shell::ExecModule
+    config:
+      watch: ["python/steps/**/*.py"]
+      exec:
+        - sh -c "cd python && uv run motia run --dir steps"
+```
+
+When a user creates a ticket via `POST /tickets`, the Node.js Step stores it in state and enqueues to `ticket::created`. The Python Step consumes that topic, triages the ticket, and enqueues to `ticket::triaged`. Both runtimes share the same state, queues, and API — proving true multi-language orchestration without cross-dependencies.
+
 ## Runtime Flexibility
 
 ### Node.js vs Bun
